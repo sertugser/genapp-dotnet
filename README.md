@@ -1,51 +1,50 @@
-# General insurance application (GenApp) for IBM CICS TS
+# genapp-dotnet
 
-This GitHub repository contains the code originally distributed by the
-IBM SupportPac CB12 (now removed).
-The repository demonstrates application modernization for IBM CICS Transaction Server for
-z/OS (CICS TS), by modeling a general insurance application.
+**Test-driven, incremental modernization of the IBM CICS General Insurance Application (GenApp) from COBOL/CICS to ASP.NET Core.**
 
-## Application description
+Engineering Design II · Ankara Bilim University · Project 01 – IBM CICS General Insurance Application (GenApp)  
+Advisor: Prof. Dr. Hakan Çağlar
 
-The primary purpose of this repository is to demonstrate application modernization, by providing a general insurance
-application (known as GenApp) for IBM CICS Transaction Server for z/OS (CICS TS). GenApp has been developed in-house by
-the IBM Hursley CICS Development team to help with their testing of new CICS releases.
+## Goal
 
-GenApp is designed to exercise various components of CICS TS; containing functions to insert, query, and delete policy
-information. In its original form GenApp is driven using 3270 input, where the insurance policy information is stored
-in an IBM Db2 database.
+GenApp is IBM's sample insurance application (customers and policies) written in COBOL, running on CICS with Db2 and VSAM.
+We analyse its `base` component statically, derive tests from the COBOL logic, check those tests by running selected
+programs in GnuCOBOL, and rebuild its 18 core operations incrementally on ASP.NET Core + PostgreSQL.
+Mutation testing (Stryker.NET) measures how many planted bugs our tests actually catch.
 
-GenApp illustrates how a 3270-based 'green screen' application can be transformed to use many of the rich features and
-functions of the newer releases of CICS TS.
+## Repository layout
 
-### GenApp base ([base/](base/README.md))
+| Folder | Content |
+|---|---|
+| `base/` | Original GenApp COBOL application from [cicsdev/cics-genapp](https://github.com/cicsdev/cics-genapp) (unchanged) |
+| `legacy-analysis/` | Static analysis of the COBOL code (in progress) |
+| `docs/` | Design notes and architecture decision records (planned) |
+| `src/` | ASP.NET Core solution (planned) |
+| `tests/` | Equivalence and integration tests (planned) |
 
-The general insurance application is a working COBOL application that you can use to try out different features of CICS,
-including modernizing applications.
+## Scope
 
-## Possible Uses
+**In scope (18 operations):** customer add / inquire / update; motor, house, endowment and commercial policies – add / inquire / delete;
+policy update for motor, house and endowment (the original code has no customer delete and no commercial update).
 
-To test a variety of functions and components of CICS TS, using a typical application. GenApp can be used to modify an
-existing legacy application to utilize new CICS functions and capabilities.
+**Out of scope:** JCL batch jobs; setup and monitoring programs (LGSETUP, LGWEBST5); the optional CICS scenarios in `base/`
+(web services, CICSPlex SM, Workload Simulator, business events); the CICS named counter – customer numbers come from
+the database instead, which is GenApp's own fallback in LGACDB01; running on a real mainframe.
 
-## Skill level required
+## Tech stack
 
-Intermediate, with knowledge of CICS systems configuration, operation, and applications.
+C# · .NET (LTS) · ASP.NET Core · Entity Framework Core · PostgreSQL · xUnit · Stryker.NET · GnuCOBOL · Docker · GitHub Actions
 
-## Prerequisites
+## Team
 
-* [IBM CICS Transaction Server for z/OS V4.1 or later](https://www.ibm.com/products/cics-transaction-server)
-* [IBM Db2](https://www.ibm.com/analytics/db2)
-
-For details of compatibility with CICS TS of the GenApp base application, or its extensions, consult the individual
-component directories linked above.
-
-## Change history and contributors
-
-See the [change history](Changes.md) document for details of changes to this sample and a list of contributors to
-the project.
+| Name | Role |
+|---|---|
+| Sertuğ Ser | Project Manager |
+| Hasan Basri Engin | Legacy Analysis |
+| Efekan Egeli | Architecture & Backend |
+| Oğuz Aladağ | Analysis & Testing |
+| Sercan Furkan Gümüşdoğrayan | Testing & QA |
 
 ## License
 
-This sample is supplied under the [Eclipse Public License 2.0](LICENSE).
-
+The original GenApp code in `base/` is distributed under the [Eclipse Public License 2.0](LICENSE).
