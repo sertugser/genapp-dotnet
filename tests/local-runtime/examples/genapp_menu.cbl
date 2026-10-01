@@ -9,17 +9,22 @@
       * real base/src programs, unmodified.
       *
       * Build (after setup.ps1 + setup-sql-bridge.ps1 + setup-cics-stub.ps1):
-      *   For each of lgacdb01, lgacdb02, lgicdb01, lgucdb01 (EXEC SQL):
+      *   For each of lgacdb01, lgacdb02, lgicdb01, lgucdb01, lgapdb01 (EXEC SQL -
+      *   lgapdb01.cbl needs DB2-M-PREMIUM-int/DB2-M-ACCIDENTS-int uppercased to
+      *   -INT in the working copy first, gixpp's host-var lookup is case-sensitive
+      *   and the original source is inconsistent there - see local-cics-runtime-plan.md):
       *     gixpp -e -S -I <copy dir> -i base/src/X.cbl -o X.sql.cbl
       *     preprocess_cics.py X.sql.cbl X.pp.cbl
-      *   For each of lgacus01, lgacvs01, lgicus01, lgucus01, lgucvs01 (CICS only):
+      *   For each of lgacus01, lgacvs01, lgicus01, lgucus01, lgucvs01, lgapol01,
+      *   lgapvs01 (CICS only):
       *     preprocess_cics.py base/src/X.cbl X.pp.cbl
-      *   cobc -c -o X.o X.pp.cbl -I <copy dir>                  for all nine
+      *   cobc -c -o X.o X.pp.cbl -I <copy dir>                  for all twelve
       *   cobc -c -o lgstsq_stub.o lgstsq_stub.cbl
       *   cobc -c -x -o menu.o genapp_menu.cbl -I <copy dir>
       *   cobc -x -o genapp_menu.exe menu.o lgacus01.o lgacdb01.o lgacdb02.o
-      *        lgacvs01.o lgicus01.o lgicdb01.o lgucus01.o lgucdb01.o
-      *        lgucvs01.o lgstsq_stub.o genapp_sqlstub.o genapp_vsam_stub.o
+      *        lgacvs01.o lgicus01.o lgicdb01.o lgucus01.o lgucdb01.o lgucvs01.o
+      *        lgapol01.o lgapdb01.o lgapvs01.o
+      *        lgstsq_stub.o genapp_sqlstub.o genapp_vsam_stub.o
       *        -L <postgres lib dir> -lpq -lstdc++
       * Run with DATASRC/DATASRC_USR/DATASRC_PWD and GENAPP_VSAM_DIR set, then
       * just type at the menu - no piped input needed for interactive use.
@@ -42,6 +47,7 @@
                EVALUATE WS-OPTION
                    WHEN '1' PERFORM DO-INQUIRY
                    WHEN '2' PERFORM DO-ADD
+                   WHEN '3' PERFORM DO-ADD-MOTOR
                    WHEN '4' PERFORM DO-UPDATE
                    WHEN '0' MOVE 'Y' TO WS-DONE
                    WHEN OTHER
@@ -56,6 +62,7 @@
            DISPLAY " ".
            DISPLAY "  1. Cust Inquiry".
            DISPLAY "  2. Cust Add".
+           DISPLAY "  3. Motor Policy Add".
            DISPLAY "  4. Cust Update".
            DISPLAY "  0. Exit".
            DISPLAY " ".
@@ -136,6 +143,62 @@
            CALL "LGUCUS01" USING COMM-AREA
            IF CA-RETURN-CODE = '00'
                DISPLAY "Customer details updated"
+           ELSE
+               DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           END-IF.
+
+       DO-ADD-MOTOR.
+           INITIALIZE COMM-AREA
+           MOVE '01AMOT' TO CA-REQUEST-ID
+           DISPLAY "Cust Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-CUSTOMER-NUM
+           DISPLAY "Issue date   (yyyy-mm-dd)   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-ISSUE-DATE
+           DISPLAY "Expiry date  (yyyy-mm-dd)   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-EXPIRY-DATE
+           DISPLAY "Broker ID                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-BROKERID
+           DISPLAY "Broker's Reference          : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-BROKERSREF
+           DISPLAY "Payment                     : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-PAYMENT
+           DISPLAY "Car Make                    : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-M-MAKE
+           DISPLAY "Car Model                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-M-MODEL
+           DISPLAY "Car Value                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-M-VALUE
+           DISPLAY "Registration                : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-M-REGNUMBER
+           DISPLAY "Car Colour                  : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-M-COLOUR
+           DISPLAY "CC                          : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-M-CC
+           DISPLAY "Manufacture Date(yyyy-mm-dd): " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-M-MANUFACTURED
+           DISPLAY "Premium                     : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-M-PREMIUM
+           DISPLAY "Accidents                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-M-ACCIDENTS
+           CALL "LGAPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE = '00'
+               DISPLAY "New Policy Inserted, Policy Number = "
+                       CA-POLICY-NUM
            ELSE
                DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
            END-IF.
