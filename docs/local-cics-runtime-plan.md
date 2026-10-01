@@ -164,12 +164,22 @@ original app).
         layer (only in the 3270 menu programs, which aren't used) so the preprocessor doesn't
         handle it — would need to if a future program turns out to need it (comments it out
         with a `FIXME` marker and keeps going, rather than silently doing the wrong thing).
-- [ ] **Step 4 — Proof of concept**: get **Add Customer** running fully end-to-end —
-      `lgacus01` → `lgacdb01` → `lgacdb02` (SQL, done in Step 1) → `lgacvs01` (VSAM, done
-      above) chained together via real `EXEC CICS LINK` calls, driven by a tiny batch program
-      instead of the 3270 menu. The individual pieces (SQL bridge, VSAM write) are each
-      proven in isolation; chaining them through LINK is the remaining unknown.
-- [ ] **Step 5 — Extend to the remaining 17 operations**, reusing the Step 3 infrastructure.
+- [x] **Step 4 — Proof of concept: DONE.** "Add Customer" runs fully end-to-end through the
+      **real, unmodified** `lgacus01.cbl` → `lgacdb01.cbl` → (`lgacdb02.cbl` + `lgacvs01.cbl`)
+      chain, via real `EXEC CICS LINK` calls (preprocessed, not bypassed), ending with
+      `CA-RETURN-CODE = 00` and correct, consistent data in all three stores (PostgreSQL
+      `CUSTOMER`, PostgreSQL `CUSTOMER_SECURE`, and the `KSDSCUST` VSAM-equivalent file).
+      Needed a handful of additional fixes beyond Steps 1–3's individual pieces — see
+      progress log, several are the kind of thing that'll bite again in Step 5 if forgotten.
+- [ ] **Step 5 — Extend to the remaining 17 operations**, reusing the Step 3/4 infrastructure
+      (build recipe: `gixpp` on anything with `EXEC SQL`, then `preprocess_cics.py` on
+      everything, in that order; link with both stub `.o`s). Known rough edges to expect:
+      `REWRITE`/`DELETE`/`GTEQ`/`GENERIC` `READ` are implemented but not yet individually
+      exercised (only plain `WRITE` is proven); `HANDLE CONDITION` isn't translated at all
+      (not seen in the data-access layer so far — the preprocessor will fail loudly with a
+      `FIXME` comment if an update/delete program turns out to need it, not silently misfire);
+      and the `CUSTOMER`/`KSDSCUST` numbering mismatch (Step 4, point 4) will recur for policy
+      numbers against `KSDSPOLY` unless addressed first.
 - [ ] **Step 6 (stretch) — Wire into `tests/GenApp.EquivalenceTests`** per the project's own
       testing plan (return codes, optimistic locking via LASTCHANGED, input checks).
 
@@ -374,6 +384,59 @@ higher-fidelity (but unnecessary now) alternative.
     `tests/local-runtime/setup-cics-stub.ps1`. The working VSAM data directory
     (`tests/local-runtime/vsam-data/`) is gitignored — it's a mutable working copy seeded
     from `base/data/`, not source.
+- **2026-10-01** — **Step 4: "Add Customer" proven end-to-end** through the unmodified
+  `lgacus01.cbl` → `lgacdb01.cbl` → `lgacdb02.cbl` + `lgacvs01.cbl` chain. Build recipe: run
+  `gixpp -e -S` on the two programs with `EXEC SQL` (`lgacdb01`, `lgacdb02`) first, then
+  `preprocess_cics.py` on **all four** (order matters — gixpp leaves `EXEC CICS` alone, so
+  it's always SQL pass then CICS pass, never the other way round), compile each as a module
+  (`cobc -c`), and link them all together with a small driver program (fills the COMMAREA,
+  `CALL "LGACUS01" USING COMM-AREA`, checks `CA-RETURN-CODE`) plus both stub `.o` files.
+  Four more things had to be fixed to get from "the pieces work alone" to "the real chain
+  works", none of them obvious in advance:
+  1. **`preprocess_cics.py` wasn't preserving the trailing period** from the original
+     `EXEC CICS ... END-EXEC.` — e.g. a translated `GOBACK` with no period silently merges
+     into the *next* line as one unterminated COBOL sentence, which then fails to compile
+     pointing at that next line (a paragraph header, usually), not at the real cause. Fixed
+     by capturing `END-EXEC`'s trailing `.` (or its absence) in the regex and echoing it
+     back after whatever the verb translates to.
+  2. **Needed a trivial `LGSTSQ` stub** (`PROCEDURE DIVISION USING DUMMY. GOBACK.`) — every
+     `WRITE-ERROR-MESSAGE` paragraph across `base/src` does `EXEC CICS LINK PROGRAM('LGSTSQ')
+     COMMAREA(...)` to log to a TDQ we're not emulating. Dynamic `CALL "literal"` only
+     resolves at runtime, so this doesn't block compiling/linking — it only matters if an
+     error path actually gets hit, which turned out to be an excellent canary for bugs
+     elsewhere (see next point: it's *how* the real bug below surfaced instead of as a silent
+     wrong answer).
+  3. **No program in `base/src` ever issues `EXEC SQL CONNECT`.** Real CICS+Db2 establishes
+     the connection implicitly (`DB2CONN=YES` in the region's SIT overrides, via the Db2
+     attachment facility) before the program ever runs — there is no mainframe equivalent of
+     our driver issuing a connect. Without this, `GIXSQLExecParams` ran against a null
+     `PGconn*`, which doesn't crash (libpq is defensive about it) but returns an error result
+     with an **empty** message, which was its own small trap when first debugging this - the
+     very first symptom was CA-RETURN-CODE 90 (SQL insert "failed") with no error text at
+     all. Fixed by adding `ensure_connected()`, called at the top of every stub entry point
+     that touches `g_conn` (`GIXSQLExec`, `GIXSQLExecParams`, `GIXSQLCursorOpen`), which
+     connects lazily from the same `DATASRC`/`_USR`/`_PWD` env vars an explicit `CONNECT`
+     would have used if `g_conn` isn't already live — mirrors the implicit-connection
+     behaviour instead of requiring every driver to replicate it.
+  4. **Not a code bug, a test-data coordination issue**: the fresh PostgreSQL `CUSTOMER`
+     table's `IDENTITY` sequence starts at 1, and the seeded VSAM `KSDSCUST` working file
+     already has customers numbered 1–10 (from `base/data/ksdscust.txt`) — so the very first
+     auto-numbered insert collided with an existing VSAM record (`DUPREC` → `ABEND LGV0`,
+     `CA-RETURN-CODE 80`). Nothing wrong with either store on its own; they just didn't agree
+     on which numbers were taken. Worked around for this proof of concept by restarting the
+     Postgres sequence well clear of the seed range (`ALTER TABLE CUSTOMER ALTER COLUMN
+     CUSTOMERNUMBER RESTART WITH 1000`) - **not a real fix**, just unblocks this test; Step 5
+     should either seed `CUSTOMER` from the same sample data as `KSDSCUST`, or accept that
+     local runs start numbering from a high watermark clear of the seed data.
+  - Added a `GENAPP_SQL_DEBUG=1` env var to `genapp_sqlstub.cpp` (prints `SQLCODE` + the
+    libpq error message to stderr) while chasing fix #3 above — kept it in, it's cheap and
+    was genuinely the thing that cut through guessing fastest; worth reaching for first next
+    time something fails silently.
+  - End state, verified by querying both databases and reading the raw VSAM bytes back, not
+    just trusting `CA-RETURN-CODE = 00`: customer 1000 (JOHN SMITH) present and byte/field
+    -identical across PostgreSQL `CUSTOMER`, PostgreSQL `CUSTOMER_SECURE` (including the
+    hardcoded default password hash from `lgacdb01.cbl`, confirming the `LGACDB02` leg of the
+    chain really ran), and `KSDSCUST.dat`.
 - **2026-10-01** — Wrote and tested `tests/local-runtime/setup.ps1`, scripting all of Step 0
   (idempotent — re-ran it after the manual install and it correctly skipped already-done
   steps, then passed the smoke test). Decided against Docker for now (see "Reproducibility"

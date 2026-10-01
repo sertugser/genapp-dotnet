@@ -16,7 +16,7 @@ import re
 import sys
 
 EXEC_CICS_RE = re.compile(
-    r"(?P<indent>^[ \t]*)(?:EXEC|Exec)\s+(?:CICS|Cics)\s+(?P<body>.*?)\bEND-EXEC\b\.?",
+    r"(?P<indent>^[ \t]*)(?:EXEC|Exec)\s+(?:CICS|Cics)\s+(?P<body>.*?)\bEND-EXEC\b(?P<period>\.?)",
     re.IGNORECASE | re.DOTALL | re.MULTILINE,
 )
 
@@ -217,23 +217,32 @@ VERB_HANDLERS = {
 def translate_block(m):
     indent = m.group("indent")
     body = m.group("body")
+    # The original `END-EXEC` may or may not have had a trailing period -
+    # whichever it was, the replacement statement needs the same, or it
+    # silently merges into the next line's paragraph name/statement as one
+    # unterminated COBOL "sentence" (seen in practice: "syntax error,
+    # unexpected Identifier" pointing at the *next* paragraph header, not
+    # at the real cause here).
+    period = m.group("period")
     first_word = re.match(r"\s*(\w[\w-]*)", body)
     verb = first_word.group(1).lower() if first_word else ""
 
     if verb in ("read", "write", "rewrite", "delete"):
-        return translate_file_op(verb, body, indent)
-    if verb == "get" and "counter" in body.lower():
-        return translate_get_counter(body, indent)
-    if verb in VERB_HANDLERS:
-        return VERB_HANDLERS[verb](body, indent)
+        result = translate_file_op(verb, body, indent)
+    elif verb == "get" and "counter" in body.lower():
+        result = translate_get_counter(body, indent)
+    elif verb in VERB_HANDLERS:
+        result = VERB_HANDLERS[verb](body, indent)
+    else:
+        # Unhandled verb (HANDLE, SEND, RECEIVE, ENQ, DEQ, ASSIGN, ...): not
+        # expected to appear in the programs this preprocessor is run
+        # against. Comment it out with a marker instead of leaving invalid
+        # syntax, so the *next* compile error (if the stubbed-out behaviour
+        # actually mattered) points straight at this spot.
+        commented = "\n".join(indent + "*>" + line for line in m.group(0).splitlines())
+        return f"{commented}\n{indent}*> FIXME: EXEC CICS {verb} not translated"
 
-    # Unhandled verb (HANDLE, SEND, RECEIVE, ENQ, DEQ, ASSIGN, ...): not
-    # expected to appear in the programs this preprocessor is run against.
-    # Comment it out with a marker instead of leaving invalid syntax, so the
-    # *next* compile error (if the stubbed-out behaviour actually mattered)
-    # points straight at this spot.
-    commented = "\n".join(indent + "*>" + line for line in m.group(0).splitlines())
-    return f"{commented}\n{indent}*> FIXME: EXEC CICS {verb} not translated"
+    return result + period
 
 
 def translate_dfhresp(text):
