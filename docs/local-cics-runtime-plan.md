@@ -171,12 +171,13 @@ original app).
       `CUSTOMER`, PostgreSQL `CUSTOMER_SECURE`, and the `KSDSCUST` VSAM-equivalent file).
       Needed a handful of additional fixes beyond Steps 1–3's individual pieces — see
       progress log, several are the kind of thing that'll bite again in Step 5 if forgotten.
-- [~] **Step 5 — Extend to the remaining operations** — **3 of 18 done** (Customer
-      Inquire/Add/Update, all three proven via `genapp_menu.cbl` — see progress log), **15 to
-      go** (the 4-policy-type Add/Inquire/Delete + Motor/House/Endowment Update). Reuses the
+- [~] **Step 5 — Extend to the remaining operations** — **4 of 18 done** (Customer
+      Inquire/Add/Update via `genapp_menu.cbl`, plus Motor Policy Add via
+      `driver_add_motor.cbl` — see progress log), **14 to go** (Motor Inquire/Delete/Update +
+      House/Endowment/Commercial Add/Inquire/Delete/Update-where-applicable). Reuses the
       Step 3/4 infrastructure (build recipe: `gixpp` on anything with `EXEC SQL`, then
       `preprocess_cics.py` on everything, in that order; link with both stub `.o`s). Known
-      rough edges to expect for the remaining 15: `REWRITE` is now proven (Customer Update),
+      rough edges to expect for the remaining 14: `REWRITE` is now proven (Customer Update),
       but `DELETE`/`GTEQ`/`GENERIC` `READ` are implemented and still not individually
       exercised — policy delete and the "all policies for a customer" inquiry will be the
       first real test; `HANDLE CONDITION` isn't translated at all (not seen in the
@@ -468,6 +469,44 @@ higher-fidelity (but unnecessary now) alternative.
     program's own "success" messages.
   - Committed: `tests/local-runtime/examples/genapp_menu.cbl`, plus the
     `GIXSQLExecSelectIntoOne` addition to `tests/local-runtime/sql-stub/genapp_sqlstub.cpp`.
+- **2026-10-01** — **First policy operation: Motor Add** (`lgapol01` → `lgapdb01` →
+  `lgapvs01`), proven the same way as Customer. Three more fixes needed, none seen on the
+  Customer side:
+  1. **`lgapdb01.cbl` has a pre-existing case-mismatch bug in its own source**:
+     `03 DB2-M-PREMIUM-int PIC S9(9) COMP.` is declared lowercase, but referenced as
+     `:DB2-M-PREMIUM-INT` (uppercase) in the `EXEC SQL INSERT`. Real COBOL compilers are
+     case-insensitive about identifiers, so this has presumably always worked on a real
+     mainframe - but gixpp's host-variable resolution is case-*sensitive* and fails to
+     compile with `Cannot find host variable`. **`base/src/lgapdb01.cbl` was not touched** -
+     fixed by normalizing the case only in the disposable working copy used for
+     preprocessing (same spirit as the preprocessing step itself - base/ stays byte-for-byte
+     original, only build-time copies are transformed).
+  2. **Db2 dialect SQL that isn't valid PostgreSQL**: `CURRENT TIMESTAMP` (two keywords,
+     Db2's "special register" syntax) fails in PostgreSQL, which wants `CURRENT_TIMESTAMP`
+     (one token). Added a small `translate_db2_sql()` pass in `genapp_sqlstub.cpp`, applied
+     to every statement right before it's sent to libpq (also covers `CURRENT DATE`/
+     `CURRENT TIME` pre-emptively — same Db2 idiom, not yet hit but likely elsewhere in the
+     policy programs). Separate from the existing `IDENTITY_VAL_LOCAL()` handling (that one
+     needs its result routed into a host variable via `try_exec_set_assignment`, not just a
+     text swap).
+  3. **The type-23 (binary `COMP`) codec was silently wrong for anything smaller than
+     `PIC S9(9)`.** Every type-23 field tested on the Customer side happened to be
+     `PIC S9(9) COMP` (4 bytes), so a hardcoded 4-byte read/write never surfaced a problem.
+     Motor's `DB2-M-CC-SINT` is `PIC S9(4) COMP` (GnuCOBOL's standard binary-size rule: 1-4
+     digits -> 2 bytes, 5-9 -> 4 bytes, 10-18 -> 8 bytes) - gixpp reports this correctly via
+     the `length` argument to `SetSQLParams`/`SetResultParams` (4 vs 9), which the codec just
+     wasn't using. Reading 4 bytes from a field that only has 2 doesn't crash - it silently
+     pulls in two bytes of whatever happens to follow in the record and produces a wrong but
+     plausible-looking number (confirmed the hard way: CC came back as 104857600 instead of
+     1600 - exactly what you get from 1600 shifted left 16 bits, i.e. two extra high bytes
+     read from neighbouring storage). **This means every type-23 result silently trusted
+     before this fix is suspect** - worth spot-checking Customer's numeric fields again,
+     though they're all `PIC S9(9)` so they were likely fine. Fixed by sizing the read/write
+     from `length` (the digit count) via `comp_byte_size()`, matching GnuCOBOL's own rule,
+     instead of assuming 4 bytes always.
+  - Verified end-to-end: `CA-RETURN-CODE = 00`, correct data (including the now-fixed `CC`
+    value) in both the `MOTOR`/`POLICY` PostgreSQL tables and the `KSDSPOLY` VSAM-equivalent
+    file, confirmed by querying/reading each directly, not just trusting the return code.
 - **2026-10-01** — Wrote and tested `tests/local-runtime/setup.ps1`, scripting all of Step 0
   (idempotent — re-ran it after the manual install and it correctly skipped already-done
   steps, then passed the smoke test). Decided against Docker for now (see "Reproducibility"

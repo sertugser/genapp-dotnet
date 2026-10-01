@@ -24,6 +24,7 @@
 #include <map>
 #include <algorithm>
 #include <regex>
+#include <utility>
 
 #pragma pack(push, 1)
 struct SQLCA_T {
@@ -79,16 +80,38 @@ std::string cstr_from_fixed(const char* data, int max_len) {
 
 // GnuCOBOL's default binary representation is big-endian (mainframe-compatible),
 // confirmed empirically for this toolchain - do not assume host byte order.
-int32_t decode_comp32_be(const unsigned char* b) {
-    return (int32_t)((uint32_t)b[0] << 24 | (uint32_t)b[1] << 16 |
-                      (uint32_t)b[2] << 8 | (uint32_t)b[3]);
+//
+// Storage size depends on the PICTURE's digit count, not just "COMP == 4
+// bytes": GnuCOBOL's standard binary-size convention is 1-4 digits -> 2
+// bytes, 5-9 -> 4 bytes, 10-18 -> 8 bytes. Type 23 covers all of these
+// (confirmed: DB2-CUSTOMERNUM-INT is PIC S9(9) COMP, length 9, 4 bytes; but
+// DB2-M-CC-SINT / DB2-E-TERM-SINT are PIC S9(4) COMP, length 4, 2 bytes -
+// treating every type-23 field as 4 bytes reads/writes past a 2-byte
+// field's real boundary and corrupts whatever follows it in the record,
+// which doesn't crash - it just silently produces a wrong number (confirmed
+// the hard way: CC came back as 104857600 instead of 1600, i.e. multiplied
+// by 65536 - that's exactly what reading 2 extra high-order bytes as part
+// of the value looks like).
+int comp_byte_size(int digits) {
+    if (digits <= 4) return 2;
+    if (digits <= 9) return 4;
+    return 8;
 }
 
-void encode_comp32_be(unsigned char* b, int32_t v) {
-    b[0] = (unsigned char)((uint32_t)v >> 24);
-    b[1] = (unsigned char)((uint32_t)v >> 16);
-    b[2] = (unsigned char)((uint32_t)v >> 8);
-    b[3] = (unsigned char)((uint32_t)v);
+int64_t decode_comp_be(const unsigned char* b, int digits) {
+    int n = comp_byte_size(digits);
+    bool negative = (b[0] & 0x80) != 0;
+    uint64_t v = negative ? ~0ULL : 0;  // sign-extend into the unused high bytes
+    for (int i = 0; i < n; i++) v = (v << 8) | b[i];
+    return (int64_t)v;
+}
+
+void encode_comp_be(unsigned char* b, int64_t v, int digits) {
+    int n = comp_byte_size(digits);
+    for (int i = n - 1; i >= 0; i--) {
+        b[i] = (unsigned char)((uint64_t)v & 0xFF);
+        v >>= 8;
+    }
 }
 
 // COMP-3 packed decimal: 2 BCD digits/byte, last nibble is the sign
@@ -124,7 +147,7 @@ std::string decode_comp3(const unsigned char* b, int digits) {
 
 std::string encode_param(int type, int length, void* data) {
     if (type == 23) {
-        int32_t v = decode_comp32_be(reinterpret_cast<unsigned char*>(data));
+        int64_t v = decode_comp_be(reinterpret_cast<unsigned char*>(data), length);
         return std::to_string(v);
     }
     if (type == 9) {
@@ -159,8 +182,8 @@ void encode_comp3(unsigned char* b, int digits, int64_t v) {
 
 void decode_into_result(const ResultSlot& slot, const char* pg_text) {
     if (slot.type == 23) {
-        int32_t v = pg_text && *pg_text ? (int32_t)atoll(pg_text) : 0;
-        encode_comp32_be(reinterpret_cast<unsigned char*>(slot.buf), v);
+        int64_t v = pg_text && *pg_text ? atoll(pg_text) : 0;
+        encode_comp_be(reinterpret_cast<unsigned char*>(slot.buf), v, slot.length);
         return;
     }
     if (slot.type == 9) {
@@ -266,6 +289,36 @@ void ensure_connected() {
     g_conn = PQconnectdb(conninfo.c_str());
 }
 
+// GenApp's SQL is Db2 dialect, written assuming a Db2 precompiler, not
+// PostgreSQL. Rather than a general dialect translator (out of scope -
+// GenApp only actually uses a handful of Db2-isms, found as each one broke
+// a real statement, not surveyed up front), patch the specific ones hit so
+// far. Applied to every statement right before it's sent to libpq.
+// IDENTITY_VAL_LOCAL() is handled separately (try_exec_set_assignment,
+// below) since it needs the result routed into a host variable, not just a
+// text swap.
+std::string translate_db2_sql(const std::string& sql) {
+    static const std::vector<std::pair<std::string, std::string>> replacements = {
+        // Db2's two-keyword special registers vs. PostgreSQL's single-token
+        // functions. CURRENT TIMESTAMP is the one actually seen so far
+        // (lgapdb01.cbl's INSERT INTO POLICY); DATE/TIME included
+        // pre-emptively since they're the same Db2 idiom and other
+        // *db01 programs are likely to use them too.
+        {"CURRENT TIMESTAMP", "CURRENT_TIMESTAMP"},
+        {"CURRENT DATE", "CURRENT_DATE"},
+        {"CURRENT TIME", "CURRENT_TIME"},
+    };
+    std::string out = sql;
+    for (auto& kv : replacements) {
+        size_t p = 0;
+        while ((p = out.find(kv.first, p)) != std::string::npos) {
+            out.replace(p, kv.first.size(), kv.second);
+            p += kv.second.size();
+        }
+    }
+    return out;
+}
+
 }  // namespace
 
 extern "C" {
@@ -323,7 +376,8 @@ int GIXSQLSetResultParams(int type, int length, int /*scale*/, int /*flags*/, vo
 int GIXSQLExec(void* sqlca_v, char*, int, char* sql) {
     SQLCA_T* ca = reinterpret_cast<SQLCA_T*>(sqlca_v);
     ensure_connected();
-    PGresult* res = PQexec(g_conn, sql);
+    std::string translated = translate_db2_sql(sql);
+    PGresult* res = PQexec(g_conn, translated.c_str());
     ExecStatusType st = PQresultStatus(res);
     if (st != PGRES_COMMAND_OK && st != PGRES_TUPLES_OK) {
         sqlca_error(ca, -1, PQresultErrorMessage(res));
@@ -386,8 +440,9 @@ int GIXSQLExecParams(void* sqlca_v, char*, int, char* sql, int /*nparams*/) {
     std::vector<const char*> vals;
     vals.reserve(g_params.size());
     for (auto& p : g_params) vals.push_back(p.value.c_str());
-    PGresult* res = PQexecParams(g_conn, sql, (int)g_params.size(), nullptr, vals.data(),
-                                  nullptr, nullptr, 0);
+    std::string translated = translate_db2_sql(sql);
+    PGresult* res = PQexecParams(g_conn, translated.c_str(), (int)g_params.size(), nullptr,
+                                  vals.data(), nullptr, nullptr, 0);
     ExecStatusType st = PQresultStatus(res);
     if (st != PGRES_COMMAND_OK && st != PGRES_TUPLES_OK) {
         sqlca_error(ca, -1, PQresultErrorMessage(res));
@@ -417,8 +472,9 @@ int GIXSQLExecSelectIntoOne(void* sqlca_v, char*, int, char* sql, int /*nparams*
     std::vector<const char*> vals;
     vals.reserve(g_params.size());
     for (auto& p : g_params) vals.push_back(p.value.c_str());
-    PGresult* res = PQexecParams(g_conn, sql, (int)g_params.size(), nullptr, vals.data(),
-                                  nullptr, nullptr, 0);
+    std::string translated = translate_db2_sql(sql);
+    PGresult* res = PQexecParams(g_conn, translated.c_str(), (int)g_params.size(), nullptr,
+                                  vals.data(), nullptr, nullptr, 0);
     ExecStatusType st = PQresultStatus(res);
     if (st != PGRES_TUPLES_OK) {
         sqlca_error(ca, -1, PQresultErrorMessage(res));
@@ -439,7 +495,7 @@ int GIXSQLExecSelectIntoOne(void* sqlca_v, char*, int, char* sql, int /*nparams*
 
 int GIXSQLCursorDeclare(void* sqlca_v, char*, int, char* cursor_name, int, char* sql, int) {
     std::string name = cstr_from_fixed(cursor_name, 256);
-    g_cursors[name] = CursorState{std::string(sql), nullptr, 0};
+    g_cursors[name] = CursorState{translate_db2_sql(sql), nullptr, 0};
     sqlca_ok(reinterpret_cast<SQLCA_T*>(sqlca_v));
     return 0;
 }
