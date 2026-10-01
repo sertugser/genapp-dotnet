@@ -57,6 +57,11 @@ Start-Sleep -Seconds 1
 $ErrorActionPreference = $prevEAP
 Write-Host "  (local dev only - superuser postgres/postgres, port 5432)"
 
+Step "Applying schema.sql (CREATE TABLE IF NOT EXISTS - never touches existing data)..."
+$schemaPath = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "schema.sql"
+& "$ucrtBin\psql.exe" -U postgres -h 127.0.0.1 -p 5432 -d genapp -f $schemaPath
+if ($LASTEXITCODE -ne 0) { throw "schema.sql failed to apply" }
+
 # --- 2. gixpp (preprocessor only - its runtime .a/.dll are NOT used) --------
 if (Test-Path $gixppExe) {
     Step "gixpp already installed, skipping."
