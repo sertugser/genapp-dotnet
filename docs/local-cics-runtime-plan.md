@@ -171,15 +171,21 @@ original app).
       `CUSTOMER`, PostgreSQL `CUSTOMER_SECURE`, and the `KSDSCUST` VSAM-equivalent file).
       Needed a handful of additional fixes beyond Steps 1–3's individual pieces — see
       progress log, several are the kind of thing that'll bite again in Step 5 if forgotten.
-- [ ] **Step 5 — Extend to the remaining 17 operations**, reusing the Step 3/4 infrastructure
-      (build recipe: `gixpp` on anything with `EXEC SQL`, then `preprocess_cics.py` on
-      everything, in that order; link with both stub `.o`s). Known rough edges to expect:
-      `REWRITE`/`DELETE`/`GTEQ`/`GENERIC` `READ` are implemented but not yet individually
-      exercised (only plain `WRITE` is proven); `HANDLE CONDITION` isn't translated at all
-      (not seen in the data-access layer so far — the preprocessor will fail loudly with a
-      `FIXME` comment if an update/delete program turns out to need it, not silently misfire);
-      and the `CUSTOMER`/`KSDSCUST` numbering mismatch (Step 4, point 4) will recur for policy
-      numbers against `KSDSPOLY` unless addressed first.
+- [~] **Step 5 — Extend to the remaining operations** — **3 of 18 done** (Customer
+      Inquire/Add/Update, all three proven via `genapp_menu.cbl` — see progress log), **15 to
+      go** (the 4-policy-type Add/Inquire/Delete + Motor/House/Endowment Update). Reuses the
+      Step 3/4 infrastructure (build recipe: `gixpp` on anything with `EXEC SQL`, then
+      `preprocess_cics.py` on everything, in that order; link with both stub `.o`s). Known
+      rough edges to expect for the remaining 15: `REWRITE` is now proven (Customer Update),
+      but `DELETE`/`GTEQ`/`GENERIC` `READ` are implemented and still not individually
+      exercised — policy delete and the "all policies for a customer" inquiry will be the
+      first real test; `HANDLE CONDITION` isn't translated at all (not seen in the
+      data-access layer so far — the preprocessor fails loudly with a `FIXME` comment if a
+      policy program turns out to need it, not silently misfires); a new runtime function
+      turned up per new SQL shape so far (`GIXSQLExecSelectIntoOne` for Inquire's
+      non-cursor `SELECT...INTO`) — budget for the possibility that a policy-specific SQL
+      shape needs another one; and the `CUSTOMER`/`KSDSCUST` numbering mismatch (Step 4,
+      point 4) will recur for policy numbers against `KSDSPOLY` unless addressed first.
 - [ ] **Step 6 (stretch) — Wire into `tests/GenApp.EquivalenceTests`** per the project's own
       testing plan (return codes, optimistic locking via LASTCHANGED, input checks).
 
@@ -437,6 +443,31 @@ higher-fidelity (but unnecessary now) alternative.
     -identical across PostgreSQL `CUSTOMER`, PostgreSQL `CUSTOMER_SECURE` (including the
     hardcoded default password hash from `lgacdb01.cbl`, confirming the `LGACDB02` leg of the
     chain really ran), and `KSDSCUST.dat`.
+- **2026-10-01** — **Interactive text-mode menu** (`tests/local-runtime/examples/genapp_menu.cbl`)
+  standing in for the `SSMAPC1` 3270 screen (`base/src/ssmap.bms`) until the real ASP.NET Core
+  frontend exists — same menu options/field order, plain `DISPLAY`/`ACCEPT` instead of
+  `EXEC CICS SEND MAP`/`RECEIVE MAP`. Explicitly **not** a 3270 protocol reproduction (that
+  would mean writing a BMS compiler and a TN3270 server — a project on the order of
+  everything above, not a quick add-on); the user chose this scope explicitly over that one.
+  Extended the proof of concept from just Add to all **three Customer operations**:
+  - **Inquire** (`lgicus01` → `lgicdb01`): first time a plain (non-cursor)
+    `SELECT col1,...,colN INTO :h1,...,:hN FROM t WHERE k=:p` was hit. gixpp compiles this to
+    a call to **`GIXSQLExecSelectIntoOne`**, a function distinct from `GIXSQLExecParams` that
+    hadn't shown up yet (Step 1's INSERT and Step 4's connect path never needed it). Added it
+    to `genapp_sqlstub.cpp`: bind + execute like `ExecParams`, then fetch the first row
+    straight into the registered result params (no cursor), mapping zero rows to `SQLCODE
+    100` — GenApp's own "not found" convention, checked the same way throughout `base/src`.
+  - **Update** (`lgucus01` → `lgucdb01` SQL `UPDATE ... WHERE CUSTOMERNUMBER = :x`, then
+    `lgucvs01` VSAM `READ ... UPDATE` + `REWRITE`): first real exercise of `REWRITE` and of a
+    `READ` using the `UPDATE` option — both already implemented in Steps 2/3 but unexercised
+    until now; no changes needed, they just worked.
+  - Verified with a real interactive session (piped input standing in for typing, since this
+    environment has no live terminal to type into): inquired customer 1000, added a new
+    customer (1001, auto-numbered correctly), updated customer 1000's name/address, exited
+    cleanly. Cross-checked the end state directly in PostgreSQL afterward, not just the
+    program's own "success" messages.
+  - Committed: `tests/local-runtime/examples/genapp_menu.cbl`, plus the
+    `GIXSQLExecSelectIntoOne` addition to `tests/local-runtime/sql-stub/genapp_sqlstub.cpp`.
 - **2026-10-01** — Wrote and tested `tests/local-runtime/setup.ps1`, scripting all of Step 0
   (idempotent — re-ran it after the manual install and it correctly skipped already-done
   steps, then passed the smoke test). Decided against Docker for now (see "Reproducibility"

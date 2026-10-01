@@ -402,6 +402,41 @@ int GIXSQLExecParams(void* sqlca_v, char*, int, char* sql, int /*nparams*/) {
     return 0;
 }
 
+// cobol: CALL "GIXSQLExecSelectIntoOne" USING sqlca connid connid-len sql
+//        BY VALUE nparams BY VALUE nresults
+// gixpp emits this (instead of GIXSQLExecParams) for a non-cursor
+// `SELECT col1,...,colN INTO :h1,...,:hN FROM t WHERE k=:p` - single-row
+// select combined with the fetch in one call, no cursor needed. Equivalent
+// to ExecParams + fetching the first row into the registered result params,
+// with "no row" mapped to SQLCODE 100 (GenApp's own convention, checked
+// throughout base/src) rather than treated as an error.
+int GIXSQLExecSelectIntoOne(void* sqlca_v, char*, int, char* sql, int /*nparams*/,
+                             int /*nresults*/) {
+    SQLCA_T* ca = reinterpret_cast<SQLCA_T*>(sqlca_v);
+    ensure_connected();
+    std::vector<const char*> vals;
+    vals.reserve(g_params.size());
+    for (auto& p : g_params) vals.push_back(p.value.c_str());
+    PGresult* res = PQexecParams(g_conn, sql, (int)g_params.size(), nullptr, vals.data(),
+                                  nullptr, nullptr, 0);
+    ExecStatusType st = PQresultStatus(res);
+    if (st != PGRES_TUPLES_OK) {
+        sqlca_error(ca, -1, PQresultErrorMessage(res));
+        PQclear(res);
+        return -1;
+    }
+    if (PQntuples(res) == 0) {
+        ca->sqlcode = 100;
+        ca->sqlerrml = 0;
+        PQclear(res);
+        return 0;
+    }
+    bind_result_row(res, 0);
+    sqlca_ok(ca);
+    PQclear(res);
+    return 0;
+}
+
 int GIXSQLCursorDeclare(void* sqlca_v, char*, int, char* cursor_name, int, char* sql, int) {
     std::string name = cstr_from_fixed(cursor_name, 256);
     g_cursors[name] = CursorState{std::string(sql), nullptr, 0};
