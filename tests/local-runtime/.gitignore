@@ -2,4 +2,6 @@
 *.obj
 *.exe
 *.cbsql
+*.pp.cbl
 *.log
+vsam-data/

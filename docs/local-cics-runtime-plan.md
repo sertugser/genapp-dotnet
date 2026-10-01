@@ -132,18 +132,43 @@ original app).
       once we preprocess the update programs, revisit `GIXSQLCursorOpen` in the stub (would
       need a real server-side `DECLARE ... CURSOR` + `BEGIN`/transaction instead of the
       current "run the query fully, buffer rows client-side" emulation).
-- [ ] **Step 2 — Define VSAM-equivalent indexed files** (`KSDSCUST`, `KSDSPOLY`) for
-      GnuCOBOL and seed them from `base/data/ksdscust.txt` / `ksdspoly.txt`.
-- [ ] **Step 3 — Build the CICS stub layer**: a small preprocessing pass that rewrites the
-      ~11 needed `EXEC CICS ... END-EXEC` patterns into `CALL`s, plus a hand-written COBOL
-      "CICS stub" subprogram implementing them (LINK → native CALL; file verbs → native
-      INDEXED I/O; ASKTIME/FORMATTIME → COBOL intrinsics; GET COUNTER → always-fail RESP;
-      ABEND/RETURN/HANDLE CONDITION → structural equivalents). Goes in
-      `tests/local-runtime/`, next to `setup.ps1`.
-- [ ] **Step 4 — Proof of concept**: get **Add Customer** running end-to-end — compile/link
-      `lgacus01` + `lgacdb01` + `lgacdb02` + `lgacvs01` + `lgstsq` + stub layer, drive it with
-      a tiny batch program, confirm a row lands in Postgres **and** the indexed VSAM-equivalent
-      file. This validates the whole pipeline before investing in the rest.
+- [x] **Step 2 — VSAM-equivalent storage** — **done**, folded into Step 3's stub (same file
+      owns both, see below) rather than using GnuCOBOL's native `ORGANIZATION IS INDEXED`
+      (the original idea) — an in-memory `std::map` keyed by record key, persisted to a flat
+      file, turned out simpler and sidesteps picking/configuring a GnuCOBOL indexed-file
+      backend (BDB/VBISAM/CISAM) sight unseen on a platform where today's track record with
+      "sounds simple, turns out to have a Windows-specific gotcha" is 100%.
+- [x] **Step 3 — CICS stub layer** — **done for the core path (WRITE), implemented but not
+      yet individually exercised for READ/REWRITE/DELETE/GET-COUNTER/multi-hop LINK chains.**
+      Turned out to split cleanly into two pieces instead of one:
+      - `tests/local-runtime/cics-stub/preprocess_cics.py` — a **syntactic** translator
+        (Python, not a runtime library) for LINK, RETURN, ABEND, ASKTIME/FORMATTIME, and
+        GET COUNTER — these don't need a runtime call at all, they rewrite directly to plain
+        COBOL (`CALL`, `GOBACK`, `FUNCTION CURRENT-DATE`, a forced bad `RESP`). Only the file
+        verbs (READ/WRITE/REWRITE/DELETE) call into a runtime stub, because those genuinely
+        need persistent state.
+      - `tests/local-runtime/cics-stub/genapp_vsam_stub.cpp` — the runtime stub, exactly four
+        functions (`VSAMREAD`/`WRITE`/`REWRITE`/`DELETE`), covering both `KSDSCUST` and
+        `KSDSPOLY` by name. `GTEQ`/`GENERIC` browse reads (used by the policy-inquiry path)
+        map directly onto `std::map::lower_bound` — no separate browse/cursor API needed.
+      - Record layouts (`KSDSCUST` 225 bytes/10-byte key, `KSDSPOLY` 64 bytes/21-byte key)
+        were read off the real `EXEC CICS WRITE` calls in `lgacvs01.cbl`/`lgapvs01.cbl`, not
+        guessed — see progress log for the exact breakdown.
+      - Validated end-to-end against the **real, unmodified** `lgacvs01.cbl` (Add Customer
+        VSAM): preprocessed, compiled, linked, run, and the written record read back
+        byte-for-byte correct. Two non-obvious COBOL bugs had to be found and fixed to get
+        there — see progress log, worth reading before touching this again.
+      - **Not yet exercised:** REWRITE, DELETE, GTEQ/GENERIC READ, and GET COUNTER's
+        forced-fallback path are implemented the same way as WRITE but haven't each been run
+        against a real program yet. `HANDLE CONDITION` was never seen in the data-access
+        layer (only in the 3270 menu programs, which aren't used) so the preprocessor doesn't
+        handle it — would need to if a future program turns out to need it (comments it out
+        with a `FIXME` marker and keeps going, rather than silently doing the wrong thing).
+- [ ] **Step 4 — Proof of concept**: get **Add Customer** running fully end-to-end —
+      `lgacus01` → `lgacdb01` → `lgacdb02` (SQL, done in Step 1) → `lgacvs01` (VSAM, done
+      above) chained together via real `EXEC CICS LINK` calls, driven by a tiny batch program
+      instead of the 3270 menu. The individual pieces (SQL bridge, VSAM write) are each
+      proven in isolation; chaining them through LINK is the remaining unknown.
 - [ ] **Step 5 — Extend to the remaining 17 operations**, reusing the Step 3 infrastructure.
 - [ ] **Step 6 (stretch) — Wire into `tests/GenApp.EquivalenceTests`** per the project's own
       testing plan (return codes, optimistic locking via LASTCHANGED, input checks).
@@ -289,6 +314,66 @@ higher-fidelity (but unnecessary now) alternative.
     copy was bundled with gixpp despite its docs claiming one exists), and
     `tests/local-runtime/setup-sql-bridge.ps1` (installs Postgres + gixpp + compiles the
     stub; idempotent like `setup.ps1`).
+- **2026-10-01** — **Steps 2+3: VSAM/CICS stub, validated against the real `lgacvs01.cbl`.**
+  - **Record layouts**, read off real `EXEC CICS WRITE` calls, not guessed:
+    `KSDSCUST` = `CA-CUSTOMER-NUM`(10) + `CA-FIRST-NAME`(10) + `CA-LAST-NAME`(20) +
+    `CA-DOB`(10) + `CA-HOUSE-NAME`(20) + `CA-HOUSE-NUM`(4) + `CA-POSTCODE`(8) +
+    `CA-NUM-POLICIES`(3) + `CA-PHONE-MOBILE`(20) + `CA-PHONE-HOME`(20) +
+    `CA-EMAIL-ADDRESS`(100) = 225 bytes, first 10 = key (from `lgacvs01.cbl`'s
+    `WRITE FILE('KSDSCUST') FROM(CA-Customer-Num) LENGTH(225)` — `FROM` starts at
+    `CA-CUSTOMER-NUM`, and group items are contiguous in memory, so reading forward 225
+    bytes from there spans exactly those fields). `KSDSPOLY` = request-id(1) +
+    customer-num(10) + policy-num(10) = 21-byte key, + 43 bytes of policy-type-specific data
+    (`REDEFINES`d per type in `lgapvs01.cbl`) = 64 bytes total. Confirmed both against
+    `base/data/README.md`'s stated `LRECL=225`/`LRECL=64`.
+  - **`base/data/*.txt` seed files are CRLF-separated 225/64-byte lines, not raw
+    concatenated fixed-length records** — a plain `cp` into the working VSAM directory
+    misaligns every record after the first against the stub's "pure fixed-length, no
+    separator" reader. `setup-cics-stub.ps1` strips line endings when seeding instead of
+    copying directly.
+  - **Two non-obvious COBOL/GnuCOBOL bugs found via a real crash, not anticipated in
+    advance** — both worth remembering if this is ever extended:
+    1. **The `BY VALUE`/`BY REFERENCE` phrase in `CALL ... USING` sticks to every following
+       operand until the next explicit `BY` phrase — it does not revert to `BY REFERENCE`
+       by default.** `CALL "X" USING a BY VALUE b c` passes `c` the same way as `b` (by
+       value), not by reference — and for an alphanumeric item that's nonsensical, so
+       GnuCOBOL silently downgrades it to `BY CONTENT` instead (a different calling
+       convention than our stub's plain-pointer `extern "C"` functions expect) with only a
+       warning (`BY CONTENT assumed for alphanumeric item ...`), not an error. The effect
+       was a native crash ("attempt to reference invalid memory address") inside the stub,
+       several calls away from the actual mistake. Fix: every reference-mode argument in a
+       generated `CALL` now says `BY REFERENCE` explicitly, matching what gixpp's own
+       generated code already does for the SQL bridge (which is exactly why that one never
+       hit this — the pattern was there to copy, just not recognized as load-bearing until
+       this).
+    2. **`BY VALUE` of a COBOL identifier passes that item's own native storage size (e.g. 2
+       bytes for a typical `PIC S9(4) BINARY` length field), not a C `int`-sized 4 bytes** —
+       passing `CUSTOMER-RECORD-SIZE` (a real `PIC S9(4) BINARY` constant in `lgacvs01.cbl`)
+       straight through as `BY VALUE` corrupted every argument after it on the call stack.
+       Bare integer *literals* don't have this problem (confirmed fine throughout the Step 1
+       SQL bridge — gixpp only ever emits `BY VALUE <literal>`, never `BY VALUE <arbitrary
+       identifier>`, which in hindsight was a second hint). Fix: `preprocess_cics.py`'s
+       `by_value_numeric()` leaves literals alone but `MOVE`s any identifier into one of two
+       fixed, purpose-declared `PIC 9(8) COMP-5` temps (`WS-GIX-LEN1`/`WS-GIX-LEN2`, native
+       binary, sized to match an `int32_t` exactly) before passing that instead.
+    3. (Not a bug in the usual sense, but caused the same crash symptom and took longest to
+       find): **`PROCEDURE DIVISION.` with no `USING DFHCOMMAREA` clause compiles fine but
+       leaves `DFHCOMMAREA` in the `LINKAGE SECTION` disconnected from the caller's
+       argument** — every real GenApp program is written this way (real CICS wires
+       `DFHCOMMAREA` up implicitly, no `USING` needed), so every reference to a COMMAREA
+       field reads uninitialized memory unless this is patched. `preprocess_cics.py` now
+       rewrites `PROCEDURE DIVISION.` to `PROCEDURE DIVISION USING DFHCOMMAREA.` whenever the
+       `LINKAGE SECTION` declares `01 DFHCOMMAREA` — necessary for essentially every program
+       in `base/src/`, not just this one.
+  - Proof: a small driver program (`CALL "LGACVS01" USING COMM-AREA` with a filled-in test
+    customer) ran against the **unmodified** `lgacvs01.cbl`, through
+    `preprocess_cics.py` → `cobc` → linked with `genapp_vsam_stub.o`, and the customer record
+    landed in the working `KSDSCUST.dat` byte-for-byte as expected, confirmed by reading the
+    raw bytes back.
+  - Committed: `tests/local-runtime/cics-stub/{genapp_vsam_stub.cpp,preprocess_cics.py}`,
+    `tests/local-runtime/setup-cics-stub.ps1`. The working VSAM data directory
+    (`tests/local-runtime/vsam-data/`) is gitignored — it's a mutable working copy seeded
+    from `base/data/`, not source.
 - **2026-10-01** — Wrote and tested `tests/local-runtime/setup.ps1`, scripting all of Step 0
   (idempotent — re-ran it after the manual install and it correctly skipped already-done
   steps, then passed the smoke test). Decided against Docker for now (see "Reproducibility"
