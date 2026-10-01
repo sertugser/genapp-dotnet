@@ -115,10 +115,23 @@ original app).
 - [x] **Step 0 — Install GnuCOBOL** on Windows (`cobc` on PATH). Verify with a trivial
       "hello world" compile. **Done 2026-10-01**, now scripted and committed as
       `tests/local-runtime/setup.ps1` (idempotent — safe to re-run) — see progress log.
-- [ ] **Step 1 — Install GixSQL** (standalone `gixpp` preprocessor, no need for full Gix-IDE)
-      and a local **PostgreSQL** instance. Derive the 8 Db2 table schemas from the `EXEC SQL`
-      statements in the `*db01`/`*db02` programs (this doubles as input for
-      `legacy-analysis/data-dictionary.md` later) and create them in Postgres.
+- [x] **Step 1 — SQL bridge to PostgreSQL** — **done, but not via GixSQL's own runtime**
+      (that part is upstream-broken, see progress log). Ended up writing our own ~250-line
+      libpq-backed replacement for the handful of GixSQL runtime functions GenApp's SQL
+      actually needs (`tests/local-runtime/sql-stub/genapp_sqlstub.cpp`), reusing only
+      `gixpp` (the preprocessor, which works fine) to translate `EXEC SQL` into `CALL`
+      statements. Confirmed working end-to-end: connect, DDL, parameterized INSERT, cursor
+      declare/open/fetch, and all three COBOL host-variable types GenApp's SQL actually uses
+      (alphanumeric, COMP binary int, and — for the vendor test program used to validate
+      this, not needed by GenApp itself — COMP-3 packed decimal and zoned-display numeric).
+      Run `tests/local-runtime/setup-sql-bridge.ps1` to set this up (needs `setup.ps1` run
+      first). **Not supported, and not needed:** `UPDATE ... WHERE CURRENT OF` on a cursor —
+      GenApp never holds a cursor open across its inquire/update COMMAREA round-trips (those
+      are separate CICS transactions), it always does plain `UPDATE ... WHERE key = :x`
+      instead, so this was deliberately not implemented. If that assumption turns out wrong
+      once we preprocess the update programs, revisit `GIXSQLCursorOpen` in the stub (would
+      need a real server-side `DECLARE ... CURSOR` + `BEGIN`/transaction instead of the
+      current "run the query fully, buffer rows client-side" emulation).
 - [ ] **Step 2 — Define VSAM-equivalent indexed files** (`KSDSCUST`, `KSDSPOLY`) for
       GnuCOBOL and seed them from `base/data/ksdscust.txt` / `ksdspoly.txt`.
 - [ ] **Step 3 — Build the CICS stub layer**: a small preprocessing pass that rewrites the
@@ -163,6 +176,119 @@ higher-fidelity (but unnecessary now) alternative.
   - **Not yet done:** compiling any real `base/src/*.cbl` file — those will fail immediately
     on the `EXEC CICS`/`EXEC SQL` statements until Step 3's stub/translator exists. That's
     expected, not a regression.
+- **2026-10-01** — **PostgreSQL 18 installed** via MSYS2 (`mingw-w64-ucrt-x86_64-postgresql`,
+  not the EDB installer — that needs admin rights we don't have; MSYS2's build runs as a
+  plain user process via `pg_ctl`, no Windows service). Data dir: `C:/Users/hasan/pgdata-genapp`,
+  port 5432, superuser `postgres`/`postgres` (local dev only, not meant to be reachable
+  outside this machine), database `genapp` created. Start with:
+  `pg_ctl -D C:/Users/hasan/pgdata-genapp -l C:/Users/hasan/pgdata-genapp/server.log start`
+  (needs `C:\msys64\ucrt64\bin` on PATH). Not yet scripted into `setup.ps1` — do that
+  alongside Step 2.
+- **2026-10-01** — **GixSQL: blocked on an upstream Windows/mingw/x64 bug, not our
+  misconfiguration.** What happened, in order:
+  1. Downloaded the official `gixsql-binaries-windows-x64-mingw-1.0.20b-1.7z` portable
+     package. `gixpp` (the ESQL preprocessor) works fine on its own.
+  2. Linking a preprocessed program against the bundled `libgixsql.a` fails with pages of
+     undefined `fmt::v9::*` symbols. This is a **known, acknowledged upstream bug**:
+     [mridoni/gixsql#167 "Missing libfmt.dll / libfmt.a from Windows binary releases"](https://github.com/mridoni/gixsql/issues/167).
+     Worked around it ourselves: cloned `fmt` at tag `9.1.0` (the exact version GixSQL's
+     symbols are mangled against — a different fmt major version will NOT link, the
+     namespace is literally part of the mangled name) and built `libfmt.a` with CMake+Ninja
+     (`mingw-w64-ucrt-x86_64-cmake`/`ninja`, both installed). Linking
+     `-lgixsql -lfmt -lstdc++` (in that order — static-lib link order matters, dependencies
+     must come *after* what needs them) then failed on a second, separate gap: undefined
+     `std::codecvt<wchar_t, char, int>` members. This one isn't fmt's fault — it's a
+     genuine gap in mingw-w64's shipped `libstdc++.a` (the generic `codecvt` primary
+     template's virtual bodies for a non-`mbstate_t` state type are declared in headers but
+     never compiled into the prebuilt archive; `std::filesystem::path`'s internal UTF
+     conversion helper needs exactly this specialization). Worked around by hand-writing
+     explicit member specializations with trivial (but *correct*, not stub/no-op) ASCII
+     passthrough bodies — see `do_out`/`do_in` doing a real char↔wchar_t copy loop, not
+     just returning `error`; an earlier no-op version caused a different crash
+     ("Result too large") because the path-conversion code path turned out to be live, not
+     dead, even for a plain `pgsql://` connection string. This got a test program all the
+     way through **preprocessing → compiling → linking** successfully.
+  3. At **runtime**, `EXEC SQL CONNECT` now reliably crashes
+     (`terminate called after throwing an instance of 'std::system_error' — what(): Result
+     too large`), reproduced with a minimal connect-only program (no cursors, no tables) so
+     it's not query complexity. No GixSQL trace log is written even with
+     `GIXSQL_LOG_LEVEL=trace`, meaning it crashes before GixSQL's own logging initializes —
+     i.e. very early in `GIXSQLConnect`, likely while loading/initializing the dynamically-
+     loaded `libgixsql-pgsql.dll` driver. This matches a second-hand report found while
+     researching #167: a user saw "access violation (C0000005) when loading
+     libgixsql-pgsql.dll" on Windows, possibly related to the same fmt mismatch — except in
+     our case the *driver* DLL (not the main lib) may still be built against a mismatched
+     fmt internally, which we have no way to fix short of rebuilding GixSQL from source
+     entirely (attempted separately — see below — and also blocked).
+  4. Side-quest, also blocked: tried building GixSQL from source via MSYS2 (the officially
+     documented route, which would avoid the fmt version-pinning problem entirely by
+     compiling against whatever fmt MSYS2 ships). `git clone` the repo at tag `v1.0.20b`,
+     `autoreconf -fi` fails with `undefined or overquoted macro: AC_MSG_ERROR`/`AS_IF` —
+     looks like an `aclocal`/macro-archive issue independent of autoconf version (tried both
+     2.73 and the project's own pinned 2.69 via `WANT_AUTOCONF`, same failure both times).
+     Did not dig further given time already spent — if revisited, start here.
+  - **Net result:** GnuCOBOL ↔ PostgreSQL via GixSQL is not working yet, blocked on what
+    looks like a genuine upstream defect, not a setup mistake. Options going forward (for
+    next session to pick up): (a) try switching the connection string to GixSQL's **ODBC**
+    driver instead of its native pgsql driver — `mingw-w64-ucrt-x86_64-unixodbc` is already
+    installed, this is a completely different code path and might sidestep the bug; (b)
+    keep pushing on the from-source build (fix the autoreconf issue); (c) park GixSQL and
+    reconsider the SQL-bridge approach entirely (e.g. write a much smaller custom stub that
+    only implements the handful of SQL operations GenApp's `*db01`/`*db02` programs actually
+    use, talking to Postgres via plain `libpq` directly, skipping GixSQL's generality).
+  - **Superseded by the next entry** — decided to stop fighting GixSQL's own runtime
+    entirely rather than keep patching it. The `fmt`/codecvt work above turned out to be a
+    dead end specifically *because* it was in service of linking against GixSQL's broken
+    `libgixsql.a` — once that approach was abandoned (see below), none of it was needed
+    any more. Left unlisted/not committed; `C:\msys64\ucrt64\opt\fmt-src\` can be deleted
+    next time MSYS2 opt is cleaned up, it's not referenced by anything going forward.
+- **2026-10-01** — **Step 1 actually finished**, via a different route: instead of fixing
+  or replacing GixSQL's runtime, reimplemented just the runtime functions GenApp needs,
+  backed directly by libpq, and kept using `gixpp` (the preprocessor) since that part was
+  never broken.
+  - **How the API was determined (not guessed):** preprocessed both a GixSQL vendor example
+    (`TSQL037A-PGSQL.cbl`, bundled in the gixsql package under `examples/`) and two real
+    GenApp programs (`lgacdb01.cbl`, `lgicdb01.cbl`) with `gixpp -e -S`, then read the
+    generated `.cbsql` output directly to see the exact `CALL "GIXSQLxxx" USING ...`
+    signatures gixpp actually emits — this is authoritative (it's what gixpp really
+    generates), not a guess from GixSQL's docs/source. 12 distinct functions cover
+    everything GenApp uses: `GIXSQLConnect`, `GIXSQLConnectReset`, `GIXSQLStartSQL`,
+    `GIXSQLEndSQL`, `GIXSQLExec`, `GIXSQLExecParams`, `GIXSQLSetSQLParams`,
+    `GIXSQLSetResultParams`, `GIXSQLCursorDeclare`, `GIXSQLCursorOpen`,
+    `GIXSQLCursorFetchOne`, `GIXSQLCursorClose`. SQL text already comes out with
+    PostgreSQL-native `$1,$2,...` placeholders (gixpp's default `-z d` mode), so it can be
+    hand straight to `PQexecParams` with no rewriting.
+  - **Host variable type codes** (the `type` argument to `SetSQLParams`/`SetResultParams`),
+    also read off real generated output, not guessed: **16** = alphanumeric (`PIC X`,
+    space-padded), **23** = binary `COMP` integer. Confirmed by preprocessing
+    `lgacdb01.cbl`'s real INSERT (customer first/last name etc. → 16; the `COMP`-converted
+    customer number → 23) and `lgicdb01.cbl`'s real SELECT (same pattern for the WHERE-clause
+    key). GenApp never uses zoned-display numeric (`PIC 9(n)` DISPLAY) or packed-decimal
+    (`COMP-3`) as SQL host variables — every numeric key gets explicitly `MOVE`d into a
+    `COMP` field first (see `lgacdb01.cbl`'s `DB2-CUSTOMERNUM-INT`). Types 1 (zoned) and 9
+    (COMP-3) are still implemented in the stub, because the *vendor test program* used to
+    validate all this needs them — just confirmed to be dead code for GenApp itself.
+  - **`COMP` is big-endian**, confirmed empirically (not assumed) with a throwaway probe
+    program (`01 N PIC S9(9) COMP VALUE 1`, dumped to a file, inspected with `od`) — GnuCOBOL
+    defaults to mainframe-compatible byte order even on a little-endian x86 host.
+  - **COMP-3 packing gotcha worth remembering if touched again:** the sign nibble is always
+    the *low* nibble of the *last* byte; digit nibbles are the N digits immediately before
+    it; if N is even there's one leading zero pad-nibble at the very front. Indexing nibble
+    positions directly (not byte-pair-at-a-time) is the only way to get both parities right
+    — an earlier byte-pair-at-a-time version silently misread the sign nibble as a digit for
+    even N and produced garbage (`"101<"` instead of `"101"`) before this was caught by the
+    vendor test program actually failing.
+  - Validated end-to-end against `TSQL037A-PGSQL.cbl` (DDL, 10 parameterized INSERTs, cursor
+    DECLARE/OPEN/FETCH reading real rows back correctly) — everything passed except the
+    `WHERE CURRENT OF` update (see Step 1 checklist entry above for why that's fine to skip).
+  - **Not yet done:** running this against a full real GenApp program end-to-end — can't,
+    yet, because `lgacdb01.cbl` also calls `EXEC CICS LINK` (to `LGACVS01`/`LGACDB02`), which
+    needs Step 3's CICS stub first. The SQL half is proven ready for that integration.
+  - Committed: `tests/local-runtime/sql-stub/genapp_sqlstub.cpp`,
+    `tests/local-runtime/copy/SQLCA.cpy` (standard SQLCA layout, hand-written — no official
+    copy was bundled with gixpp despite its docs claiming one exists), and
+    `tests/local-runtime/setup-sql-bridge.ps1` (installs Postgres + gixpp + compiles the
+    stub; idempotent like `setup.ps1`).
 - **2026-10-01** — Wrote and tested `tests/local-runtime/setup.ps1`, scripting all of Step 0
   (idempotent — re-ran it after the manual install and it correctly skipped already-done
   steps, then passed the smoke test). Decided against Docker for now (see "Reproducibility"
