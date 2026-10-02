@@ -171,10 +171,10 @@ original app).
       `CUSTOMER`, PostgreSQL `CUSTOMER_SECURE`, and the `KSDSCUST` VSAM-equivalent file).
       Needed a handful of additional fixes beyond Steps 1–3's individual pieces — see
       progress log, several are the kind of thing that'll bite again in Step 5 if forgotten.
-- [~] **Step 5 — Extend to the remaining operations** — **11 of 18 done** (Customer
-      Inquire/Add/Update, Motor and House Policy Add/Inquire/Delete/Update — all via
-      `genapp_menu.cbl`, options 1-11 — see progress log), **7 to go**
-      (Endowment/Commercial Add/Inquire/Delete/Update-where-applicable). Reuses the
+- [~] **Step 5 — Extend to the remaining operations** — **15 of 18 done** (Customer
+      Inquire/Add/Update, Motor/House/Endowment Policy Add/Inquire/Delete/Update — all via
+      `genapp_menu.cbl`, options 1-15 — see progress log), **3 to go**
+      (Commercial Add/Inquire/Delete - no Commercial Update per the README). Reuses the
       Step 3/4 infrastructure (build recipe: `gixpp` on anything with `EXEC SQL`, then
       `preprocess_cics.py` on everything, in that order; link with both stub `.o`s). Known
       rough edges to expect for the remaining 14: `REWRITE` is now proven (Customer Update),
@@ -673,3 +673,49 @@ higher-fidelity (but unnecessary now) alternative.
     confirms the Motor Inquire indicator fix really does cover House too, as predicted since
     it's the same global text replace in `build-menu.ps1`), updated every other field and
     confirmed via Inquire, then deleted it and confirmed gone (`CA-RETURN-CODE=01`).
+- **2026-10-02** — **Endowment Policy Add/Inquire/Update/Delete** (menu options 12-15), the
+  12th through 15th of 18 operations, and the one that found the biggest latent bug of
+  Step 5 so far - in this runtime's own CICS stub, not in base/src. Two new SQL shapes, one
+  real runtime bug:
+  - **New SQL shape: a VARCHAR host variable with a length prefix** (COBOL's "49-level
+    VARYING" convention - `lgapdb01.cbl`'s `WS-VARY-FIELD` backing `ENDOWMENT.PADDINGDATA`,
+    `01 WS-VARY-FIELD. 49 WS-VARY-LEN PIC S9(4) COMP. 49 WS-VARY-CHAR PIC X(3900).`). gixpp
+    marks this with a flags bit (128) on `GIXSQLSetSQLParams` that was previously ignored
+    entirely (the signature took `flags` but discarded it, same as `null_ind` still does).
+    `encode_param()` now takes `flags` and, when bit 128 is set, decodes the first 2 bytes as
+    the real length (same big-endian COMP decode used everywhere else) and takes only that
+    many bytes as the value - not the whole fixed-size group, which would otherwise include
+    thousands of bytes of trailing garbage.
+  - **Endowment's own Inquire result has a *second*, Endowment-specific indicator pair**
+    (`PADDINGDATA`/`LENGTH(PADDINGDATA)` with indicators `IND-E-PADDINGDATA`/
+    `IND-E-PADDINGDATAL`) beyond the generic `BROKERID`/`BROKERSREFERENCE`/`PAYMENT` one
+    already fixed for Motor Inquire - same gixpp column-count-vs-slot-count mismatch, same
+    fix (real `CASE WHEN ... IS NULL THEN -1 ELSE 0 END` columns spliced into
+    `build-menu.ps1`'s disposable copy).
+  - **The real find: `EIBCALEN` has been wrong in this environment since Step 4, for every
+    program, the whole time.** This runtime's own CICS stub injects
+    `01 EIBCALEN PIC S9(4) COMP VALUE 32500` into every program (`preprocess_cics.py`,
+    `EIB_BLOCK`) - but `PIC S9(4)` only holds 4 *decimal digits*, and COBOL's VALUE clause
+    truncates a literal that overflows its picture, so `EIBCALEN` was actually `2500`
+    (32500 mod 10000) the entire time, not `32500`. Every check so far happened to be
+    `IF EIBCALEN IS LESS THAN WS-REQUIRED-CA-LEN` with a `WS-REQUIRED-CA-LEN` safely under
+    2500 (Customer/Motor/House's fixed-size records), so this never surfaced - Endowment's
+    is the first commarea-size check to push past 2500 once `PADDINGDATA`'s length (2348 in
+    testing) is added in, finally tripping a spurious `CA-RETURN-CODE=98`. Root-caused by
+    taking a scratchpad copy of `lgipdb01.cbl`, adding one temporary `DISPLAY` of `EIBCALEN`/
+    `WS-REQUIRED-CA-LEN`/`DB2-E-PADDING-LEN` right before the check, linking it against the
+    already-built `.o`s into a throwaway debug exe, and running the same failing Inquire -
+    confirmed `EIBCALEN=+2500` directly. The real IBM EIB (`DFHEIBLK`, modern 31-bit CICS)
+    declares `EIBCALEN` as `PIC S9(8) COMP` precisely to support commareas up to 32763 bytes
+    (matching every `LENGTH(32500)` call seen throughout `base/src`) - `EIB_BLOCK` was simply
+    using the wrong (older, 24-bit-era) picture. Fixed in one place
+    (`preprocess_cics.py`'s `EIB_BLOCK`) for every program at once; re-ran the full build and
+    re-verified Motor Inquire still passes, to confirm nothing that depended on the old
+    (wrong but coincidentally-fine) value broke.
+  - Verified end-to-end through the real menu: added an endowment policy (confirming the
+    VARCHAR INSERT path doesn't crash or corrupt adjacent storage - `WS-VARY-LEN`'s own
+    `PIC S9(4)` truncation, same class of truncation as the `EIBCALEN` bug, happens to keep
+    its reference-modification safely within `WS-VARY-CHAR`'s 3900-byte bounds for this
+    environment's fixed `EIBCALEN`/header-length combination), inquired it back (all fields
+    incl. both indicator pairs correct), updated every other field and confirmed via
+    Inquire, then deleted it and confirmed gone.

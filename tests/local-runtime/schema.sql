@@ -68,6 +68,22 @@ CREATE TABLE IF NOT EXISTS HOUSE (
     POSTCODE         VARCHAR(8)
 );
 
+CREATE TABLE IF NOT EXISTS ENDOWMENT (
+    POLICYNUMBER     INTEGER PRIMARY KEY REFERENCES POLICY(POLICYNUMBER) ON DELETE CASCADE,
+    WITHPROFITS      CHAR(1),
+    EQUITIES         CHAR(1),
+    MANAGEDFUND      CHAR(1),
+    FUNDNAME         VARCHAR(10),
+    TERM             INTEGER,
+    SUMASSURED       INTEGER,
+    LIFEASSURED      VARCHAR(31),
+    -- lgapdb01.cbl's INSERT always goes through its WS-VARY-FIELD/PADDINGDATA
+    -- branch in this environment (EIBCALEN is a fixed emulated constant, see
+    -- docs/local-cics-runtime-plan.md) - column must exist even though every
+    -- test insert so far only ever writes spaces into it.
+    PADDINGDATA      VARCHAR(3900)
+);
+
 -- Both IDENTITY sequences start well clear of base/data's seed VSAM records
 -- (customers/policies 1-10 already exist in KSDSCUST.dat/KSDSPOLY.dat) so a
 -- fresh Postgres insert doesn't collide with them on the VSAM side - see

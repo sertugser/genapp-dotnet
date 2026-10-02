@@ -253,7 +253,7 @@ def translate_dfhresp(text):
 
 
 EIB_BLOCK = """\
-       01  EIBCALEN                 PIC S9(4) COMP VALUE 32500.
+       01  EIBCALEN                 PIC S9(8) COMP VALUE 32500.
        01  EIBRESP2                 PIC S9(8) COMP VALUE 0.
        01  EIBTASKN                 PIC 9(7) VALUE 0.
        01  EIBTRNID                 PIC X(4) VALUE SPACES.

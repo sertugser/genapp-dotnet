@@ -146,7 +146,22 @@ std::string decode_comp3(const unsigned char* b, int digits) {
     return negative ? "-" + out : out;
 }
 
-std::string encode_param(int type, int length, void* data) {
+std::string encode_param(int type, int length, int flags, void* data) {
+    // VARCHAR group item (COBOL "49-level VARYING" convention, e.g.
+    // lgapdb01.cbl's WS-VARY-FIELD backing ENDOWMENT.PADDINGDATA): a 2-byte
+    // PIC S9(4) COMP length prefix followed by the character data: `length`
+    // here is the *group's* total allocated size (e.g. 3904 = 4 + 3900),
+    // not the actual string length - that's what the prefix is for. gixpp
+    // marks this shape with flags bit 128 (confirmed from its own generated
+    // CALL - distinct from bit 256, which just means "this field is COMP").
+    if (flags & 128) {
+        unsigned char* bytes = reinterpret_cast<unsigned char*>(data);
+        int64_t varlen = decode_comp_be(bytes, 4);
+        int avail = length - 2;
+        if (varlen < 0) varlen = 0;
+        if (varlen > avail) varlen = avail;
+        return std::string(reinterpret_cast<char*>(bytes + 2), (size_t)varlen);
+    }
     if (type == 23) {
         int64_t v = decode_comp_be(reinterpret_cast<unsigned char*>(data), length);
         return std::to_string(v);
@@ -423,9 +438,9 @@ int GIXSQLConnectReset(void* sqlca_v, char*, int) {
     return 0;
 }
 
-int GIXSQLSetSQLParams(int type, int length, int /*scale*/, int /*flags*/, void* data,
+int GIXSQLSetSQLParams(int type, int length, int /*scale*/, int flags, void* data,
                         void* /*null_ind*/) {
-    g_params.push_back({encode_param(type, length, data), type, length, data});
+    g_params.push_back({encode_param(type, length, flags, data), type, length, data});
     return 0;
 }
 
