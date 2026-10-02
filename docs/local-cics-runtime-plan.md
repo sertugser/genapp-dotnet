@@ -171,10 +171,10 @@ original app).
       `CUSTOMER`, PostgreSQL `CUSTOMER_SECURE`, and the `KSDSCUST` VSAM-equivalent file).
       Needed a handful of additional fixes beyond Steps 1–3's individual pieces — see
       progress log, several are the kind of thing that'll bite again in Step 5 if forgotten.
-- [~] **Step 5 — Extend to the remaining operations** — **7 of 18 done** (Customer
-      Inquire/Add/Update, Motor Policy Add/Inquire/Delete/Update — all via `genapp_menu.cbl`,
-      options 1-7 — see progress log), **11 to go**
-      (House/Endowment/Commercial Add/Inquire/Delete/Update-where-applicable). Reuses the
+- [~] **Step 5 — Extend to the remaining operations** — **11 of 18 done** (Customer
+      Inquire/Add/Update, Motor and House Policy Add/Inquire/Delete/Update — all via
+      `genapp_menu.cbl`, options 1-11 — see progress log), **7 to go**
+      (Endowment/Commercial Add/Inquire/Delete/Update-where-applicable). Reuses the
       Step 3/4 infrastructure (build recipe: `gixpp` on anything with `EXEC SQL`, then
       `preprocess_cics.py` on everything, in that order; link with both stub `.o`s). Known
       rough edges to expect for the remaining 14: `REWRITE` is now proven (Customer Update),
@@ -649,3 +649,27 @@ higher-fidelity (but unnecessary now) alternative.
     persisted - including the optimistic-lock path succeeding and the VSAM-side `lgupvs01`
     rewrite (inferred from `CA-RETURN-CODE` staying `'00'` all the way back, since `lgupvs01`
     sets it directly on failure and nothing resets it to `'00'` afterward).
+- **2026-10-02** — **House Policy Add/Inquire/Update/Delete** (menu options 8-11), the 8th
+  through 11th of 18 operations - the first confirmation that the "one data-access program
+  per verb, dispatched by `CA-REQUEST-ID`, shared across all four policy types" design
+  (already known from reading `lgapdb01.cbl`/`lgipdb01.cbl`/`lgdpol01.cbl`/`lgupdb01.cbl`)
+  actually pays off: **zero new COBOL programs to compile**, since `LGAPOL01`/`LGIPOL01`/
+  `LGDPOL01`/`LGUPOL01` and their DB2/VSAM layers were already built for Motor and handle
+  House via `'01xHOU'` request-IDs in the same EVALUATEs. All of the work was in
+  `genapp_menu.cbl` (four new paragraphs, request-ids `01AHOU`/`01IHOU`/`01DHOU`/`01UHOU`,
+  House's own field set) and one real gap:
+  - **`schema.sql` had no `HOUSE` table at all** (flagged as a known gap in its own header
+    comment since Step 4) - `INSERT INTO HOUSE` failed with `relation "house" does not
+    exist`. Added it, same shape as `MOTOR` (`ON DELETE CASCADE` back to `POLICY` from the
+    start this time, not discovered the hard way like `MOTOR`'s was).
+  - **Menu now has two-digit options (10, 11)** - `WS-OPTION` was `PIC X` (one character), so
+    typing "10" would only register the "1" and leave "0" to desync the next prompt (the
+    same class of cascading-misalignment symptom seen testing Motor Update, that time from a
+    wrong guessed policy number rather than this). Widened to `PIC X(2)`; every existing
+    `WHEN '1'`/`'2'`/etc. still matches unchanged thanks to standard COBOL alphanumeric
+    comparison rules (the shorter operand is compared as if space-padded to match).
+  - Verified end-to-end through the real menu: added a house policy, inquired it back (all
+    fields incl. the indicator-bearing `BROKERID`/`BROKERSREFERENCE`/`PAYMENT` correct -
+    confirms the Motor Inquire indicator fix really does cover House too, as predicted since
+    it's the same global text replace in `build-menu.ps1`), updated every other field and
+    confirmed via Inquire, then deleted it and confirmed gone (`CA-RETURN-CODE=01`).

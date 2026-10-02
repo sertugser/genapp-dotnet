@@ -34,7 +34,7 @@
        WORKING-STORAGE SECTION.
        01 COMM-AREA.
           COPY LGCMAREA.
-       01 WS-OPTION        PIC X.
+       01 WS-OPTION        PIC X(2).
        01 WS-IN-NUM        PIC X(10).
        01 WS-IN-TEXT       PIC X(100).
        01 WS-DONE          PIC X VALUE 'N'.
@@ -52,6 +52,10 @@
                    WHEN '5' PERFORM DO-INQUIRY-MOTOR
                    WHEN '6' PERFORM DO-DELETE-MOTOR
                    WHEN '7' PERFORM DO-UPDATE-MOTOR
+                   WHEN '8' PERFORM DO-ADD-HOUSE
+                   WHEN '9' PERFORM DO-INQUIRY-HOUSE
+                   WHEN '10' PERFORM DO-DELETE-HOUSE
+                   WHEN '11' PERFORM DO-UPDATE-HOUSE
                    WHEN '0' MOVE 'Y' TO WS-DONE
                    WHEN OTHER
                        DISPLAY "Please enter a valid option"
@@ -70,6 +74,10 @@
            DISPLAY "  5. Motor Policy Inquiry".
            DISPLAY "  6. Motor Policy Delete".
            DISPLAY "  7. Motor Policy Update".
+           DISPLAY "  8. House Policy Add".
+           DISPLAY "  9. House Policy Inquiry".
+           DISPLAY " 10. House Policy Delete".
+           DISPLAY " 11. House Policy Update".
            DISPLAY "  0. Exit".
            DISPLAY " ".
            DISPLAY "Select Option: " WITH NO ADVANCING.
@@ -317,6 +325,150 @@
            DISPLAY "Accidents                   : " WITH NO ADVANCING
            ACCEPT WS-IN-NUM
            MOVE WS-IN-NUM TO CA-M-ACCIDENTS
+           CALL "LGUPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE = '00'
+             DISPLAY "Policy updated"
+           ELSE
+             DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           END-IF
+           END-IF.
+
+       DO-ADD-HOUSE.
+           INITIALIZE COMM-AREA
+           MOVE '01AHOU' TO CA-REQUEST-ID
+           DISPLAY "Cust Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-CUSTOMER-NUM
+           DISPLAY "Issue date   (yyyy-mm-dd)   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-ISSUE-DATE
+           DISPLAY "Expiry date  (yyyy-mm-dd)   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-EXPIRY-DATE
+           DISPLAY "Broker ID                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-BROKERID
+           DISPLAY "Broker's Reference          : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-BROKERSREF
+           DISPLAY "Payment                     : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-PAYMENT
+           DISPLAY "Property Type                : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-H-PROPERTY-TYPE
+           DISPLAY "Bedrooms                    : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-H-BEDROOMS
+           DISPLAY "Value                        : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-H-VALUE
+           DISPLAY "House Name                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-H-HOUSE-NAME
+           DISPLAY "House Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-H-HOUSE-NUMBER
+           DISPLAY "Postcode                     : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-H-POSTCODE
+           CALL "LGAPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE = '00'
+               DISPLAY "New Policy Inserted, Policy Number = "
+                       CA-POLICY-NUM
+           ELSE
+               DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           END-IF.
+
+       DO-INQUIRY-HOUSE.
+           INITIALIZE COMM-AREA
+           MOVE '01IHOU' TO CA-REQUEST-ID
+           DISPLAY "Cust Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-CUSTOMER-NUM
+           DISPLAY "Policy Number                : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-POLICY-NUM
+           CALL "LGIPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE = '00'
+               DISPLAY " "
+               DISPLAY "Issue date   : " CA-ISSUE-DATE
+               DISPLAY "Expiry date  : " CA-EXPIRY-DATE
+               DISPLAY "Broker ID    : " CA-BROKERID
+               DISPLAY "Broker Ref   : " CA-BROKERSREF
+               DISPLAY "Payment      : " CA-PAYMENT
+               DISPLAY "Property Type: " CA-H-PROPERTY-TYPE
+               DISPLAY "Bedrooms     : " CA-H-BEDROOMS
+               DISPLAY "Value        : " CA-H-VALUE
+               DISPLAY "House Name   : " CA-H-HOUSE-NAME
+               DISPLAY "House Number : " CA-H-HOUSE-NUMBER
+               DISPLAY "Postcode     : " CA-H-POSTCODE
+           ELSE
+               DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           END-IF.
+
+       DO-DELETE-HOUSE.
+           INITIALIZE COMM-AREA
+           MOVE '01DHOU' TO CA-REQUEST-ID
+           DISPLAY "Cust Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-CUSTOMER-NUM
+           DISPLAY "Policy Number                : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-POLICY-NUM
+           CALL "LGDPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE = '00'
+               DISPLAY "Policy deleted"
+           ELSE
+               DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           END-IF.
+
+       DO-UPDATE-HOUSE.
+           INITIALIZE COMM-AREA
+           MOVE '01IHOU' TO CA-REQUEST-ID
+           DISPLAY "Cust Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-CUSTOMER-NUM
+           DISPLAY "Policy Number                : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-POLICY-NUM
+           CALL "LGIPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE NOT = '00'
+               DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           ELSE
+           DISPLAY " "
+           DISPLAY "Current values shown - enter new values below."
+           MOVE '01UHOU' TO CA-REQUEST-ID
+           DISPLAY "Issue date   (yyyy-mm-dd)   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-ISSUE-DATE
+           DISPLAY "Expiry date  (yyyy-mm-dd)   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-EXPIRY-DATE
+           DISPLAY "Broker ID                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-BROKERID
+           DISPLAY "Broker's Reference          : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-BROKERSREF
+           DISPLAY "Property Type                : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-H-PROPERTY-TYPE
+           DISPLAY "Bedrooms                    : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-H-BEDROOMS
+           DISPLAY "Value                        : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-H-VALUE
+           DISPLAY "House Name                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-H-HOUSE-NAME
+           DISPLAY "House Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-H-HOUSE-NUMBER
+           DISPLAY "Postcode                     : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-H-POSTCODE
            CALL "LGUPOL01" USING COMM-AREA
            IF CA-RETURN-CODE = '00'
              DISPLAY "Policy updated"

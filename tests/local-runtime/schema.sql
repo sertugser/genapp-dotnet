@@ -1,13 +1,14 @@
 -- PostgreSQL schema for the GenApp data access programs proven so far
 -- (tests/local-runtime/examples/genapp_menu.cbl: Customer Inquire/Add/Update,
--- Motor Policy Add). Columns/types match the EXEC SQL statements in
--- base/src/lgacdb01.cbl, lgacdb02.cbl, lgapdb01.cbl exactly (column names,
--- at least - base/ never declares real Db2 DDL, this repo has no SQL source
--- of truth to copy from, so types are inferred from the COBOL host
--- variables' PICTUREs). Only the 4 tables the proven operations touch -
--- NOT the full 8-table schema the real app has (HOUSE, ENDOWMENT,
--- COMMERCIAL, CUSTOMER_SECURE's full use, CLAIM are still missing - add as
--- Step 5 reaches each one). See docs/local-cics-runtime-plan.md.
+-- Motor and House Policy Add/Inquire/Delete/Update). Columns/types match the
+-- EXEC SQL statements in base/src/lgacdb01.cbl, lgacdb02.cbl, lgapdb01.cbl,
+-- lgipdb01.cbl, lgupdb01.cbl exactly (column names, at least - base/ never
+-- declares real Db2 DDL, this repo has no SQL source of truth to copy from,
+-- so types are inferred from the COBOL host variables' PICTUREs). Only the
+-- tables the proven operations touch - NOT the full 8-table schema the real
+-- app has (ENDOWMENT, COMMERCIAL, CUSTOMER_SECURE's full use, CLAIM are
+-- still missing - add as Step 5 reaches each one). See
+-- docs/local-cics-runtime-plan.md.
 --
 -- Applied automatically by setup-sql-bridge.ps1; safe to re-run (CREATE
 -- TABLE IF NOT EXISTS - won't touch existing data).
@@ -55,6 +56,16 @@ CREATE TABLE IF NOT EXISTS MOTOR (
     YEAROFMANUFACTURE  VARCHAR(10),
     PREMIUM            INTEGER,
     ACCIDENTS          INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS HOUSE (
+    POLICYNUMBER     INTEGER PRIMARY KEY REFERENCES POLICY(POLICYNUMBER) ON DELETE CASCADE,
+    PROPERTYTYPE     VARCHAR(15),
+    BEDROOMS         INTEGER,
+    VALUE            INTEGER,
+    HOUSENAME        VARCHAR(20),
+    HOUSENUMBER      VARCHAR(4),
+    POSTCODE         VARCHAR(8)
 );
 
 -- Both IDENTITY sequences start well clear of base/data's seed VSAM records
