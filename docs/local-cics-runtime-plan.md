@@ -171,9 +171,9 @@ original app).
       `CUSTOMER`, PostgreSQL `CUSTOMER_SECURE`, and the `KSDSCUST` VSAM-equivalent file).
       Needed a handful of additional fixes beyond Steps 1–3's individual pieces — see
       progress log, several are the kind of thing that'll bite again in Step 5 if forgotten.
-- [~] **Step 5 — Extend to the remaining operations** — **5 of 18 done** (Customer
-      Inquire/Add/Update, Motor Policy Add, and now Motor Policy Inquire — all via
-      `genapp_menu.cbl`, options 1-5 — see progress log), **13 to go** (Motor Delete/Update +
+- [~] **Step 5 — Extend to the remaining operations** — **6 of 18 done** (Customer
+      Inquire/Add/Update, Motor Policy Add/Inquire/Delete — all via `genapp_menu.cbl`,
+      options 1-6 — see progress log), **12 to go** (Motor Update +
       House/Endowment/Commercial Add/Inquire/Delete/Update-where-applicable). Reuses the
       Step 3/4 infrastructure (build recipe: `gixpp` on anything with `EXEC SQL`, then
       `preprocess_cics.py` on everything, in that order; link with both stub `.o`s). Known
@@ -572,3 +572,30 @@ higher-fidelity (but unnecessary now) alternative.
     inquire it back): every field round-tripped correctly, including the three
     indicator-bearing ones (`BROKERID`/`BROKERSREFERENCE`/`PAYMENT`), proving the column
     realignment fix actually works and not just that it compiles.
+- **2026-10-02** — **Motor Policy Delete** (`lgdpol01` → `lgdpdb01` → `lgdpvs01`, menu
+  option 6), the 6th of 18 operations. No gixpp issues this time (plain single-row `DELETE`,
+  no cursor, no indicator) - both new programs compiled against `base/src` completely
+  unmodified. Two real bugs found instead, both in test infrastructure, not business logic:
+  - **`lgdpdb01.cbl` only `DELETE`s `FROM POLICY`**, relying - like the real Db2 schema must -
+    on `MOTOR`'s foreign key having `ON DELETE CASCADE`. `schema.sql`'s `MOTOR` table didn't
+    have that (plain `REFERENCES POLICY(POLICYNUMBER)`, default `NO ACTION`), so the first
+    delete attempt against a motor policy would have failed with a FK violation. Added
+    `ON DELETE CASCADE` to the `CREATE TABLE`, plus a `DROP`/`ADD CONSTRAINT` pair so an
+    already-existing `MOTOR` table (every dev machine that ran setup before today) gets fixed
+    too - `CREATE TABLE IF NOT EXISTS` doesn't retroactively change a table that already
+    exists.
+  - **Found while re-running `schema.sql` to apply that fix: `ALTER TABLE ... RESTART WITH`
+    is not safe to rerun once real data exists.** `setup-sql-bridge.ps1` runs `schema.sql`
+    every time (by design, so schema changes reach already-set-up machines) - but
+    `RESTART WITH 5000` unconditionally rewinds the sequence back to 5000 even if policies
+    past 5000 already exist, so the next INSERT collides (`duplicate key value violates
+    unique constraint "policy_pkey"`) with whatever real row is sitting at 5001. This is
+    exactly what happened testing Motor Add immediately after the CASCADE fix - looked like a
+    regression in Motor Add itself at first, wasn't. Fixed by replacing both `RESTART WITH`
+    statements with `SELECT setval(..., GREATEST(floor, max(column)+1), false)`, which only
+    ever moves a sequence forward - safe to rerun indefinitely, unlike `RESTART WITH`.
+  - Verified end-to-end through the real menu: added a motor policy, deleted it (option 6),
+    confirmed gone via Inquire (`CA-RETURN-CODE=01`), then deleted the *same* policy number
+    again and confirmed `CA-RETURN-CODE=81` (VSAM `NOTFND`) rather than a silent success -
+    proving the `KSDSPOLY` VSAM record was actually removed the first time, not just the
+    Postgres row.

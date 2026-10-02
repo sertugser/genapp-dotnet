@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS POLICY (
 );
 
 CREATE TABLE IF NOT EXISTS MOTOR (
-    POLICYNUMBER       INTEGER PRIMARY KEY REFERENCES POLICY(POLICYNUMBER),
+    POLICYNUMBER       INTEGER PRIMARY KEY REFERENCES POLICY(POLICYNUMBER) ON DELETE CASCADE,
     MAKE               VARCHAR(15),
     MODEL              VARCHAR(15),
     VALUE              INTEGER,
@@ -61,5 +61,25 @@ CREATE TABLE IF NOT EXISTS MOTOR (
 -- (customers/policies 1-10 already exist in KSDSCUST.dat/KSDSPOLY.dat) so a
 -- fresh Postgres insert doesn't collide with them on the VSAM side - see
 -- docs/local-cics-runtime-plan.md, Step 4 point 4, for why that matters.
-ALTER TABLE CUSTOMER ALTER COLUMN CUSTOMERNUMBER RESTART WITH 1000;
-ALTER TABLE POLICY ALTER COLUMN POLICYNUMBER RESTART WITH 5000;
+--
+-- setval(..., false), not RESTART WITH: this script re-runs every time
+-- setup-sql-bridge.ps1 does, and RESTART WITH unconditionally rewinds the
+-- sequence - on a DB that already has rows past the floor, the next INSERT
+-- then collides with one of them ("duplicate key value violates unique
+-- constraint policy_pkey"). setval(..., GREATEST(floor, max+1), false)
+-- only ever moves the sequence forward.
+SELECT setval(pg_get_serial_sequence('CUSTOMER', 'customernumber'),
+              GREATEST(1000, (SELECT COALESCE(MAX(CUSTOMERNUMBER), 0) + 1 FROM CUSTOMER)),
+              false);
+SELECT setval(pg_get_serial_sequence('POLICY', 'policynumber'),
+              GREATEST(5000, (SELECT COALESCE(MAX(POLICYNUMBER), 0) + 1 FROM POLICY)),
+              false);
+
+-- lgdpdb01.cbl (Delete Policy) only deletes FROM POLICY, relying - like the
+-- real Db2 schema must - on the policy-type tables' FK having ON DELETE
+-- CASCADE. The CREATE TABLE above already has it for fresh installs; this
+-- ALTER fixes an already-existing MOTOR table from before this was added
+-- (CREATE TABLE IF NOT EXISTS above won't retroactively change it).
+ALTER TABLE MOTOR DROP CONSTRAINT IF EXISTS motor_policynumber_fkey;
+ALTER TABLE MOTOR ADD CONSTRAINT motor_policynumber_fkey
+    FOREIGN KEY (POLICYNUMBER) REFERENCES POLICY(POLICYNUMBER) ON DELETE CASCADE;

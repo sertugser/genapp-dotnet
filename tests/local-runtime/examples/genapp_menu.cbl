@@ -50,6 +50,7 @@
                    WHEN '3' PERFORM DO-ADD-MOTOR
                    WHEN '4' PERFORM DO-UPDATE
                    WHEN '5' PERFORM DO-INQUIRY-MOTOR
+                   WHEN '6' PERFORM DO-DELETE-MOTOR
                    WHEN '0' MOVE 'Y' TO WS-DONE
                    WHEN OTHER
                        DISPLAY "Please enter a valid option"
@@ -66,6 +67,7 @@
            DISPLAY "  3. Motor Policy Add".
            DISPLAY "  4. Cust Update".
            DISPLAY "  5. Motor Policy Inquiry".
+           DISPLAY "  6. Motor Policy Delete".
            DISPLAY "  0. Exit".
            DISPLAY " ".
            DISPLAY "Select Option: " WITH NO ADVANCING.
@@ -201,6 +203,22 @@
            IF CA-RETURN-CODE = '00'
                DISPLAY "New Policy Inserted, Policy Number = "
                        CA-POLICY-NUM
+           ELSE
+               DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           END-IF.
+
+       DO-DELETE-MOTOR.
+           INITIALIZE COMM-AREA
+           MOVE '01DMOT' TO CA-REQUEST-ID
+           DISPLAY "Cust Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-CUSTOMER-NUM
+           DISPLAY "Policy Number                : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-POLICY-NUM
+           CALL "LGDPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE = '00'
+               DISPLAY "Policy deleted"
            ELSE
                DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
            END-IF.

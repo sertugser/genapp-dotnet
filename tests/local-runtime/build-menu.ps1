@@ -38,8 +38,8 @@ $env:COB_CONFIG_DIR = "$ucrtBin\..\share\gnucobol\config"
 # Programs with EXEC SQL need gixpp first; programs with only EXEC CICS go
 # straight to preprocess_cics.py. Order matters - gixpp leaves EXEC CICS
 # alone, so it's always SQL pass then CICS pass, never the other way round.
-$sqlPrograms = @("lgacdb01", "lgacdb02", "lgicdb01", "lgucdb01", "lgapdb01", "lgipdb01")
-$cicsOnlyPrograms = @("lgacus01", "lgacvs01", "lgicus01", "lgucus01", "lgucvs01", "lgapol01", "lgapvs01", "lgipol01")
+$sqlPrograms = @("lgacdb01", "lgacdb02", "lgicdb01", "lgucdb01", "lgapdb01", "lgipdb01", "lgdpdb01")
+$cicsOnlyPrograms = @("lgacus01", "lgacvs01", "lgicus01", "lgucus01", "lgucvs01", "lgapol01", "lgapvs01", "lgipol01", "lgdpol01", "lgdpvs01")
 
 Step "Copying base/src programs into the build dir (base/ itself is never touched)..."
 foreach ($p in $sqlPrograms + $cicsOnlyPrograms) {
