@@ -60,6 +60,9 @@
                    WHEN '13' PERFORM DO-INQUIRY-ENDOW
                    WHEN '14' PERFORM DO-DELETE-ENDOW
                    WHEN '15' PERFORM DO-UPDATE-ENDOW
+                   WHEN '16' PERFORM DO-ADD-COMM
+                   WHEN '17' PERFORM DO-INQUIRY-COMM
+                   WHEN '18' PERFORM DO-DELETE-COMM
                    WHEN '0' MOVE 'Y' TO WS-DONE
                    WHEN OTHER
                        DISPLAY "Please enter a valid option"
@@ -86,6 +89,9 @@
            DISPLAY " 13. Endowment Policy Inquiry".
            DISPLAY " 14. Endowment Policy Delete".
            DISPLAY " 15. Endowment Policy Update".
+           DISPLAY " 16. Commercial Policy Add".
+           DISPLAY " 17. Commercial Policy Inquiry".
+           DISPLAY " 18. Commercial Policy Delete".
            DISPLAY "  0. Exit".
            DISPLAY " ".
            DISPLAY "Select Option: " WITH NO ADVANCING.
@@ -634,4 +640,131 @@
            ELSE
              DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
            END-IF
+           END-IF.
+
+       DO-ADD-COMM.
+           INITIALIZE COMM-AREA
+           MOVE '01ACOM' TO CA-REQUEST-ID
+           DISPLAY "Cust Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-CUSTOMER-NUM
+           DISPLAY "Issue date   (yyyy-mm-dd)   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-ISSUE-DATE
+           DISPLAY "Expiry date  (yyyy-mm-dd)   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-EXPIRY-DATE
+           DISPLAY "Broker ID                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-BROKERID
+           DISPLAY "Broker's Reference          : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-BROKERSREF
+           DISPLAY "Payment                     : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-PAYMENT
+           DISPLAY "Address                      : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-B-Address
+           DISPLAY "Postcode                     : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-B-Postcode
+           DISPLAY "Latitude                     : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-B-Latitude
+           DISPLAY "Longitude                    : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-B-Longitude
+           DISPLAY "Customer (business name)     : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-B-Customer
+           DISPLAY "Property Type                : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-B-PropType
+           DISPLAY "Fire Peril                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-B-FirePeril
+           DISPLAY "Fire Premium                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-B-FirePremium
+           DISPLAY "Crime Peril                  : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-B-CrimePeril
+           DISPLAY "Crime Premium                : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-B-CrimePremium
+           DISPLAY "Flood Peril                  : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-B-FloodPeril
+           DISPLAY "Flood Premium                : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-B-FloodPremium
+           DISPLAY "Weather Peril                : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-B-WeatherPeril
+           DISPLAY "Weather Premium              : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-B-WeatherPremium
+           DISPLAY "Status                       : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-B-Status
+           DISPLAY "Reject Reason                : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-B-RejectReason
+           CALL "LGAPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE = '00'
+               DISPLAY "New Policy Inserted, Policy Number = "
+                       CA-POLICY-NUM
+           ELSE
+               DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           END-IF.
+
+       DO-INQUIRY-COMM.
+           INITIALIZE COMM-AREA
+           MOVE '01ICOM' TO CA-REQUEST-ID
+           DISPLAY "Cust Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-CUSTOMER-NUM
+           DISPLAY "Policy Number                : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-POLICY-NUM
+           CALL "LGIPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE = '00'
+               DISPLAY " "
+               DISPLAY "Issue date (StartDate)  : " CA-ISSUE-DATE
+               DISPLAY "Expiry date (RenewDate) : " CA-EXPIRY-DATE
+               DISPLAY "Address                 : " CA-B-Address
+               DISPLAY "Postcode                : " CA-B-Postcode
+               DISPLAY "Latitude                : " CA-B-Latitude
+               DISPLAY "Longitude               : " CA-B-Longitude
+               DISPLAY "Customer                : " CA-B-Customer
+               DISPLAY "Property Type           : " CA-B-PropType
+               DISPLAY "Fire Peril              : " CA-B-FirePeril
+               DISPLAY "Fire Premium            : " CA-B-FirePremium
+               DISPLAY "Crime Peril             : " CA-B-CrimePeril
+               DISPLAY "Crime Premium           : " CA-B-CrimePremium
+               DISPLAY "Flood Peril             : " CA-B-FloodPeril
+               DISPLAY "Flood Premium           : " CA-B-FloodPremium
+               DISPLAY "Weather Peril           : " CA-B-WeatherPeril
+               DISPLAY "Weather Premium         : " CA-B-WeatherPremium
+               DISPLAY "Status                  : " CA-B-Status
+               DISPLAY "Reject Reason           : " CA-B-RejectReason
+           ELSE
+               DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           END-IF.
+
+       DO-DELETE-COMM.
+           INITIALIZE COMM-AREA
+           MOVE '01DCOM' TO CA-REQUEST-ID
+           DISPLAY "Cust Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-CUSTOMER-NUM
+           DISPLAY "Policy Number                : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-POLICY-NUM
+           CALL "LGDPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE = '00'
+               DISPLAY "Policy deleted"
+           ELSE
+               DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
            END-IF.

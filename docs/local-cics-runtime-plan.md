@@ -171,22 +171,31 @@ original app).
       `CUSTOMER`, PostgreSQL `CUSTOMER_SECURE`, and the `KSDSCUST` VSAM-equivalent file).
       Needed a handful of additional fixes beyond Steps 1–3's individual pieces — see
       progress log, several are the kind of thing that'll bite again in Step 5 if forgotten.
-- [~] **Step 5 — Extend to the remaining operations** — **15 of 18 done** (Customer
-      Inquire/Add/Update, Motor/House/Endowment Policy Add/Inquire/Delete/Update — all via
-      `genapp_menu.cbl`, options 1-15 — see progress log), **3 to go**
-      (Commercial Add/Inquire/Delete - no Commercial Update per the README). Reuses the
-      Step 3/4 infrastructure (build recipe: `gixpp` on anything with `EXEC SQL`, then
-      `preprocess_cics.py` on everything, in that order; link with both stub `.o`s). Known
-      rough edges to expect for the remaining 14: `REWRITE` is now proven (Customer Update),
-      but `DELETE`/`GTEQ`/`GENERIC` `READ` are implemented and still not individually
-      exercised — policy delete and the "all policies for a customer" inquiry will be the
-      first real test; `HANDLE CONDITION` isn't translated at all (not seen in the
-      data-access layer so far — the preprocessor fails loudly with a `FIXME` comment if a
-      policy program turns out to need it, not silently misfires); a new runtime function
-      turned up per new SQL shape so far (`GIXSQLExecSelectIntoOne` for Inquire's
-      non-cursor `SELECT...INTO`) — budget for the possibility that a policy-specific SQL
-      shape needs another one; and the `CUSTOMER`/`KSDSCUST` numbering mismatch (Step 4,
-      point 4) will recur for policy numbers against `KSDSPOLY` unless addressed first.
+- [x] **Step 5 — Extend to the remaining operations — DONE, 18 of 18.** Customer
+      Inquire/Add/Update, Motor/House/Endowment Policy Add/Inquire/Delete/Update, and
+      Commercial Policy Add/Inquire/Delete (no Commercial Update per the README) - all via
+      `genapp_menu.cbl`, options 1-18, all against real unmodified `base/src` programs - see
+      the progress log below for the full history. Reused the Step 3/4 infrastructure
+      throughout (build recipe: `gixpp` on anything with `EXEC SQL`, then
+      `preprocess_cics.py` on everything, in that order; link with both stub `.o`s) with no
+      changes to that recipe itself. What actually turned up, in rough order of how much it
+      cost to find: three real gixpp limitations (`Insensitive Scroll` cursor modifiers not
+      parsed; `col INDICATOR :ind` on `SELECT...INTO` silently binding every later column to
+      the wrong result, worked around by splicing real `CASE WHEN ... IS NULL` columns into
+      the disposable build copy rather than touching `genapp_sqlstub.cpp`; Db2's
+      `FOR UPDATE OF <column-list>` not valid Postgres syntax), one gixpp-unsupported SQL
+      construct this runtime had to reimplement itself (`WHERE CURRENT OF cursor`, since
+      there's no real server-side cursor to position against), one new host-variable shape
+      (`GIXSQLCursorDeclareParams` for parameterized cursor DECLAREs, and separately a
+      VARCHAR-with-length-prefix convention for COBOL's 49-level VARYING groups), a handful
+      of real base/src case-mismatch bugs (same class as Step 4's, always fixed only in the
+      disposable build copy), two test-infrastructure bugs in this repo's own `schema.sql`
+      (`MOTOR` missing `ON DELETE CASCADE`; `RESTART WITH` unsafe to rerun once data exists),
+      and - the single biggest find - a genuine bug in this runtime's own CICS stub
+      (`EIBCALEN` declared with a picture too narrow for its own injected value, silently
+      truncating `32500` to `2500` for every program since Step 4, undetected until
+      Endowment's commarea-size math finally exceeded it). Not one of these required
+      touching `base/src` itself.
 - [ ] **Step 6 (stretch) — Wire into `tests/GenApp.EquivalenceTests`** per the project's own
       testing plan (return codes, optimistic locking via LASTCHANGED, input checks).
 
@@ -719,3 +728,25 @@ higher-fidelity (but unnecessary now) alternative.
     environment's fixed `EIBCALEN`/header-length combination), inquired it back (all fields
     incl. both indicator pairs correct), updated every other field and confirmed via
     Inquire, then deleted it and confirmed gone.
+- **2026-10-02** — **Commercial Policy Add/Inquire/Delete** (menu options 16-18), the 16th
+  through 18th and final operations - **all 18 of 18 done.** Simplest of the four policy
+  types to wire up: plain `PIC X`/`PIC 9` host variables throughout (no cursors, no
+  indicators, no VARCHAR-length-prefix), so no new gixpp or runtime work at all - purely
+  `genapp_menu.cbl` paragraphs plus the still-missing `COMMERCIAL` table in `schema.sql`
+  (`ON DELETE CASCADE` back to `POLICY` included from the start this time). One real
+  oddity worth recording, not fixing: Commercial's own `SELECT` (`GET-Commercial-DB2-INFO-1`)
+  never fetches `BROKERID`/`BROKERSREFERENCE`/`PAYMENT` the way Motor/House/Endowment's do -
+  those three commarea fields go into `POLICY` fine on Add (the common
+  `INSERT INTO POLICY` every policy type shares), but Commercial Inquire never re-reads
+  them back, so the menu doesn't display them for this type (matches what `base/src` itself
+  does, not a gap introduced here). Verified end-to-end through the real menu: added a
+  commercial policy with all peril/premium fields, inquired it back (every field correct),
+  deleted it, confirmed gone via Inquire (`CA-RETURN-CODE=01`).
+
+  **Step 5 retrospective:** 18 of 18 GenApp business operations now run end-to-end through
+  real, unmodified `base/src` COBOL - every fix for every gap found along the way (gixpp
+  limitations, base/src case-mismatches, this runtime's own stub bugs) lives in either a
+  disposable build-dir copy or this repo's own test infrastructure, never in `base/`. Next
+  up per the top-level plan: Step 6 (stretch - wiring into `tests/GenApp.EquivalenceTests`),
+  or starting the actual COBOL→.NET analysis/migration work this whole exercise was meant
+  to de-risk.
