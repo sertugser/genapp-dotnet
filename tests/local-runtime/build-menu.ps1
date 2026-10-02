@@ -38,8 +38,8 @@ $env:COB_CONFIG_DIR = "$ucrtBin\..\share\gnucobol\config"
 # Programs with EXEC SQL need gixpp first; programs with only EXEC CICS go
 # straight to preprocess_cics.py. Order matters - gixpp leaves EXEC CICS
 # alone, so it's always SQL pass then CICS pass, never the other way round.
-$sqlPrograms = @("lgacdb01", "lgacdb02", "lgicdb01", "lgucdb01", "lgapdb01")
-$cicsOnlyPrograms = @("lgacus01", "lgacvs01", "lgicus01", "lgucus01", "lgucvs01", "lgapol01", "lgapvs01")
+$sqlPrograms = @("lgacdb01", "lgacdb02", "lgicdb01", "lgucdb01", "lgapdb01", "lgipdb01")
+$cicsOnlyPrograms = @("lgacus01", "lgacvs01", "lgicus01", "lgucus01", "lgucvs01", "lgapol01", "lgapvs01", "lgipol01")
 
 Step "Copying base/src programs into the build dir (base/ itself is never touched)..."
 foreach ($p in $sqlPrograms + $cicsOnlyPrograms) {
@@ -56,6 +56,37 @@ foreach ($p in $sqlPrograms + $cicsOnlyPrograms) {
     -replace "DB2-M-PREMIUM-int", "DB2-M-PREMIUM-INT" `
     -replace "DB2-M-ACCIDENTS-int", "DB2-M-ACCIDENTS-INT" |
     Set-Content "$build\lgapdb01.cbl"
+
+# lgipdb01.cbl needs three fixes in this disposable build-dir copy, none of
+# which touch base/src (see docs/local-cics-runtime-plan.md, Motor Inquire
+# entry):
+#  1. gixpp's ESQL parser doesn't support Db2's "Insensitive Scroll" cursor
+#     modifiers (used only by the Commercial-search cursors, not by any path
+#     Motor/House/Endowment Inquire need) - strip them, gixpp needs plain
+#     "DECLARE x CURSOR FOR".
+#  2. gixpp's host-variable lookup is case-sensitive; Zip_Cursor's WHERE
+#     clause references :CA-B-POSTCODE but the shared LGCMAREA.cpy declares
+#     it CA-B-Postcode.
+#  3. gixpp mishandles "col INDICATOR :ind" on a SELECT...INTO: it registers
+#     the indicator as its own ordinary result slot but never adds a
+#     matching column to the actual SQL text sent to the DB, so every result
+#     after the first indicator binds to the wrong Postgres column. Fix:
+#     rewrite each "col INDICATOR :ind" into a real extra selected column
+#     ("col, CASE WHEN col IS NULL THEN -1 ELSE 0 END") plus a plain host
+#     var in the INTO list - gixpp then treats it as 18 ordinary columns
+#     with nothing left to mishandle. BROKERID/BROKERSREFERENCE/PAYMENT use
+#     this exact indicator pattern verbatim in GET-ENDOW/HOUSE/MOTOR-DB2-INFO,
+#     so one global replace fixes all three paragraphs at once.
+(Get-Content "$build\lgipdb01.cbl") `
+    -replace "Insensitive Scroll Cursor For", "Cursor For" `
+    -replace ":CA-B-POSTCODE", ":CA-B-Postcode" `
+    -replace "^(\s+)BROKERID,$", "`$1BROKERID,`r`n`$1CASE WHEN BROKERID IS NULL THEN -1 ELSE 0 END," `
+    -replace "^(\s+)BROKERSREFERENCE,$", "`$1BROKERSREFERENCE,`r`n`$1CASE WHEN BROKERSREFERENCE IS NULL`r`n`$1  THEN -1 ELSE 0 END," `
+    -replace "^(\s+)PAYMENT,$", "`$1PAYMENT,`r`n`$1CASE WHEN PAYMENT IS NULL THEN -1 ELSE 0 END," `
+    -replace ":DB2-BROKERID-INT INDICATOR :IND-BROKERID,", ":DB2-BROKERID-INT,`r`n                   :IND-BROKERID," `
+    -replace ":DB2-BROKERSREF INDICATOR :IND-BROKERSREF,", ":DB2-BROKERSREF,`r`n                   :IND-BROKERSREF," `
+    -replace ":DB2-PAYMENT-INT INDICATOR :IND-PAYMENT,", ":DB2-PAYMENT-INT,`r`n                   :IND-PAYMENT," |
+    Set-Content "$build\lgipdb01.cbl"
 
 Step "Preprocessing (gixpp for EXEC SQL, then preprocess_cics.py for EXEC CICS)..."
 Push-Location $build

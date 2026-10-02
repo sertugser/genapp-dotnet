@@ -63,6 +63,7 @@ struct CursorState {
     std::string sql;
     PGresult*   res = nullptr;
     int         next_row = 0;
+    std::vector<std::string> params;  // bound at DECLARE time for parameterized cursors
 };
 std::map<std::string, CursorState> g_cursors;
 
@@ -495,7 +496,25 @@ int GIXSQLExecSelectIntoOne(void* sqlca_v, char*, int, char* sql, int /*nparams*
 
 int GIXSQLCursorDeclare(void* sqlca_v, char*, int, char* cursor_name, int, char* sql, int) {
     std::string name = cstr_from_fixed(cursor_name, 256);
-    g_cursors[name] = CursorState{translate_db2_sql(sql), nullptr, 0};
+    g_cursors[name] = CursorState{translate_db2_sql(sql), nullptr, 0, {}};
+    sqlca_ok(reinterpret_cast<SQLCA_T*>(sqlca_v));
+    return 0;
+}
+
+// Same as GIXSQLCursorDeclare, but for a cursor whose SELECT has WHERE-clause
+// host variables (e.g. "DECLARE x CURSOR FOR SELECT ... WHERE k = :h").
+// gixpp emits GIXSQLSetSQLParams calls for those host variables immediately
+// before this one, in the same StartSQL/EndSQL block (confirmed from actual
+// gixpp output on lgipdb01.cbl's Cust_Cursor/Zip_Cursor) - capture g_params
+// now, since the values could change before CursorOpen actually runs the
+// query.
+int GIXSQLCursorDeclareParams(void* sqlca_v, char*, int, char* cursor_name, int, char* sql, int,
+                               int nparams) {
+    std::string name = cstr_from_fixed(cursor_name, 256);
+    std::vector<std::string> params;
+    int n = std::min((int)g_params.size(), nparams);
+    for (int i = 0; i < n; i++) params.push_back(g_params[i].value);
+    g_cursors[name] = CursorState{translate_db2_sql(sql), nullptr, 0, params};
     sqlca_ok(reinterpret_cast<SQLCA_T*>(sqlca_v));
     return 0;
 }
@@ -512,7 +531,15 @@ int GIXSQLCursorOpen(void* sqlca_v, char* cursor_name) {
     // Emulated (non-streaming) cursor: run the query fully now, buffer rows,
     // fetch from the buffer. Fine for GenApp's record counts; not meant to
     // scale to huge result sets.
-    PGresult* res = PQexec(g_conn, it->second.sql.c_str());
+    PGresult* res;
+    if (!it->second.params.empty()) {
+        std::vector<const char*> vals;
+        for (auto& p : it->second.params) vals.push_back(p.c_str());
+        res = PQexecParams(g_conn, it->second.sql.c_str(), (int)vals.size(), nullptr, vals.data(),
+                            nullptr, nullptr, 0);
+    } else {
+        res = PQexec(g_conn, it->second.sql.c_str());
+    }
     if (PQresultStatus(res) != PGRES_TUPLES_OK) {
         sqlca_error(ca, -1, PQresultErrorMessage(res));
         PQclear(res);

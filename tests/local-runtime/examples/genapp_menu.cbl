@@ -49,6 +49,7 @@
                    WHEN '2' PERFORM DO-ADD
                    WHEN '3' PERFORM DO-ADD-MOTOR
                    WHEN '4' PERFORM DO-UPDATE
+                   WHEN '5' PERFORM DO-INQUIRY-MOTOR
                    WHEN '0' MOVE 'Y' TO WS-DONE
                    WHEN OTHER
                        DISPLAY "Please enter a valid option"
@@ -64,6 +65,7 @@
            DISPLAY "  2. Cust Add".
            DISPLAY "  3. Motor Policy Add".
            DISPLAY "  4. Cust Update".
+           DISPLAY "  5. Motor Policy Inquiry".
            DISPLAY "  0. Exit".
            DISPLAY " ".
            DISPLAY "Select Option: " WITH NO ADVANCING.
@@ -199,6 +201,36 @@
            IF CA-RETURN-CODE = '00'
                DISPLAY "New Policy Inserted, Policy Number = "
                        CA-POLICY-NUM
+           ELSE
+               DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           END-IF.
+
+       DO-INQUIRY-MOTOR.
+           INITIALIZE COMM-AREA
+           MOVE '01IMOT' TO CA-REQUEST-ID
+           DISPLAY "Cust Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-CUSTOMER-NUM
+           DISPLAY "Policy Number                : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-POLICY-NUM
+           CALL "LGIPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE = '00'
+               DISPLAY " "
+               DISPLAY "Issue date  : " CA-ISSUE-DATE
+               DISPLAY "Expiry date : " CA-EXPIRY-DATE
+               DISPLAY "Broker ID   : " CA-BROKERID
+               DISPLAY "Broker Ref  : " CA-BROKERSREF
+               DISPLAY "Payment     : " CA-PAYMENT
+               DISPLAY "Car Make    : " CA-M-MAKE
+               DISPLAY "Car Model   : " CA-M-MODEL
+               DISPLAY "Car Value   : " CA-M-VALUE
+               DISPLAY "Registration: " CA-M-REGNUMBER
+               DISPLAY "Car Colour  : " CA-M-COLOUR
+               DISPLAY "CC          : " CA-M-CC
+               DISPLAY "Manufactured: " CA-M-MANUFACTURED
+               DISPLAY "Premium     : " CA-M-PREMIUM
+               DISPLAY "Accidents   : " CA-M-ACCIDENTS
            ELSE
                DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
            END-IF.

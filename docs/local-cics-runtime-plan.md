@@ -171,9 +171,9 @@ original app).
       `CUSTOMER`, PostgreSQL `CUSTOMER_SECURE`, and the `KSDSCUST` VSAM-equivalent file).
       Needed a handful of additional fixes beyond Steps 1–3's individual pieces — see
       progress log, several are the kind of thing that'll bite again in Step 5 if forgotten.
-- [~] **Step 5 — Extend to the remaining operations** — **4 of 18 done** (Customer
-      Inquire/Add/Update via `genapp_menu.cbl`, plus Motor Policy Add via
-      `driver_add_motor.cbl` — see progress log), **14 to go** (Motor Inquire/Delete/Update +
+- [~] **Step 5 — Extend to the remaining operations** — **5 of 18 done** (Customer
+      Inquire/Add/Update, Motor Policy Add, and now Motor Policy Inquire — all via
+      `genapp_menu.cbl`, options 1-5 — see progress log), **13 to go** (Motor Delete/Update +
       House/Endowment/Commercial Add/Inquire/Delete/Update-where-applicable). Reuses the
       Step 3/4 infrastructure (build recipe: `gixpp` on anything with `EXEC SQL`, then
       `preprocess_cics.py` on everything, in that order; link with both stub `.o`s). Known
@@ -527,3 +527,48 @@ higher-fidelity (but unnecessary now) alternative.
   rather than trusting the inherited environment, and it now checks `genapp_menu.exe`'s own
   exit code too (previously only the four setup/build steps were checked - a crash in the
   menu program itself would have been silently reported as success).
+- **2026-10-02** — **Motor Policy Inquire** (`lgipol01` → `lgipdb01`, menu option 5), the 5th
+  of 18 operations. Two new gixpp limitations found, both fixed only in the disposable
+  `tests/local-runtime/build/lgipdb01.cbl` copy (never in `base/src`):
+  - gixpp's ESQL parser doesn't accept Db2's `Insensitive Scroll` cursor modifiers (used by
+    `Cust_Cursor`/`Zip_Cursor`, both only for the Commercial-search paths this operation
+    doesn't exercise) - stripped to plain `DECLARE x CURSOR FOR`. Also one real case-mismatch
+    bug like the `lgapdb01.cbl` one from Step 4: `Zip_Cursor`'s WHERE clause references
+    `:CA-B-POSTCODE` but the shared `LGCMAREA.cpy` declares it `CA-B-Postcode` - gixpp's
+    host-var lookup is case-sensitive, real COBOL isn't. Fixing the cursor syntax alone was
+    enough to let `cobc` compile `lgipdb01.cbl` cleanly (the `GET-MOTOR-DB2-INFO` path never
+    opens either cursor); the `INCLUDE SQLCA`/business logic the other `GET-*-DB2-INFO`
+    paragraphs need does exercise them, so both fixes are now in `build-menu.ps1` regardless.
+  - **Bigger find: gixpp mishandles `col INDICATOR :ind` on `SELECT...INTO`.** It registers
+    the indicator as an ordinary extra `GIXSQLSetResultParams` slot but never adds a matching
+    column to the real SQL text it sends to the DB - so for `GET-MOTOR-DB2-INFO`'s indicator
+    trio (`BROKERID`/`BROKERSREFERENCE`/`PAYMENT`), the runtime ended up with 18 registered
+    result slots against only 15 real Postgres columns, silently binding every field after the
+    first indicator to the wrong column. Root-caused by comparing `PQnfields()` against
+    `g_results.size()` and finding they didn't match, then confirming the actual generated SQL
+    literal (`SQ0005`) really did only have 15 columns - gixpp's embedded-SQL translation
+    doesn't inject the synthetic indicator column a real Db2/CLI driver would. Fixed by
+    rewriting each `col INDICATOR :ind` into a real extra selected column
+    (`col, CASE WHEN col IS NULL THEN -1 ELSE 0 END`) plus a plain (non-INDICATOR) host var in
+    the `INTO` list, in the build-dir copy - gixpp then has nothing left to mishandle, and
+    `genapp_sqlstub.cpp` needed zero changes for NULL handling. `BROKERID`/`BROKERSREFERENCE`/
+    `PAYMENT` use this exact pattern verbatim in `GET-ENDOW`/`HOUSE`/`MOTOR-DB2-INFO`, so the
+    fix in `build-menu.ps1` is a global replace across the whole file - will already be in
+    place when House/Endowment Inquire are tackled.
+  - Hit fixed-format COBOL's column-72 truncation again (same class of bug as Step 4's
+    `cobol_call()` line-wrapping): the generated `CASE WHEN BROKERSREFERENCE IS NULL THEN -1
+    ELSE 0 END,` line was 75 characters, so gixpp silently truncated it mid-string on read,
+    producing invalid SQL (`...ELSE 0 E PAYMENT...`, missing `ND ,`) that only showed up by
+    inspecting the generated `SQ0005` literal, not from any compiler error. Fixed by wrapping
+    that one line across two in the `build-menu.ps1` replacement text.
+  - New runtime function needed: `GIXSQLCursorDeclareParams` (declare-with-host-variables
+    variant of `GIXSQLCursorDeclare`, used by `Cust_Cursor`/`Zip_Cursor` even though this
+    operation never opens them - they're compiled unconditionally so the link fails without
+    it). Implemented in `genapp_sqlstub.cpp`: captures `g_params` at declare time (gixpp emits
+    `GIXSQLSetSQLParams` immediately before it, same `StartSQL`/`EndSQL` block) into the new
+    `CursorState.params`, and `GIXSQLCursorOpen` now runs `PQexecParams` instead of plain
+    `PQexec` whenever a cursor has bound params.
+  - Verified end-to-end through the real menu (option 3 to add a motor policy, option 5 to
+    inquire it back): every field round-tripped correctly, including the three
+    indicator-bearing ones (`BROKERID`/`BROKERSREFERENCE`/`PAYMENT`), proving the column
+    realignment fix actually works and not just that it compiles.
