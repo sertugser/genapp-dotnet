@@ -171,10 +171,10 @@ original app).
       `CUSTOMER`, PostgreSQL `CUSTOMER_SECURE`, and the `KSDSCUST` VSAM-equivalent file).
       Needed a handful of additional fixes beyond Steps 1–3's individual pieces — see
       progress log, several are the kind of thing that'll bite again in Step 5 if forgotten.
-- [~] **Step 5 — Extend to the remaining operations** — **6 of 18 done** (Customer
-      Inquire/Add/Update, Motor Policy Add/Inquire/Delete — all via `genapp_menu.cbl`,
-      options 1-6 — see progress log), **12 to go** (Motor Update +
-      House/Endowment/Commercial Add/Inquire/Delete/Update-where-applicable). Reuses the
+- [~] **Step 5 — Extend to the remaining operations** — **7 of 18 done** (Customer
+      Inquire/Add/Update, Motor Policy Add/Inquire/Delete/Update — all via `genapp_menu.cbl`,
+      options 1-7 — see progress log), **11 to go**
+      (House/Endowment/Commercial Add/Inquire/Delete/Update-where-applicable). Reuses the
       Step 3/4 infrastructure (build recipe: `gixpp` on anything with `EXEC SQL`, then
       `preprocess_cics.py` on everything, in that order; link with both stub `.o`s). Known
       rough edges to expect for the remaining 14: `REWRITE` is now proven (Customer Update),
@@ -599,3 +599,53 @@ higher-fidelity (but unnecessary now) alternative.
     again and confirmed `CA-RETURN-CODE=81` (VSAM `NOTFND`) rather than a silent success -
     proving the `KSDSPOLY` VSAM record was actually removed the first time, not just the
     Postgres row.
+- **2026-10-02** — **Motor Policy Update** (`lgupol01` → `lgupdb01` → `lgupvs01`, menu
+  option 7), the 7th of 18 operations and the most SQL-complex one yet: an optimistic-lock
+  cursor pattern (`DECLARE POLICY_CURSOR CURSOR WITH HOLD FOR ... FOR UPDATE OF ...`,
+  `OPEN`/`FETCH`/`CLOSE`, then `UPDATE POLICY ... WHERE CURRENT OF POLICY_CURSOR`, gated on
+  a `LASTCHANGED` timestamp match). gixpp parsed `lgupdb01.cbl` with zero errors - no
+  disposable-copy fixes needed, unlike `lgipdb01.cbl`. Two real gaps found in
+  `genapp_sqlstub.cpp` instead, both now generic runtime features rather than one-off
+  patches:
+  - **Db2's `FOR UPDATE OF col1, col2, ...`** (restricting which columns a positioned update
+    may touch) **isn't valid PostgreSQL** (`FOR UPDATE OF` there takes a table name, for
+    locking one side of a join, not a column list) - would have been a syntax error on every
+    `CursorOpen`. `translate_db2_sql()` now strips `FOR UPDATE OF <identifier list>` down to
+    plain `FOR UPDATE`; correct for every cursor seen so far since none join multiple tables.
+  - **`WHERE CURRENT OF cursor-name` has no server-side cursor to position against** - this
+    runtime emulates a cursor by running its SELECT eagerly via `PQexecParams` and buffering
+    the rows client-side (never issuing a real `DECLARE ... CURSOR` to Postgres), so there's
+    nothing for Postgres's own `WHERE CURRENT OF` to bind to either. Added
+    `rewrite_where_current_of()`: pulls the condition out of the *cursor's own* stored SQL
+    (everything between its `WHERE` and a trailing `FOR UPDATE`, if any), substitutes its
+    bound params ($1, $2, ... from the now-generic `CursorState.params` added for Motor
+    Inquire's `Cust_Cursor`/`Zip_Cursor`) in as literal values, and splices that in place of
+    `WHERE CURRENT OF x` - safe to splice as literals rather than `$N` placeholders because
+    the calling statement's own `$N`s refer to its *own* bound params (the `SET` values here),
+    not the cursor's, so leaving placeholders in would have collided.
+  - **Found, not fixed: a genuine host-variable/column-count mismatch in `base/src/lgupdb01.cbl`
+    itself** (not touched - just documented). `FETCH-DB2-POLICY-ROW`'s `INTO` list has 6 host
+    variables incl. 3 `INDICATOR`-paired ones (`BROKERID`/`BROKERSREFERENCE`/`PAYMENT`), but
+    `POLICY_CURSOR`'s own `SELECT` only has 5 columns (no `PAYMENT` at all) - gixpp accepted it
+    without complaint, and at runtime the extra host variables after the mismatch silently bind
+    to the wrong columns or nothing at all (same class of issue fixed for real in
+    `lgipdb01.cbl`). Traced every one of those 6 fetched values forward through the rest of the
+    paragraph and confirmed **none are ever read** - `DB2-BROKERID-INT`/`DB2-BROKERSREF` get
+    overwritten from `CA-BROKERID`/`CA-BROKERSREF` before the `UPDATE` anyway, and
+    `DB2-PAYMENT-INT`/all three indicators are simply never referenced again - so the mismatch
+    is inert for this program's actual control flow. Left as-is rather than "fixed", since
+    there's nothing to fix that changes behavior; noted here so it isn't re-discovered as a
+    surprise later.
+  - **Found while testing, not a bug: `lgupdb01.cbl`'s own `UPDATE POLICY` statement never
+    includes `PAYMENT` in its `SET` list** (confirmed by reading `base/src/lgupdb01.cbl`
+    directly - lines 318-326) - so a Motor Update through the real menu correctly leaves
+    `PAYMENT` unchanged no matter what the user enters for it. This is upstream GenApp's own
+    behavior (perhaps deliberate - payment/commission may be restricted from this self-service
+    path on the real system), not something introduced here; the menu still prompts for it
+    (mirroring `DO-ADD-MOTOR`'s field layout) but the value is discarded, same as the real
+    program would do.
+  - Verified end-to-end through the real menu: added a motor policy, updated every other field
+    to new values (option 7), confirmed via Inquire (option 5) that each one actually
+    persisted - including the optimistic-lock path succeeding and the VSAM-side `lgupvs01`
+    rewrite (inferred from `CA-RETURN-CODE` staying `'00'` all the way back, since `lgupvs01`
+    sets it directly on failure and nothing resets it to `'00'` afterward).

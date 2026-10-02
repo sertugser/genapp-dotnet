@@ -317,7 +317,68 @@ std::string translate_db2_sql(const std::string& sql) {
             p += kv.second.size();
         }
     }
+
+    // Db2's "FOR UPDATE OF col1, col2, ..." names the columns a positioned
+    // UPDATE through this cursor may touch. PostgreSQL's "FOR UPDATE OF"
+    // takes table names (for locking one side of a join), not columns, so
+    // this is a syntax error as-is (confirmed against lgupdb01.cbl's
+    // POLICY_CURSOR). A plain row-level "FOR UPDATE" is equivalent here -
+    // every cursor seen so far is single-table, so there's no join side to
+    // disambiguate anyway.
+    static const std::regex for_update_of_re(R"(FOR\s+UPDATE\s+OF\s+[A-Za-z_][A-Za-z0-9_]*(\s*,\s*[A-Za-z_][A-Za-z0-9_]*)*)",
+                                              std::regex::icase);
+    out = std::regex_replace(out, for_update_of_re, "FOR UPDATE");
+
     return out;
+}
+
+// Db2's positioned UPDATE/DELETE ("... WHERE CURRENT OF cursor-name") only
+// makes sense against a real server-side cursor; this runtime instead runs
+// each DECLAREd cursor's SELECT eagerly and buffers the rows, so there's no
+// open server-side cursor to position against. Since every such cursor seen
+// so far (lgupdb01.cbl's POLICY_CURSOR) is opened with a WHERE clause that
+// already names the exact row via its bound params, "WHERE CURRENT OF x" is
+// rewritten into a literal copy of that same WHERE condition, with the
+// cursor's own bound param values ($1, $2, ...) substituted in as SQL
+// literals - substituted, not left as $N placeholders, since $N in the
+// caller's own statement refers to *its* bound params (the SET-clause
+// values here), not the cursor's.
+std::string rewrite_where_current_of(const std::string& sql) {
+    static const std::regex cur_re(R"(WHERE\s+CURRENT\s+OF\s+([A-Za-z_][A-Za-z0-9_]*))",
+                                    std::regex::icase);
+    std::smatch m;
+    if (!std::regex_search(sql, m, cur_re)) return sql;
+    std::string cursor_name = m[1].str();
+    auto it = g_cursors.find(cursor_name);
+    if (it == g_cursors.end()) return sql;  // unknown cursor - leave as-is, will error out downstream
+
+    // Pull the condition out of the cursor's own stored SQL: everything
+    // between its (first) WHERE and a trailing FOR UPDATE, if any.
+    const std::string& curSql = it->second.sql;
+    static const std::regex where_re(R"(WHERE\s+(.*?)(\s+FOR\s+UPDATE\b|$))",
+                                      std::regex::icase);
+    std::smatch wm;
+    if (!std::regex_search(curSql, wm, where_re)) return sql;
+    std::string condition = wm[1].str();
+
+    for (size_t i = 0; i < it->second.params.size(); i++) {
+        std::string placeholder = "$" + std::to_string(i + 1);
+        std::string literal = "'" + it->second.params[i] + "'";
+        size_t p = 0;
+        while ((p = condition.find(placeholder, p)) != std::string::npos) {
+            // Don't match $1 as a prefix of $10, $11, ... (not expected with
+            // today's single-digit cursor param counts, but cheap to guard).
+            size_t after = p + placeholder.size();
+            if (after < condition.size() && isdigit((unsigned char)condition[after])) {
+                p = after;
+                continue;
+            }
+            condition.replace(p, placeholder.size(), literal);
+            p += literal.size();
+        }
+    }
+
+    return std::regex_replace(sql, cur_re, "WHERE " + condition);
 }
 
 }  // namespace
@@ -441,7 +502,7 @@ int GIXSQLExecParams(void* sqlca_v, char*, int, char* sql, int /*nparams*/) {
     std::vector<const char*> vals;
     vals.reserve(g_params.size());
     for (auto& p : g_params) vals.push_back(p.value.c_str());
-    std::string translated = translate_db2_sql(sql);
+    std::string translated = rewrite_where_current_of(translate_db2_sql(sql));
     PGresult* res = PQexecParams(g_conn, translated.c_str(), (int)g_params.size(), nullptr,
                                   vals.data(), nullptr, nullptr, 0);
     ExecStatusType st = PQresultStatus(res);

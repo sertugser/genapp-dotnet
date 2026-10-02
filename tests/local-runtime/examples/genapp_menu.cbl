@@ -51,6 +51,7 @@
                    WHEN '4' PERFORM DO-UPDATE
                    WHEN '5' PERFORM DO-INQUIRY-MOTOR
                    WHEN '6' PERFORM DO-DELETE-MOTOR
+                   WHEN '7' PERFORM DO-UPDATE-MOTOR
                    WHEN '0' MOVE 'Y' TO WS-DONE
                    WHEN OTHER
                        DISPLAY "Please enter a valid option"
@@ -68,6 +69,7 @@
            DISPLAY "  4. Cust Update".
            DISPLAY "  5. Motor Policy Inquiry".
            DISPLAY "  6. Motor Policy Delete".
+           DISPLAY "  7. Motor Policy Update".
            DISPLAY "  0. Exit".
            DISPLAY " ".
            DISPLAY "Select Option: " WITH NO ADVANCING.
@@ -251,4 +253,74 @@
                DISPLAY "Accidents   : " CA-M-ACCIDENTS
            ELSE
                DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           END-IF.
+
+       DO-UPDATE-MOTOR.
+           INITIALIZE COMM-AREA
+           MOVE '01IMOT' TO CA-REQUEST-ID
+           DISPLAY "Cust Number                 : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-CUSTOMER-NUM
+           DISPLAY "Policy Number                : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-POLICY-NUM
+      *    Fetch current values first - also gets the LASTCHANGED
+      *    timestamp LGUPOL01 needs for its optimistic-lock check
+      *    (CA-REQUEST-ID gets overwritten below, CA-LASTCHANGED isn't
+      *    touched again so it carries straight through unmodified).
+           CALL "LGIPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE NOT = '00'
+             DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           ELSE
+           DISPLAY " "
+           DISPLAY "Current values shown - enter new values below."
+           MOVE '01UMOT' TO CA-REQUEST-ID
+           DISPLAY "Issue date   (yyyy-mm-dd)   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-ISSUE-DATE
+           DISPLAY "Expiry date  (yyyy-mm-dd)   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-EXPIRY-DATE
+           DISPLAY "Broker ID                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-BROKERID
+           DISPLAY "Broker's Reference          : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-BROKERSREF
+           DISPLAY "Payment                     : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-PAYMENT
+           DISPLAY "Car Make                    : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-M-MAKE
+           DISPLAY "Car Model                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-M-MODEL
+           DISPLAY "Car Value                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-M-VALUE
+           DISPLAY "Registration                : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-M-REGNUMBER
+           DISPLAY "Car Colour                  : " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-M-COLOUR
+           DISPLAY "CC                          : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-M-CC
+           DISPLAY "Manufacture Date(yyyy-mm-dd): " WITH NO ADVANCING
+           ACCEPT WS-IN-TEXT
+           MOVE WS-IN-TEXT TO CA-M-MANUFACTURED
+           DISPLAY "Premium                     : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-M-PREMIUM
+           DISPLAY "Accidents                   : " WITH NO ADVANCING
+           ACCEPT WS-IN-NUM
+           MOVE WS-IN-NUM TO CA-M-ACCIDENTS
+           CALL "LGUPOL01" USING COMM-AREA
+           IF CA-RETURN-CODE = '00'
+             DISPLAY "Policy updated"
+           ELSE
+             DISPLAY "Error - CA-RETURN-CODE=" CA-RETURN-CODE
+           END-IF
            END-IF.
