@@ -10,6 +10,12 @@ REM the caller's current directory.
 setlocal
 set HERE=%~dp0
 set PS=powershell -NoProfile -ExecutionPolicy Bypass -File
+REM setup.ps1 persists this to the User registry for *future* terminals;
+REM a cmd.exe window opened before that persisted (e.g. one left open from
+REM before setup.ps1 ever ran) won't have picked it up yet. genapp_menu.exe
+REM needs it on PATH to even start (libpq.dll and friends) - set it
+REM explicitly here too rather than trusting the inherited environment.
+set PATH=C:\msys64\ucrt64\bin;%PATH%
 
 echo ==== Step 0: GnuCOBOL (MSYS2) ====
 %PS% "%HERE%setup.ps1"
@@ -37,6 +43,13 @@ set DATASRC_USR=postgres
 set DATASRC_PWD=postgres
 set GENAPP_VSAM_DIR=%HERE%vsam-data
 "%HERE%build\genapp_menu.exe"
+if errorlevel 1 (
+    echo.
+    echo genapp_menu.exe exited with an error ^(code %errorlevel%^) instead of
+    echo a clean exit via menu option 0 - if no menu ever appeared above,
+    echo it likely failed to start ^(missing DLL, or Postgres isn't running^).
+    goto :error
+)
 
 echo.
 echo Done.

@@ -512,3 +512,18 @@ higher-fidelity (but unnecessary now) alternative.
   steps, then passed the smoke test). Decided against Docker for now (see "Reproducibility"
   above) — plain PowerShell script instead, so teammates don't need anything beyond winget.
   This is what gets committed so a fresh clone doesn't repeat our manual trial-and-error.
+- **2026-10-02** — **`tests/local-runtime/run.bat`**: a single double-clickable entry point
+  chaining `setup.ps1` → `setup-sql-bridge.ps1` → `setup-cics-stub.ps1` → `build-menu.ps1` →
+  launches `genapp_menu.exe`, so a teammate doesn't have to type five separate commands just
+  to see the menu run. Caught a real bug on first real-world use (not caught by my own
+  testing, which always had the right `PATH` already set from earlier in the same shell):
+  **`setup.ps1` persists `C:\msys64\ucrt64\bin` to the User registry PATH for *future*
+  terminals, but a `cmd.exe` window that was already open before that persisted doesn't pick
+  it up** (normal Windows behaviour - env var changes don't propagate to already-running
+  processes). `genapp_menu.exe` needs that directory on `PATH` to even start (`libpq.dll` and
+  the rest), so launching it from such a window fails to start at all - silently, often as a
+  GUI popup rather than console text, so the batch script saw nothing wrong and happily
+  printed "Done." right after. Fixed two ways: `run.bat` now sets `PATH` explicitly itself
+  rather than trusting the inherited environment, and it now checks `genapp_menu.exe`'s own
+  exit code too (previously only the four setup/build steps were checked - a crash in the
+  menu program itself would have been silently reported as success).
