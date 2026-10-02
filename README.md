@@ -2,7 +2,6 @@
 
 **Test-driven, incremental modernization of the IBM CICS General Insurance Application (GenApp) from COBOL/CICS to ASP.NET Core.**
 
-Engineering Design II · Ankara Bilim University · Project 01 – IBM CICS General Insurance Application (GenApp)  
 Advisor: Prof. Dr. Hakan Çağlar
 
 ## Goal
