@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GenApp.Api/GenApp.Api.csproj" />
+    <Project Path="src/GenApp.Application/GenApp.Application.csproj" />
+    <Project Path="src/GenApp.Domain/GenApp.Domain.csproj" />
+    <Project Path="src/GenApp.Infrastructure/GenApp.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GenApp.EquivalenceTests/GenApp.EquivalenceTests.csproj" />
+    <Project Path="tests/GenApp.IntegrationTests/GenApp.IntegrationTests.csproj" />
+  </Folder>
+</Solution>
