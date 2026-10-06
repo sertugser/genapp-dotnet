@@ -1,2 +1,15 @@
 base/src/.DS_Store
 base/.DS_Store
+
+# .NET build output
+bin/
+obj/
+
+# Local environment overrides (docker compose password/port)
+.env
+
+# Editor and OS files
+.vs/
+.idea/
+*.user
+.DS_Store
