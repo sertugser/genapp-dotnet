@@ -7,9 +7,9 @@ Folder layout:
 
 | Folder | Content |
 |---|---|
-| `work/` | `lgapol01.cbl`, `lgcmarea.cpy`: unchanged copies of `base/src/`. `lgapol01-gc.cbl`: the GnuCOBOL version of LGAPOL01. `drv-lgapol01.cbl`: its driver. |
-| `stubs/` | Fake replacements for the programs LGAPOL01 `LINK`s to (`lgapdb01.cbl`, `lgstsq.cbl`). |
-| `runs/` | One record per run (`lgapol01-deneme.md`). |
+| `work/` | `lgapol01.cbl`, `lgdpdb01.cbl`, `lgcmarea.cpy`: unchanged copies of `base/src/`. `lgapol01-gc.cbl`, `lgdpdb01-gc.cbl`: the GnuCOBOL versions. `drv-lgapol01.cbl`, `drv-lgdpdb01.cbl`: their drivers. |
+| `stubs/` | Fake replacements for what the programs call: `lgapdb01.cbl`, `lgstsq.cbl`, `lgdpvs01.cbl` (programs they `LINK` to), `db2stub.cbl` and `sqlca.cpy` (Db2). |
+| `runs/` | One record per run (`lgapol01-deneme.md`, `lgdpdb01-sql-deneme.md`). |
 | `build/` | Compiler output. Not committed (see `.gitignore`). |
 
 ## Setup
@@ -93,7 +93,7 @@ for each one what the stub should do and add a row here.
 
 ### 5b. Replace each `EXEC SQL` (programs that use Db2)
 
-Tried on LGDPDB01 (`runs/lgdpdb01-sql-deneme.md`). GnuCOBOL has no Db2 precompiler, so every
+Tried on LGDPDB01 (`runs/lgdpdb01-sql-deneme.md`). `cobc` 3.2.0 does not accept `EXEC SQL` (no Db2 precompiler is part of the setup), so every
 `EXEC SQL` is replaced by hand:
 
 | Original | Replacement | Why |
