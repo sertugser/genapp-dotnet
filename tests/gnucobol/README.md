@@ -88,8 +88,30 @@ Under CICS the COMMAREA arrives without a `USING` clause. Under GnuCOBOL it has 
 | `ASKTIME`, `FORMATTIME` | `DISPLAY 'STUB EXEC CICS ...'` | Time is not needed for the result. The target fields keep their initial value (`SPACES`). |
 | `ABEND` | `DISPLAY 'STUB EXEC CICS ABEND ...'` followed by `GOBACK` | A real `ABEND` never returns. Without the `GOBACK` the program would run on after the abend. |
 
-Anything else you meet (`READ`, `WRITE`, `SEND`, `XCTL`, `EXEC SQL`...) is not covered yet. Decide
+Anything else you meet (`READ`, `WRITE`, `SEND`, `XCTL`...) is not covered yet. Decide
 for each one what the stub should do and add a row here.
+
+### 5b. Replace each `EXEC SQL` (programs that use Db2)
+
+Tried on LGDPDB01 (`runs/lgdpdb01-sql-deneme.md`). GnuCOBOL has no Db2 precompiler, so every
+`EXEC SQL` is replaced by hand:
+
+| Original | Replacement | Why |
+|---|---|---|
+| `PROCESS SQL` (first line) | delete the line | IBM compiler directive. `cobc` only warns, but it is meaningless here. |
+| `EXEC SQL INCLUDE SQLCA END-EXEC` | `COPY SQLCA.` with `stubs/sqlca.cpy` | A minimal SQLCA with the same field names and types (`SQLCODE` is `COMP-5`). No `VALUE` clauses, so the stub can use it in its `LINKAGE SECTION`. |
+| `EXEC SQL INCLUDE X END-EXEC` | `COPY X.` | Same copybook, no precompiler needed. |
+| `EXEC SQL <statement> END-EXEC` | `DISPLAY` of the host variables, then `CALL 'DB2STUB' USING SQLCA` | The statement text is never parsed or checked. The `DISPLAY` shows what would have been sent to Db2. |
+
+`stubs/db2stub.cbl` sets `SQLCODE` to the value the **test case** chose. The driver puts it in the
+external field `DB2STUB-SQLCODE` (default `0`). So the SQLCODE is an input of the test, written in
+the run record, and not a result of the program. The program under test then reacts to it
+(LGDPDB01: `SQLCODE NOT = 0` gives return code `90`).
+
+Each `EXEC SQL` statement needs a decision about what SQLCODE (and which host-variable output, for
+`SELECT`/`FETCH`) the stub returns. That is an assumption about Db2, so list every value used.
+Output host variables (`SELECT ... INTO`) were **not** tried yet.
+
 
 ### 6. Write a stub for each linked program
 
@@ -172,7 +194,7 @@ export COB_LIBRARY_PATH=build        # where CALL finds the modules
   that depends on `LGAPDB01` (database inserts) needs a stub that behaves like it, and that is a
   decision for the test team, because it adds assumptions.
 - Time is stubbed, so error messages carry blank date and time.
-- `EXEC SQL` is not handled.
+- `EXEC SQL` is replaced statement by statement with a stub that returns a SQLCODE chosen by the test (step 5b). Db2 itself is never run: constraints (foreign keys), locking and real SQLCODE values are not checked. `SELECT ... INTO` and cursors were not tried.
 
 ## First compile check (before the method)
 
