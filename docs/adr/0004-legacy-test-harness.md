@@ -26,8 +26,8 @@ Sorun: GenApp programları normal bir COBOL derleyicisinde derlenmiyor. GnuCOBOL
   verir, kaynakta tanımlı değildir.
 - **`EXEC CICS` komutları**: COBOL değildir; CICS çeviricisi bunları derlemeden önce gerçek
   çağrılara çevirir. GnuCOBOL'da çevirici yoktur.
-- **`EXEC SQL` komutları**: Veri katmanındaki programlarda vardır ve Db2 ister. Henüz denenmedi, çünkü ilk
-  deneme iş katmanındaki bir program üzerindeydi.
+- **`EXEC SQL` komutları**: Veri katmanındaki programlarda vardır ve Db2 ister. İlk deneme (LGAPOL01) SQL
+  içermiyordu; SQL ikinci denemede (LGDPDB01) ele alındı. GnuCOBOL'da Db2 ön derleyicisi de yoktur.
 
 Ayrıca bir iş katmanı programı tek başına yaşamaz: LGAPOL01 veri katmanındaki LGAPDB01'i ve hata
 kuyruğuna yazan LGSTSQ'yu çağırır.
@@ -50,10 +50,15 @@ o programın koduna bağlı olsun.
 4. **Bir sürücü program CICS'in rolünü oynar** (`work/drv-*.cbl`). EIB değerlerini verir, COMMAREA'yı
    kurar, programı çağırır, dönüş kodunu yazar. Her durum ayrı bir süreçte çalışır, çünkü CICS her
    görev için `WORKING-STORAGE`'ı yeniden kurar; GnuCOBOL aynı süreçte çağrılar arasında değerleri korur.
-5. **`EXEC SQL` için de aynı ilke geçerlidir:** veri katmanı programı çağıran iş katmanı testlerinde
-   veri katmanının tamamı stub ile değişir (LGAPDB01'de yapıldığı gibi). Veri katmanı programlarının
-   kendisini çalıştırmak için SQL komutları düzeyinde bir karşılık gerekir; bu **henüz denenmedi ve
-   karar verilmedi** (bkz. Açık sorular).
+5. **`EXEC SQL` komutları da deyim deyim değişir.** `INCLUDE SQLCA` ve `INCLUDE <kopya>` → `COPY`
+   (SQLCA için, alan adları ve türleri Db2'ninkiyle aynı olan en küçük bir kopya: `stubs/sqlca.cpy`).
+   `EXEC SQL <deyim>` → ana bilgisayar değişkenlerini `DISPLAY` ile gösterip `CALL 'DB2STUB' USING SQLCA`.
+   Db2 stub'ı yalnızca `SQLCODE`'u doldurur ve değeri **test senaryosu** seçer (sürücü verir). Madde 3'ün
+   tek istisnası budur: SQLCODE programın ya da Db2'nin sonucu değil, testin girdisidir ve run kaydına
+   yazılır. Sonuç "Db2 şu SQLCODE'u döndürürse program şunu yapar" biçiminde, koşullu olur.
+   Veri katmanını çağıran iş katmanı testlerinde ise veri katmanının tamamı stub ile değişir (LGAPDB01'de
+   olduğu gibi). Deneme: LGDPDB01 (`tests/gnucobol/runs/lgdpdb01-sql-deneme.md`, 3 `EXEC SQL` ve 10
+   `EXEC CICS` komutu, hepsi değişti). `SELECT ... INTO` gibi Db2'den veri alan deyimler denenmedi.
 
 Adım adım yöntem `tests/gnucobol/README.md` içindedir; her program için aynı adımlar izlenir.
 
@@ -86,14 +91,23 @@ H02 denemesinde (`tests/gnucobol/runs/lgapol01-deneme.md`) şunlar gösterildi:
 
 Bunlar programın kendi kodunun davranışıdır; varsayımımıza bağlı değildir.
 
+SQL içeren programlarda sonuç, senaryoda verdiğimiz SQLCODE'a koşulludur. LGDPDB01, SQLCODE 0'da `00`,
+100 ve -911'de `90`, geçersiz istek kodunda `99`, kısa COMMAREA'da `98` döndürdü. Bu, "Db2 bu değeri
+döndürürse" koşuluyla geçerlidir. Ayrıca deneme koddaki bir çelişkiyi gösterdi: yorum SQLCODE 100'ü
+başarılı sayıyor, ama kod `IF SQLCODE NOT EQUAL 0` ile 100'de de `90` döndürüyor.
+
 ### Neyi ölçemiyoruz
 
 - **Db2, VSAM ve kuyrukların gerçek davranışı.** Stub bizim varsayımımızdır. Gerçek Db2'nin hata
   kodlarını, kısıtlarını (örn. olmayan müşteriye poliçe eklenememesi) ya da kilitleme davranışını
   görmeyiz. LGAPDB01 stub'ı hiçbir şey eklemediği için `00` sonucu LGAPOL01'den gelir ve gerçek
   LGAPDB01 hakkında hiçbir şey söylemez.
+  Seçtiğimiz SQLCODE değeri de bir varsayımdır: gerçek Db2'nin hangi durumda hangi SQLCODE'u döndüreceğini
+  (örn. silinecek satır yokken 100 dönüp dönmediğini) ölçmeyiz. SQL deyiminin metni de denetlenmez; yanlış
+  yazılmış bir tablo ya da sütun adı bulunmaz.
 - **Stub'ın arkasındaki her şey.** Stub'a girdikten sonraki dönüş kodları, yazılan kayıtlar, üretilen
-  müşteri numarası ölçülmez. Bir stub'a dönüş kodu atamak ölçümü varsayıma çevirir ve bunu yapmayız.
+  müşteri numarası ölçülmez. Bir stub'a dönüş kodu atamak ölçümü varsayıma çevirir ve bunu yapmayız
+  (madde 5'teki SQLCODE hariç: o bir senaryo girdisidir ve kayıtta yazılıdır).
   O sonuç gerekiyorsa, davranış bir test ekibi kararı olarak ayrıca yazılır ve ölçüm sayılmaz.
 - **CICS çalışma zamanının davranışı.** ABEND sonrası görev sonlanması, `LINK` ile COMMAREA'nın
   aktarılma biçimi, işlem ve bölge sınırları bizim karşılıklarımızla birebir aynı olmayabilir. Tarih
@@ -123,15 +137,18 @@ Bunlar programın kendi kodunun davranışıdır; varsayımımıza bağlı deği
 
 ## Açık sorular
 
-- **SQL komutları düzeyinde karşılık.** Veri katmanı programlarını (`EXEC SQL` içerenler) çalıştırmak
-  istiyorsak, elimizde Db2 ve SQL çeviricisi olmadığı için ya SQL komutlarını `CALL`'a çevirip sahte
-  bir veri deposuna bağlamak ya da bu programları yalnızca C# tarafında test etmek gerekir. İkisi de
-  denenmedi; karar bu ADR'nin kapsamı dışındadır.
+- **SQL: Db2'den veri bekleyen deyimler.** Deneme yalnızca `DELETE` içeren LGDPDB01 üzerindeydi.
+  `SELECT ... INTO` ve `FETCH` gibi deyimlerde stub'ın ana bilgisayar değişkenlerine ne koyacağı denenmedi.
+  Bu doğrudan bir Db2 varsayımıdır ve yukarıdaki "stub sonuç uydurmaz" kuralıyla çelişir; nasıl
+  çözüleceği ayrıca kararlaştırılmalıdır.
+- **Koşullu sonuçlar ölçüme nasıl girer.** "Db2 şu SQLCODE'u döndürürse" koşullu sonuçların tahmin doğruluğu
+  hesabına nasıl katılacağı (tahminin de bu koşulla yazılması gerekir) test ekibince kararlaştırılmalı.
 - Stub'a davranış eklemek gerektiğinde bunun nasıl onaylanacağı (kimin kararı, nerede yazılacağı).
 
 ## Kaynaklar
 
 - `tests/gnucobol/README.md`: adım adım yöntem ve ilk derleme denemesi
 - `tests/gnucobol/runs/lgapol01-deneme.md`: LGAPOL01 deneme çalıştırması (ölçüme dahil değil)
+- `tests/gnucobol/runs/lgdpdb01-sql-deneme.md`: LGDPDB01 ile `EXEC SQL` denemesi (ölçüme dahil değil)
 - `tests/predictions/TEMPLATE.md`: tahmin şablonu ve kural türleri
 - `docs/system-overview.md`: GenApp'in katmanları
