@@ -27,7 +27,7 @@ Sorun: GenApp programları normal bir COBOL derleyicisinde derlenmiyor. GnuCOBOL
 - **`EXEC CICS` komutları**: COBOL değildir; CICS çeviricisi bunları derlemeden önce gerçek
   çağrılara çevirir. GnuCOBOL'da çevirici yoktur.
 - **`EXEC SQL` komutları**: Veri katmanındaki programlarda vardır ve Db2 ister. İlk deneme (LGAPOL01) SQL
-  içermiyordu; SQL ikinci denemede (LGDPDB01) ele alındı. GnuCOBOL'da Db2 ön derleyicisi de yoktur.
+  içermiyordu; SQL ikinci denemede (LGDPDB01) ele alındı. Kurulumumuzda Db2 ön derleyicisi de yoktur; cobc 3.2.0 `EXEC SQL` kabul etmiyor.
 
 Ayrıca bir iş katmanı programı tek başına yaşamaz: LGAPOL01 veri katmanındaki LGAPDB01'i ve hata
 kuyruğuna yazan LGSTSQ'yu çağırır.
