@@ -1,0 +1,137 @@
+# GenApp CI
+# 1. adım: test projeleri dahil bütün çözüm her PR'da derlenir.
+# 2. adım: yalnızca tests/active-operations.txt'te adı geçen operasyonların eşdeğerlik testleri çalışır
+#          (Aşama 4'te eklenecek).
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Derleme ve testler
+    runs-on: ubuntu-latest
+
+    services:
+      # Değerler docker-compose.yml ile aynı (kullanıcı ve parola, compose'daki varsayılanlar).
+      # genapp_dev yerel test parolasıdır, gerçek bir secret değil.
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: genapp
+          POSTGRES_USER: genapp
+          POSTGRES_PASSWORD: genapp_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U genapp -d genapp"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    # Bağlantı dizesi ortam değişkeni testler yazılınca eklenecek. Testlerin okuduğu bir anahtar henüz yok
+    # (appsettings ve test kodunda bulunamadı). Servis job'a localhost:5432 üzerinden açılır.
+
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      # global.json'da rollForward: latestFeature olduğu için setup-dotnet en güncel 10.0.x SDK'yı kurar.
+      - name: .NET SDK'yı kur (global.json)
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Kullanılan SDK sürümünü göster
+        run: dotnet --version
+
+      - name: Paketleri geri yükle
+        run: dotnet restore GenApp.slnx
+
+      - name: Çözümü derle (test projeleri dahil)
+        run: dotnet build GenApp.slnx --no-restore
+
+      # Yalnızca active-operations.txt'te adı geçen operasyonların eşdeğerlik testleri çalışır.
+      # Dosya boşsa test çalışmaz. Her ad için ayrı dotnet test çalışır: etiketli testi olmayan ya da testi
+      # başarısız olan bir ad varsa diğer adlar yine denenir ve adım sonunda başarısız biter.
+      - name: Aktif operasyonların eşdeğerlik testlerini çalıştır
+        shell: bash
+        env:
+          OPS_FILE: tests/active-operations.txt
+          # [a-z] yalnızca ASCII küçük harfleri kapsasın.
+          LC_ALL: C
+        run: |
+          set -euo pipefail
+
+          if [[ ! -f "$OPS_FILE" ]]; then
+            echo "::error::$OPS_FILE bulunamadı. Aktif operasyon yoksa dosya silinmemeli, boş bırakılmalı."
+            exit 1
+          fi
+
+          names=()
+          seen=" "
+          invalid=0
+          lineno=0
+          # || [[ -n "$line" ]]: dosya sonunda satır sonu olmasa da son satır okunur.
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            lineno=$((lineno + 1))
+            line="${line//$'\r'/}"
+            line="${line#$'\xef\xbb\xbf'}"  # UTF-8 BOM
+            line="${line#"${line%%[![:space:]]*}"}"
+            line="${line%"${line##*[![:space:]]}"}"
+            if [[ -z "$line" || "$line" == \#* ]]; then
+              continue
+            fi
+            if [[ "$line" =~ ^[a-z]+(-[a-z]+)*$ ]]; then
+              # Tekrarlanan ad atlanır, ilk görülme sırası korunur. Adlarda boşluk olamayacağı için güvenli.
+              if [[ "$seen" != *" $line "* ]]; then
+                names+=("$line")
+                seen+="$line "
+              fi
+            else
+              echo "::error file=$OPS_FILE,line=$lineno::Geçersiz operasyon adı: '$line' (yalnızca küçük harf ve tire)"
+              invalid=1
+            fi
+          done < "$OPS_FILE"
+
+          if (( invalid )); then
+            exit 1
+          fi
+
+          if (( ${#names[@]} == 0 )); then
+            echo "Aktif operasyon yok, eşdeğerlik testleri atlandı"
+            exit 0
+          fi
+
+          combined=""
+          for name in "${names[@]}"; do
+            combined+="${combined:+|}Operasyon=$name"
+          done
+          echo "Aktif operasyonlar (birleşik filtre, yalnızca bilgi): $combined"
+
+          failed=()
+          for name in "${names[@]}"; do
+            filter="Operasyon=$name"
+            echo "::group::$filter"
+            echo "Kullanılan filtre: $filter"
+            if ! dotnet test tests/GenApp.EquivalenceTests/GenApp.EquivalenceTests.csproj \
+                --no-build \
+                --filter "$filter" \
+                -- RunConfiguration.TreatNoTestsAsError=true; then
+              failed+=("$name")
+            fi
+            echo "::endgroup::"
+          done
+
+          if (( ${#failed[@]} > 0 )); then
+            echo "::error::Başarısız operasyonlar (${#failed[@]}/${#names[@]}): ${failed[*]}"
+            echo "Etiketli testi olmayan ya da testi başarısız olan operasyonlar yukarıdaki gruplarda."
+            exit 1
+          fi
+          echo "Tüm aktif operasyonların eşdeğerlik testleri geçti (${#names[@]} operasyon)."
