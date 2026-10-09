@@ -91,11 +91,6 @@ H02 denemesinde (`tests/gnucobol/runs/lgapol01-deneme.md`) şunlar gösterildi:
 
 Bunlar programın kendi kodunun davranışıdır; varsayımımıza bağlı değildir.
 
-SQL içeren programlarda sonuç, senaryoda verdiğimiz SQLCODE'a koşulludur. LGDPDB01, SQLCODE 0'da `00`,
-100 ve -911'de `90`, geçersiz istek kodunda `99`, kısa COMMAREA'da `98` döndürdü. Bu, "Db2 bu değeri
-döndürürse" koşuluyla geçerlidir. Ayrıca deneme koddaki bir çelişkiyi gösterdi: yorum SQLCODE 100'ü
-başarılı sayıyor, ama kod `IF SQLCODE NOT EQUAL 0` ile 100'de de `90` döndürüyor.
-
 ### Neyi ölçemiyoruz
 
 - **Db2, VSAM ve kuyrukların gerçek davranışı.** Stub bizim varsayımımızdır. Gerçek Db2'nin hata
