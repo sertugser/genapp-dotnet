@@ -6,6 +6,8 @@ katmanları ve tek tek ne yaptıkları için [program-inventory.md](program-inve
 bakılabilir.
 
 `base/src` altındaki 31 programın hepsinde `EXEC CICS LINK` satırları aranarak çıkarıldı.
+Müşteri, poliçe ve hata günlüğü ayrı diyagramlarda; en sonda üçünün birleşimi (bütün
+sistem tek bakışta) var.
 Bir operasyonun baştan sona, adım adım ve hangi verinin taşındığıyla birlikte gösterimi
 için: [docs/diagrams/sequence-customer-inquire.md](../docs/diagrams/sequence-customer-inquire.md).
 
@@ -304,3 +306,123 @@ program = **31**.
 - **Bütün katmanlar tek bir veri alanını paylaşıyor.** Her `LINK` çağrısında aynı
   `COMMAREA` (`LGCMAREA` kopya kitabı, 32.500 bayt) aktarılıyor; ayrı giriş/çıkış
   parametresi yok, her program aynı alanın üzerine yazıyor.
+
+## Genel görünüm: üç diyagramın birleşimi
+
+Yukarıdaki üç diyagramın (müşteri, poliçe, hata günlüğü) tek bir resimde birleşimi —
+bütün sistemin çağrı grafiği tek bakışta. Burada katmanlar **sütunlar** (soldan sağa
+1 · Sunum → 4 · Veri deposu), operasyonlar **satırlardır** (üstten alta müşteri sorgula,
+ekle, güncelle, poliçe sorgula, ekle, sil, güncelle). Her satırı soldan sağa izlemek bir
+operasyonun ekrandan veritabanına giden zincirini verir. Üstteki mor şerit, bütün
+zincirlerde ortak olan hata günlüğü yoludur. Renkler ve ok türleri yukarıdakilerle aynı;
+menü numaraları gibi ayrıntılar 1-3 numaralı bölümlerde.
+
+```mermaid
+%%{init: {"theme": "base", "look": "classic", "themeVariables": {"background": "#ffffff", "primaryColor": "#ffffff", "primaryTextColor": "#1f2328", "primaryBorderColor": "#8c959f", "lineColor": "#57606a", "textColor": "#1f2328", "titleColor": "#1f2328", "clusterBkg": "#ffffff", "clusterBorder": "#d0d7de", "edgeLabelBackground": "#ffffff", "fontSize": "15px"}, "flowchart": {"nodeSpacing": 12, "rankSpacing": 15, "padding": 10}}}%%
+flowchart LR
+    subgraph ZEMIN["GENAPP — TÜM ÇAĞRI GRAFİĞİ"]
+        direction LR
+        K1["1 · SUNUM"]
+        K2["2 · İŞ"]
+        K3["3 · VERİ ERİŞİMİ"]
+        K4["4 · VERİ DEPOSU"]
+        K1 ~~~ K2 ~~~ K3 ~~~~ K4
+
+        C1["LGTESTC1<br/>Müşteri menüsü"]
+        PM["LGTESTP1-4<br/>4 poliçe menüsü"]
+
+        ICUS["LGICUS01<br/>Müşteri sorgula"]
+        ACUS["LGACUS01<br/>Müşteri ekle"]
+        UCUS["LGUCUS01<br/>Müşteri güncelle"]
+        IPOL["LGIPOL01<br/>Poliçe sorgula"]
+        APOL["LGAPOL01<br/>Poliçe ekle"]
+        DPOL["LGDPOL01<br/>Poliçe sil"]
+        UPOL["LGUPOL01<br/>Poliçe güncelle<br/>Commercial hariç"]
+
+        ICDB["LGICDB01<br/>SELECT"]
+        ACDB["LGACDB01<br/>INSERT"]
+        UCDB["LGUCDB01<br/>UPDATE"]
+        IPDB["LGIPDB01<br/>SELECT"]
+        APDB["LGAPDB01<br/>INSERT"]
+        DPDB["LGDPDB01<br/>DELETE"]
+        UPDB["LGUPDB01<br/>UPDATE"]
+        ACDB2["LGACDB02<br/>INSERT şifre"]
+        ACVS["LGACVS01<br/>WRITE"]
+        UCVS["LGUCVS01<br/>REWRITE"]
+        APVS["LGAPVS01<br/>WRITE"]
+        DPVS["LGDPVS01<br/>DELETE"]
+        UPVS["LGUPVS01<br/>REWRITE"]
+
+        T_CUST[("Db2<br/>CUSTOMER")]
+        T_SEC[("Db2<br/>CUSTOMER_SECURE")]
+        F_CUST[("VSAM<br/>KSDSCUST")]
+        T_POL[("Db2<br/>POLICY +<br/>tip tabloları")]
+        F_POL[("VSAM<br/>KSDSPOLY")]
+
+        subgraph HATA["Hata günlüğü — bütün zincirlerde ortak"]
+            direction LR
+            EH["hata olursa:<br/>7 iş + 13 veri<br/>erişim programı"]
+            ST["LGSTSQ<br/>hata günlüğü"]
+            EQ>"CSMT ve<br/>GENAERRS<br/>kuyrukları"]
+        end
+
+        C1 --> ICUS
+        C1 --> ACUS
+        C1 --> UCUS
+        PM --> IPOL
+        PM --> APOL
+        PM --> DPOL
+        PM --> UPOL
+
+        ICUS --> ICDB
+        ACUS --> ACDB
+        UCUS --> UCDB
+        IPOL --> IPDB
+        APOL --> APDB
+        DPOL --> DPDB
+        UPOL --> UPDB
+
+        ACDB --> ACDB2
+        ACDB --> ACVS
+        UCDB --> UCVS
+        APDB --> APVS
+        DPDB --> DPVS
+        UPDB --> UPVS
+
+        ICDB -..-> T_CUST
+        ACDB -..-> T_CUST
+        UCDB -..-> T_CUST
+        ACDB2 -.-> T_SEC
+        ACVS -.-> F_CUST
+        UCVS -.-> F_CUST
+        IPDB -..-> T_POL
+        APDB -..-> T_POL
+        DPDB -..-> T_POL
+        UPDB -..-> T_POL
+        APVS -.-> F_POL
+        DPVS -.-> F_POL
+        UPVS -.-> F_POL
+
+        PM ~~~ EH
+        EH -->|LINK| ST
+        ST -..-> EQ
+    end
+
+    classDef katman fill:none,stroke:none,color:#57606a,font-weight:bold
+    classDef sunumK fill:#dbeafe,stroke:#2563eb,color:#1e3a8a,stroke-width:2px
+    classDef isK fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
+    classDef veriK fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
+    classDef depoK fill:#f3f4f6,stroke:#4b5563,color:#111827,stroke-width:2px
+    classDef destekK fill:#ede9fe,stroke:#7c3aed,color:#3b0764,stroke-width:2px
+    classDef grupK fill:#ffffff,stroke:#8c959f,color:#1f2328,stroke-width:1px,stroke-dasharray:4 3
+    class K1,K2,K3,K4 katman
+    class C1,PM sunumK
+    class ICUS,ACUS,UCUS,IPOL,APOL,DPOL,UPOL isK
+    class ICDB,ACDB,UCDB,IPDB,APDB,DPDB,UPDB,ACDB2,ACVS,UCVS,APVS,DPVS,UPVS veriK
+    class T_CUST,T_SEC,F_CUST,T_POL,F_POL,EQ depoK
+    class ST destekK
+    class EH grupK
+
+    style ZEMIN fill:#ffffff,stroke:#d0d7de,color:#1f2328
+    style HATA fill:#faf5ff,stroke:#ddd6fe,color:#3b0764
+```
