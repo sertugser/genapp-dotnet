@@ -1,78 +1,106 @@
 # Sıralama Diyagramı: Müşteri Sorgula
 
-"Müşteri Sorgula" operasyonunun, kullanıcının 3270 ekranında müşteri numarasını
-girmesinden sonuçların ekrana dönmesine kadar olan tam akışı. Kaynak:
-`base/src/lgtestc1.cbl` (ekran, seçenek `'1'`), `lgicus01.cbl` (iş), `lgicdb01.cbl`
-(veri erişimi, `SELECT ... FROM CUSTOMER`).
+"Müşteri Sorgula" operasyonunun baştan sona akışı: kullanıcı 3270 ekranında müşteri
+numarasını girip Enter'a bastığı andan, sonuç ekrana gelene kadar hangi programın
+hangisini hangi sırayla çağırdığı ve hangi bilginin geri döndüğü.
 
-Veri taşıyıcısı tüm katmanlarda **aynı COMMAREA** (`DFHCOMMAREA`/`COMM-AREA`,
-`LGCMAREA` kopya kitabı) — her LINK çağrısında aynı alan aktarılıp üzerine yazılıyor,
-ayrı giriş/çıkış parametreleri yok.
+Kaynak kod: `base/src/lgtestc1.cbl` (ekran, menü seçeneği 1), `lgicus01.cbl` (iş),
+`lgicdb01.cbl` (veri erişimi), `lgstsq.cbl` (hata günlüğü). Tüm programların genel
+çağrı grafiği için: [legacy-analysis/call-graph.md](../../legacy-analysis/call-graph.md).
 
-## Normal akış (müşteri bulundu)
+## Diyagram nasıl okunur
 
-```mermaid
-sequenceDiagram
-    actor Kullanıcı
-    participant LGTESTC1 as LGTESTC1<br/>(Sunum)
-    participant LGICUS01 as LGICUS01<br/>(İş)
-    participant LGICDB01 as LGICDB01<br/>(Veri Erişimi)
-    participant Db2 as Db2<br/>CUSTOMER tablosu
+- **Sütunlar** akışa katılanlardır, soldan sağa: Kullanıcı → ekran (`LGTESTC1`) → iş
+  (`LGICUS01`) → veri erişimi (`LGICDB01`) → Db2 `CUSTOMER` tablosu → hata günlüğü
+  (`LGSTSQ`, yalnızca hata durumunda devreye girer).
+- **Düz ok** bir çağrıdır (`LINK` ya da SQL), **kesikli ok** cevabın geri dönüşüdür.
+- **Siyah daire içindeki numaralar** adımların sırasıdır; aşağıdaki tabloda her biri
+  açıklanıyor.
+- **Dikey gri çubuk**, o programın o anda çalıştığını (kontrolün onda olduğunu) gösterir.
+- **`alt` çerçevesi** birbirini dışlayan durumlardır: her seferinde yalnızca bir dalı
+  çalışır.
+- **Sarı notlar**, o adımda programın içinde olan işi gösterir.
 
-    Kullanıcı->>LGTESTC1: Müşteri numarası girer, Enter (seçenek '1')
-    LGTESTC1->>LGTESTC1: CA-REQUEST-ID = '01ICUS'<br/>CA-CUSTOMER-NUM = girilen numara
-    LGTESTC1->>LGICUS01: EXEC CICS LINK<br/>COMMAREA(COMM-AREA)
-
-    LGICUS01->>LGICUS01: Commarea uzunluğunu kontrol eder
-    LGICUS01->>LGICDB01: EXEC CICS LINK<br/>COMMAREA(DFHCOMMAREA) - aynı alanı aktarır
-
-    LGICDB01->>Db2: SELECT FIRSTNAME, LASTNAME, DATEOFBIRTH,<br/>HOUSENAME, HOUSENUMBER, POSTCODE,<br/>PHONEMOBILE, PHONEHOME, EMAILADDRESS<br/>FROM CUSTOMER<br/>WHERE CUSTOMERNUMBER = :DB2-CUSTOMERNUMBER-INT
-    Db2-->>LGICDB01: SQLCODE = 0, satır verisi
-
-    LGICDB01->>LGICDB01: CA-FIRST-NAME, CA-LAST-NAME, ... host<br/>değişkenlerinden COMMAREA'ya yazılır<br/>CA-RETURN-CODE = '00'
-    LGICDB01-->>LGICUS01: RETURN (COMMAREA güncellenmiş halde)
-    LGICUS01-->>LGTESTC1: RETURN (COMMAREA değişmeden geçer)
-
-    LGTESTC1->>LGTESTC1: CA-RETURN-CODE = '00' → CA-FIRST-NAME,<br/>CA-LAST-NAME, CA-DOB, ... ekran alanlarına taşınır
-    LGTESTC1-->>Kullanıcı: Müşteri bilgileri ekranda gösterilir
-```
-
-## Alternatif akışlar
-
-**Müşteri bulunamadı** (`SQLCODE = 100` veya `-913`):
+## Diyagram
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "fontSize": "15px", "primaryTextColor": "#1f2328", "textColor": "#1f2328", "actorBkg": "#ffffff", "actorBorder": "#57606a", "actorTextColor": "#1f2328", "actorLineColor": "#8c959f", "signalColor": "#1f2328", "signalTextColor": "#1f2328", "labelBoxBkgColor": "#f6f8fa", "labelBoxBorderColor": "#8c959f", "labelTextColor": "#1f2328", "loopTextColor": "#1f2328", "noteBkgColor": "#fff8c5", "noteBorderColor": "#d4a72c", "noteTextColor": "#1f2328", "activationBkgColor": "#e6e8eb", "activationBorderColor": "#57606a", "sequenceNumberColor": "#ffffff"}, "sequence": {"actorMargin": 22, "width": 110, "noteMargin": 8, "messageMargin": 32, "boxMargin": 8}}}%%
 sequenceDiagram
-    participant LGICDB01 as LGICDB01
-    participant Db2 as Db2
+    autonumber
+    box rgb(255,255,255) MÜŞTERİ SORGULA — baştan sona akış
+        actor K as Kullanıcı
+        participant C1 as LGTESTC1<br/>sunum
+        participant IC as LGICUS01<br/>iş
+        participant DB as LGICDB01<br/>veri erişimi
+        participant D2 as Db2<br/>CUSTOMER
+        participant ST as LGSTSQ<br/>hata günlüğü
+    end
 
-    LGICDB01->>Db2: SELECT ... WHERE CUSTOMERNUMBER = :DB2-CUSTOMERNUMBER-INT
-    Db2-->>LGICDB01: SQLCODE = 100 (satır yok)
-    LGICDB01->>LGICDB01: CA-RETURN-CODE = '01'
-    Note over LGICDB01: LGICUS01 ve LGTESTC1'e aynen geri döner;<br/>LGTESTC1, CA-RETURN-CODE > 0 görünce<br/>NO-DATA etiketine atlar, hata mesajı gösterir
+    K->>+C1: müşteri no<br/>+ menü 1, Enter
+    Note over C1: RECEIVE MAP<br/>CA-REQUEST-ID = 01ICUS<br/>CA-CUSTOMER-NUM = no
+    C1->>+IC: LINK<br/>(COMMAREA)
+    Note over IC: uzunluk kontrolü
+    IC->>+DB: LINK<br/>(COMMAREA)
+    DB->>D2: SELECT 9 sütun<br/>WHERE müşteri no
+    D2-->>DB: SQLCODE + satır
+    alt bulundu (SQLCODE 0)
+        Note over DB: 9 alan COMMAREA'ya<br/>CA-RETURN-CODE = 00
+    else bulunamadı (100 / -913)
+        Note over DB: CA-RETURN-CODE = 01
+    else hata (diğer SQLCODE)
+        Note over DB: CA-RETURN-CODE = 90
+        DB->>+ST: LINK<br/>(hata mesajı)
+        ST-->>-DB: RETURN
+        DB->>+ST: LINK<br/>(COMMAREA ilk 90 bayt)
+        ST-->>-DB: RETURN
+    end
+    DB-->>-IC: RETURN<br/>(COMMAREA)
+    IC-->>-C1: RETURN<br/>(COMMAREA)
+    alt kod 00
+        C1-->>K: SEND MAP<br/>müşteri bilgileri
+    else kod 01 / 90
+        C1-->>K: SEND MAP<br/>hata mesajı
+    end
+    deactivate C1
 ```
 
-**Beklenmeyen Db2 hatası** (diğer her SQLCODE):
+## Adım adım
 
-```mermaid
-sequenceDiagram
-    participant LGICDB01 as LGICDB01
-    participant Db2 as Db2
-    participant LGSTSQ as LGSTSQ<br/>(Destek)
+| Adım | Kimden → kime | Ne oluyor, hangi bilgi taşınıyor |
+|---:|---|---|
+| 1 | Kullanıcı → `LGTESTC1` | Kullanıcı `SSMAPC1` ekranında müşteri numarasını yazar, menüde 1'i seçip Enter'a basar. `LGTESTC1` ekranı `RECEIVE MAP` ile okur; `COMMAREA`'ya `CA-REQUEST-ID = '01ICUS'` ve `CA-CUSTOMER-NUM = girilen numara` yazar. |
+| 2 | `LGTESTC1` → `LGICUS01` | `EXEC CICS LINK` ile iş programını çağırır; `COMMAREA`'nın tamamı (32.500 bayt) aktarılır. |
+| 3 | `LGICUS01` → `LGICDB01` | `COMMAREA` yeterince uzun mu diye bakar (kısaysa `'98'` ile hemen döner), sonra aynı `COMMAREA` ile veri erişim programını çağırır. İş programının bu operasyonda başka bir kuralı yok; doğrudan aktarıcı görevi görüyor. |
+| 4 | `LGICDB01` → Db2 | Müşteri numarasını Db2 tamsayısına çevirir ve şu sorguyu çalıştırır: `SELECT FIRSTNAME, LASTNAME, DATEOFBIRTH, HOUSENAME, HOUSENUMBER, POSTCODE, PHONEMOBILE, PHONEHOME, EMAILADDRESS FROM CUSTOMER WHERE CUSTOMERNUMBER = :DB2-CUSTOMERNUMBER-INT` |
+| 5 | Db2 → `LGICDB01` | Sonuç kodu (`SQLCODE`) ve bulunduysa satır döner. 9 sütun doğrudan `COMMAREA` alanlarına (`CA-FIRST-NAME` … `CA-EMAIL-ADDRESS`) yazılır. `SQLCODE`'a göre `CA-RETURN-CODE` belirlenir: `0` → `'00'`, `100` veya `-913` → `'01'`, diğer her değer → `'90'`. |
+| 6 | `LGICDB01` → `LGSTSQ` | **Yalnızca hata dalında (`'90'`).** Tarih, saat, müşteri numarası ve `SQLCODE`'u içeren hata mesajı `LINK` ile gönderilir. |
+| 7 | `LGSTSQ` → `LGICDB01` | Mesajı `CSMT` (TD) ve `GENAERRS` (TS) kuyruklarına yazıp döner. |
+| 8 | `LGICDB01` → `LGSTSQ` | **Yalnızca hata dalında.** İkinci çağrı: `COMMAREA`'nın ilk 90 baytı (hangi isteğin hata verdiğini görmek için) gönderilir. |
+| 9 | `LGSTSQ` → `LGICDB01` | Bunu da aynı iki kuyruğa yazıp döner. |
+| 10 | `LGICDB01` → `LGICUS01` | `RETURN`. `COMMAREA` artık sonuç kodunu ve (bulunduysa) müşterinin 9 alanını taşır. |
+| 11 | `LGICUS01` → `LGTESTC1` | `RETURN`. `COMMAREA` hiç değiştirilmeden ekrana geri gelir. |
+| 12 | `LGTESTC1` → Kullanıcı | **Kod `'00'` ise:** 9 alanı ekran alanlarına taşır ve `SEND MAP` ile müşteri bilgilerini gösterir. |
+| 13 | `LGTESTC1` → Kullanıcı | **Kod `'00'` değilse:** ekranın mesaj satırına `No data was returned.` yazar ve `SEND MAP` ile gösterir. |
 
-    LGICDB01->>Db2: SELECT ...
-    Db2-->>LGICDB01: SQLCODE = beklenmeyen bir değer
-    LGICDB01->>LGICDB01: CA-RETURN-CODE = '90'
-    LGICDB01->>LGSTSQ: EXEC CICS LINK<br/>(hata mesajı + SQLCODE, GENAERRS TSQ'suna yazılsın diye)
-    LGSTSQ-->>LGICDB01: RETURN
-    Note over LGICDB01: EXEC CICS RETURN - çağıran zincire '90' ile döner
-```
+## `CA-RETURN-CODE` değerleri
 
-## Dönen değerin anlamı (`CA-RETURN-CODE`)
+| Değer | Nerede atanıyor | Anlamı |
+|---|---|---|
+| `'00'` | `LGICDB01` | Müşteri bulundu, bilgileri `COMMAREA`'da. |
+| `'01'` | `LGICDB01` | Müşteri bulunamadı (`SQLCODE 100`). Kod, `SQLCODE -913`'ü (Db2 kilitlenme/zaman aşımı) da aynı şekilde "bulunamadı" sayıyor — .NET'e taşırken bu davranışın korunup korunmayacağına karar verilmeli. |
+| `'90'` | `LGICDB01` | Beklenmeyen bir Db2 hatası; `LGSTSQ` ile günlüğe yazılır. |
+| `'98'` | `LGICUS01` veya `LGICDB01` | Gelen `COMMAREA` gereken minimum uzunluktan kısa. `LGTESTC1` her zaman 32.500 bayt gönderdiği için bu ekrandan pratikte oluşmaz. |
 
-| Değer | Anlamı |
-|---|---|
-| `'00'` | Başarılı, müşteri bulundu, bilgiler COMMAREA'da |
-| `'01'` | Müşteri numarası bulunamadı |
-| `'90'` | Beklenmeyen Db2 hatası (`LGSTSQ` ile loglanır) |
-| `'98'` | Gelen COMMAREA, gereken minimum uzunluktan küçük |
+## Notlar
+
+- **Tek veri taşıyıcısı `COMMAREA`.** Üç program arasında ayrı giriş/çıkış parametresi
+  yok; aynı alan (`LGCMAREA` kopya kitabı) her `LINK`'te aktarılıyor ve sonuçlar onun
+  üzerine yazılıyor.
+- **Ekran programı her etkileşimden sonra sonlanıyor.** `LGTESTC1` işi bitince
+  `EXEC CICS RETURN TRANSID('SSC1') COMMAREA(...)` ile kapanıyor; kullanıcı ekranda
+  tekrar Enter'a bastığında CICS programı baştan başlatıyor (pseudo-conversational
+  çalışma). Bu, her isteğin bağımsız işlendiği bir web isteğine benziyor.
+- **Hata günlüğünde etiket karışıklığı.** `LGICDB01`'in hata mesajı yapısında program adı
+  alanı `' LGICUS01'` olarak sabit yazılmış (`lgicdb01.cbl`, `ERROR-MSG` tanımı). Yani
+  `GENAERRS`/`CSMT` kuyruklarında `LGICUS01` etiketiyle görünen bir Db2 hatası aslında
+  `LGICDB01`'den geliyor — günlükleri okurken dikkat edilmeli.
