@@ -214,3 +214,41 @@ Nothing fails because of the COBOL itself. All 12 errors come from the CICS envi
 `EXEC CICS` commands (to be rewritten by a translator) and EIB fields (to be provided by CICS). Running GenApp in
 GnuCOBOL therefore needs a replacement for these two things, plus a replacement for `EXEC SQL` in the programs that
 touch Db2. The method above is that replacement.
+
+## Measured runs (comparing with `tests/predictions/`)
+
+A measured run follows everything above, plus the rules below. They come from the LGICUS01 run
+(`runs/lgicus01.md`).
+
+### Before the run
+
+1. The prediction file for the program must be on `main` (`git log origin/main -- tests/predictions/<file>`), and must not change after the run.
+2. `git diff <prediction source commit> origin/main -- base/` must be empty, or the line numbers in the prediction are wrong.
+3. Write the rules for "tuttu / tutmadı / belirsiz / ölçülemedi" **before** running (see `runs/lgicus01.md`).
+4. Read the preconditions of the prediction file (for 02: B1-B4) and build the driver to them. They override step 7 above.
+
+### What changes compared with a trial run
+
+- **One 32500-byte buffer (prediction precondition B1).** The driver always passes the same full buffer. `EIBCALEN` is only the length it
+  reports; bytes after `EIBCALEN` are spaces. Do not pass a separate short area: the writes outside the reported length must land in the
+  caller's buffer, because the prediction describes them.
+- **`LINK ... LENGTH(n)` also changes `EIBCALEN`.** The EIB fields are shared by all programs here (`EXTERNAL`), but under CICS the called
+  program gets its own `EIBCALEN = n`. So `EXEC CICS LINK PROGRAM(X) COMMAREA(A) LENGTH(n)` becomes
+  `MOVE EIBCALEN TO WS-SAVE-EIBCALEN`, `MOVE n TO EIBCALEN`, `CALL X USING A`, `MOVE WS-SAVE-EIBCALEN TO EIBCALEN`.
+  Without it the called program sees the caller's length (the LGAPOL01 and LGDPDB01 trials did not notice, because their stubs never read `EIBCALEN`).
+- **`SELECT ... INTO`:** replace the statement with a `DISPLAY` of the input host variable and
+  `CALL 'DB2CUST' USING SQLCA <input host variable> <every INTO variable, in INTO order>`. `stubs/db2cust.cbl` shows the pattern: it
+  either answers with a forced `SQLCODE` (external field `DB2FORCE-SQLCODE`, set by the driver) or looks the key up in a table written in the
+  stub. The mapping from the SELECT list to the INTO list is done by hand in the stub, so check it against the SQL text.
+- **Source of the table values:** the same file the prediction names (here `base/cntl/db2cre.jcl`). Only load the rows a test needs.
+- **A pass is not a Db2 result.** Rows that compare table data check that the COBOL moves and pads the values correctly. They do not check Db2.
+
+### Scripted conversion
+
+For a large program, change the copy with a script, not by hand, and check with `diff` and
+`grep -c "^ *EXEC "` (must print `0`). Watch columns 8-72: a replaced line that is indented too much goes past column 72 and is cut off.
+
+### Compare with a script
+
+`runs/lgicus01-karsilastir.sh` builds every expected value from the prediction file and compares it with `runs/lgicus01-cikti.txt` byte by byte
+(`[ ]` brackets in the output show trailing spaces). Keep the raw output in `runs/` next to the record.
