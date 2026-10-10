@@ -1,0 +1,378 @@
+=================== C0201
+DRIVER case=C0201    program=LGICUS01 EIBCALEN= 32500 forced SQLCODE=         0
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[777]
+STUB EXEC SQL SELECT FROM CUSTOMER CUSTOMERNUMBER=+000000001
+STUB DB2CUST answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0202
+DRIVER case=C0202    program=LGICUS01 EIBCALEN= 32500 forced SQLCODE=         0
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[777]
+STUB EXEC SQL SELECT FROM CUSTOMER CUSTOMERNUMBER=+000000000
+STUB DB2CUST answers SQLCODE=       100
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[01]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000000]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0203
+DRIVER case=C0203    program=LGICUS01 EIBCALEN= 32500 forced SQLCODE=      -913
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[777]
+STUB EXEC SQL SELECT FROM CUSTOMER CUSTOMERNUMBER=+000000001
+STUB DB2CUST answers SQLCODE=      -913
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[01]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0204
+DRIVER case=C0204    program=LGICUS01 EIBCALEN= 32500 forced SQLCODE=      -204
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[777]
+STUB EXEC SQL SELECT FROM CUSTOMER CUSTOMERNUMBER=+000000001
+STUB DB2CUST answers SQLCODE=      -204
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000071 message=[                LGICUS01 CNUM=0000000001                 SQLCODE=-00204]
+STUB LGSTSQ length=0000000099 message=[COMMAREA=01ICUS900000000001                                                                        ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[90]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0205
+DRIVER case=C0205    program=LGICUS01 EIBCALEN=     0 forced SQLCODE=         0
+BEFORE bytes 7-8      =[  ]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000045 message=[                LGICUS01 NO COMMAREA RECEIVED]
+STUB EXEC CICS ABEND ABCODE(LGCA)
+AFTER  bytes 1-6   REQUEST-ID  =[      ]
+AFTER  bytes 7-8   RETURN-CODE =[  ]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0206A
+DRIVER case=C0206A   program=LGICUS01 EIBCALEN=    89 forced SQLCODE=         0
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0206B
+DRIVER case=C0206B   program=LGICUS01 EIBCALEN=     8 forced SQLCODE=         0
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0207A
+DRIVER case=C0207A   program=LGICUS01 EIBCALEN=     7 forced SQLCODE=         0
+BEFORE bytes 7-8      =[9 ]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0207B
+DRIVER case=C0207B   program=LGICUS01 EIBCALEN=     1 forced SQLCODE=         0
+BEFORE bytes 7-8      =[  ]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[0     ]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0208
+DRIVER case=C0208    program=LGICUS01 EIBCALEN=    90 forced SQLCODE=         0
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC SQL SELECT FROM CUSTOMER CUSTOMERNUMBER=+000000001
+STUB DB2CUST answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0212
+DRIVER case=C0212    program=LGICUS01 EIBCALEN= 32500 forced SQLCODE=         0
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[777]
+STUB EXEC SQL SELECT FROM CUSTOMER CUSTOMERNUMBER=+000000001
+STUB DB2CUST answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01AEND]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0213
+DRIVER case=C0213    program=LGICUS01 EIBCALEN= 32500 forced SQLCODE=         0
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[777]
+STUB EXEC SQL SELECT FROM CUSTOMER CUSTOMERNUMBER=+000000001
+STUB DB2CUST answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[1000000001]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== C0214
+DRIVER case=C0214    program=LGICUS01 EIBCALEN= 32500 forced SQLCODE=         0
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[777]
+STUB EXEC SQL SELECT FROM CUSTOMER CUSTOMERNUMBER=+000000000
+STUB DB2CUST answers SQLCODE=       100
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[01]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== D0209
+DRIVER case=D0209    program=LGICDB01 EIBCALEN=     0 forced SQLCODE=         0
+BEFORE bytes 7-8      =[  ]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000071 message=[                LGICUS01 NO COMMAREA RECEIVED                    +00000]
+STUB EXEC CICS ABEND ABCODE(LGCA)
+AFTER  bytes 1-6   REQUEST-ID  =[      ]
+AFTER  bytes 7-8   RETURN-CODE =[  ]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== D0210A
+DRIVER case=D0210A   program=LGICDB01 EIBCALEN=    89 forced SQLCODE=         0
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== D0210B
+DRIVER case=D0210B   program=LGICDB01 EIBCALEN=     8 forced SQLCODE=         0
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== D0211
+DRIVER case=D0211    program=LGICDB01 EIBCALEN=   233 forced SQLCODE=         0
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[777]
+STUB EXEC SQL SELECT FROM CUSTOMER CUSTOMERNUMBER=+000000001
+STUB DB2CUST answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[777]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
+=================== D0217
+DRIVER case=D0217    program=LGICDB01 EIBCALEN=    90 forced SQLCODE=      -204
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC SQL SELECT FROM CUSTOMER CUSTOMERNUMBER=+000000001
+STUB DB2CUST answers SQLCODE=      -204
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000071 message=[                LGICUS01 CNUM=0000000001                 SQLCODE=-00204]
+STUB LGSTSQ length=0000000099 message=[COMMAREA=01ICUS900000000001                                                                        ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ICUS]
+AFTER  bytes 7-8   RETURN-CODE =[90]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+[exit=0]
