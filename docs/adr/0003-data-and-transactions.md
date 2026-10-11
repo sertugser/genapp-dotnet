@@ -3,7 +3,7 @@
 - **Durum:** Önerildi
 - **Tarih:** 2026-10-11
 - **Yazan:** Hasan
-- **İlgili:** [Database şeması](../database-schema.md) (#15), [ADR 0002](0002-rest-api.md) (REST API ve return code mapping), [API tasarımı](../api-design.md), [SRS](../srs.md) (NFR-04, NFR-05), #75
+- **İlgili:** [Database şeması](../database-schema.md) (#15, PR #92), [ADR 0002](0002-rest-api.md) (REST API ve return code mapping), [API tasarımı](../api-design.md), [SRS](../srs.md) (NFR-04, NFR-05), #75
 
 ## Bağlam
 
@@ -51,7 +51,17 @@ yenilenir (`:322`). Customer table'ında böyle bir column yoktur.
   - Birden fazla table'a yazan her işlem tek bir database transaction'ı olmalı (NFR-04).
   - Eşzamanlı update'te son yazan öncekinin değişikliğini ezmemeli (NFR-05).
 
-Bu ADR, şema belgesinin "ADR 0003'e bırakılanlar" bölümündeki soruları kesinleştirir.
+Bu ADR, şema belgesinin "ADR 0003'e bırakılanlar" bölümündeki soruları kesinleştirir:
+
+| Şema belgesindeki soru | Cevap |
+|---|---|
+| Db2 + VSAM two-phase commit'in yerini tek PostgreSQL transaction'ı alacak mı? | Evet, Karar 2 |
+| VSAM write'ı başarısız olunca dönen code'lar nasıl korunacak? | Oluşmazlar, Karar 2 (error mapping) |
+| `KSDSCUST` record size tutarsızlığı (225 / 82 byte) | Yeni sistemi etkilemez, Karar 1 |
+
+Şema belgesindeki tip eşlemesi de Karar 3'ün dayanağıdır: `last_changed`'in `timestamp
+without time zone` olması, timestamp'in mikrosaniyeye kırpılmasını ve `Kind` kuralını
+gerektirir.
 
 ## Karar
 
