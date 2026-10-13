@@ -21,7 +21,7 @@ public class CommercialPolicyConfiguration : IEntityTypeConfiguration<Commercial
         b.Property(c => c.PropertyType).HasMaxLength(255);
         b.Property(c => c.RejectionReason).HasMaxLength(255);
 
-        b.HasOne<Policy>()
+        b.HasOne(c => c.Policy)
             .WithOne()
             .HasForeignKey<CommercialPolicy>(c => c.PolicyNumber)
             .OnDelete(DeleteBehavior.Cascade);

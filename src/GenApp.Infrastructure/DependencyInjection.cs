@@ -1,3 +1,5 @@
+using GenApp.Application.Persistence;
+using GenApp.Application.Policies;
 using GenApp.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +13,10 @@ public static class DependencyInjection
         services.AddDbContext<GenAppDbContext>(options => options
             .UseNpgsql(connectionString)
             .UseSnakeCaseNamingConvention());
+
+        services.AddSingleton(TimeProvider.System);
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IPolicyRepository, PolicyRepository>();
 
         return services;
     }

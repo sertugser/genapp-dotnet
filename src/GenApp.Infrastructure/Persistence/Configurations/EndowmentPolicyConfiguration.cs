@@ -19,7 +19,7 @@ public class EndowmentPolicyConfiguration : IEntityTypeConfiguration<EndowmentPo
         b.Property(e => e.LifeAssured).HasMaxLength(31);
         b.Property(e => e.PaddingData).HasMaxLength(32606);
 
-        b.HasOne<Policy>()
+        b.HasOne(e => e.Policy)
             .WithOne()
             .HasForeignKey<EndowmentPolicy>(e => e.PolicyNumber)
             .OnDelete(DeleteBehavior.Cascade);
