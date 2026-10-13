@@ -35,8 +35,10 @@ jobs:
           --health-timeout 3s
           --health-retries 10
 
-    # Bağlantı dizesi ortam değişkeni testler yazılınca eklenecek. Testlerin okuduğu bir anahtar henüz yok
-    # (appsettings ve test kodunda bulunamadı). Servis job'a localhost:5432 üzerinden açılır.
+    # Eşdeğerlik testleri ve migration bu bağlantı dizesini kullanır (GenAppApiFactory). Servis job'a
+    # localhost:5432 üzerinden açılır.
+    env:
+      ConnectionStrings__GenApp: Host=localhost;Port=5432;Database=genapp;Username=genapp;Password=genapp_dev
 
     steps:
       - name: Kodu al
@@ -56,6 +58,12 @@ jobs:
 
       - name: Çözümü derle (test projeleri dahil)
         run: dotnet build GenApp.slnx --no-restore
+
+      # Eşdeğerlik testleri şeması kurulmuş bir veritabanı ister (docs/database-schema.md).
+      - name: Veritabanı şemasını kur (migration)
+        run: |
+          dotnet tool restore
+          dotnet ef database update --no-build --project src/GenApp.Infrastructure --startup-project src/GenApp.Api
 
       # Yalnızca active-operations.txt'te adı geçen operasyonların eşdeğerlik testleri çalışır.
       # Dosya boşsa test çalışmaz. Her ad için ayrı dotnet test çalışır: etiketli testi olmayan ya da testi
