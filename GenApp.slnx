@@ -8,5 +8,6 @@
   <Folder Name="/tests/">
     <Project Path="tests/GenApp.EquivalenceTests/GenApp.EquivalenceTests.csproj" />
     <Project Path="tests/GenApp.IntegrationTests/GenApp.IntegrationTests.csproj" />
+    <Project Path="tests/GenApp.UnitTests/GenApp.UnitTests.csproj" />
   </Folder>
 </Solution>
