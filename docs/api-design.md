@@ -16,6 +16,7 @@ ve eşdeğerlik testleriyle doğrulanır.
 | Numaralar | Müşteri ve poliçe numaraları tam sayıdır (`1000001`); başta sıfır yazılmaz. |
 | Tarihler | `yyyy-MM-dd` biçimindedir (`2026-10-15`). |
 | Metinler | Cevaplardaki metinlerin sonundaki boşluklar kırpılır (`"Andrew"`, `"Andrew    "` değil). |
+| Posta kodu | Müşteri ekle ve güncellede `postcode` büyük harfe çevrilerek kaydedilir (`"pi101oo"` → `"PI101OO"`). Eski sistemde bunu ekran programı yapar (`lgtestc1.cbl:126-127`, `:188-189`); yeni sistemde ekranın yerini API aldığı için API yapar. |
 | Boş metin | Metin alanları boş gönderilebilir; eski sistem de boş değeri kontrol etmeden kaydeder. Boş bir metin cevapta `""` olarak döner, `null` dönmez. |
 | Yalnızca cevapta olan alanlar | 4. bölümde "yalnızca cevapta" diye işaretli alanlar (`customerNumber`, `policyNumber`) istek gövdesinde gönderilirse yok sayılır; istek reddedilmez. Eski sistem de müşteri eklerken gelen numarayı yok sayıp yeni numara üretir (`lgacdb01.cbl:285`). |
 | Uzunluk sınırları | Metin alanlarının en fazla uzunluğu eski sistemdeki alan uzunluğuyla aynıdır (bkz. 4). |
@@ -128,6 +129,7 @@ raporlanır, hata sayılmaz.
 | Poliçe güncelle: poliçe okunurken veritabanı hatası | `90` yazılır (`lgupdb01.cbl:354`), aynı şekilde `00` ile ezilir | `500`, `returnCode: "90"` | Bilinçli sapma |
 | Müşteri güncelle: müşteri yok | Db2'de `01` yazılır (`lgucdb01.cbl:173-174`), ardından VSAM okuması başarısız olur ve program `LGV1` ile durur (`lgucvs01.cbl:77-81`); çağırana cevap dönmez | `404`, `returnCode: "01"` | Bilinçli sapma (yeni sistemde VSAM yok) |
 | Kilitlenme ve zaman aşımı | Müşteri sorgulamada `01` (`lgicdb01.cbl:197-198`); diğer operasyonlarda o adımın genel hata kodu (çoğunlukla `90`, ticari liste sorgularında `88`/`89`) | `503`, `returnCode: "90"` | Bilinçli sapma (Karar 8) |
+| Müşteri ekle/güncelle: doğum tarihi boş ya da geçerli bir tarih değil | Db2'nin `DATE` sütunu (`db2cre.jcl:115`) değeri kabul etmez ve işlem `90` ile biter; boş değerin sonucu tahminde belirsizdir (01-09) | `400`, `type: validation-error` | Bilinçli sapma (hatalı girdi veritabanına ulaşmadan reddedilir) |
 | Poliçe sil: poliçe yok | `90` döner (`lgdpdb01.cbl:198-199`); kodun hemen üstündeki yorum "bulunamadı başarılı sayılsın" der, ama kod bunu yapmaz | `500`, `returnCode: "90"` | **Korunan davranış:** eski sistemle aynı |
 
 ### Hata gövdesi örneği

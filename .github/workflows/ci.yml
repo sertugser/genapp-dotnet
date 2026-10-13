@@ -59,6 +59,15 @@ jobs:
       - name: Çözümü derle (test projeleri dahil)
         run: dotnet build GenApp.slnx --no-restore
 
+      # Yapım ekibinin testleri: COMMAREA modeli (veritabanı yok) ve repository'ler. Repository testleri aynı
+      # PostgreSQL servisinde kendi genapp_test veritabanını her çalıştırmada silip yeniden kurar; eşdeğerlik
+      # testlerinin kullandığı genapp veritabanına dokunmaz.
+      - name: Birim testlerini çalıştır
+        run: dotnet test tests/GenApp.UnitTests/GenApp.UnitTests.csproj --no-build
+
+      - name: Veritabanı (repository) testlerini çalıştır
+        run: dotnet test tests/GenApp.Infrastructure.Tests/GenApp.Infrastructure.Tests.csproj --no-build
+
       # Eşdeğerlik testleri şeması kurulmuş bir veritabanı ister (docs/database-schema.md).
       - name: Veritabanı şemasını kur (migration)
         run: |
