@@ -17,7 +17,7 @@ public class HousePolicyConfiguration : IEntityTypeConfiguration<HousePolicy>
         b.Property(h => h.HouseNumber).HasMaxLength(4);
         b.Property(h => h.Postcode).HasMaxLength(8);
 
-        b.HasOne<Policy>()
+        b.HasOne(h => h.Policy)
             .WithOne()
             .HasForeignKey<HousePolicy>(h => h.PolicyNumber)
             .OnDelete(DeleteBehavior.Cascade);

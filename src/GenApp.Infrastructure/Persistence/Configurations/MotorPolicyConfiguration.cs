@@ -17,7 +17,7 @@ public class MotorPolicyConfiguration : IEntityTypeConfiguration<MotorPolicy>
         b.Property(m => m.RegNumber).HasMaxLength(7);
         b.Property(m => m.Colour).HasMaxLength(8);
 
-        b.HasOne<Policy>()
+        b.HasOne(m => m.Policy)
             .WithOne()
             .HasForeignKey<MotorPolicy>(m => m.PolicyNumber)
             .OnDelete(DeleteBehavior.Cascade);

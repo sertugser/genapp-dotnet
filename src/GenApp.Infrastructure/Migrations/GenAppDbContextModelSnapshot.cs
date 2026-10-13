@@ -472,42 +472,50 @@ namespace GenApp.Infrastructure.Migrations
 
             modelBuilder.Entity("GenApp.Domain.Policies.CommercialPolicy", b =>
                 {
-                    b.HasOne("GenApp.Domain.Policies.Policy", null)
+                    b.HasOne("GenApp.Domain.Policies.Policy", "Policy")
                         .WithOne()
                         .HasForeignKey("GenApp.Domain.Policies.CommercialPolicy", "PolicyNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_commercial_policy_policy_number");
+
+                    b.Navigation("Policy");
                 });
 
             modelBuilder.Entity("GenApp.Domain.Policies.EndowmentPolicy", b =>
                 {
-                    b.HasOne("GenApp.Domain.Policies.Policy", null)
+                    b.HasOne("GenApp.Domain.Policies.Policy", "Policy")
                         .WithOne()
                         .HasForeignKey("GenApp.Domain.Policies.EndowmentPolicy", "PolicyNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_endowment_policy_policy_number");
+
+                    b.Navigation("Policy");
                 });
 
             modelBuilder.Entity("GenApp.Domain.Policies.HousePolicy", b =>
                 {
-                    b.HasOne("GenApp.Domain.Policies.Policy", null)
+                    b.HasOne("GenApp.Domain.Policies.Policy", "Policy")
                         .WithOne()
                         .HasForeignKey("GenApp.Domain.Policies.HousePolicy", "PolicyNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_house_policy_policy_number");
+
+                    b.Navigation("Policy");
                 });
 
             modelBuilder.Entity("GenApp.Domain.Policies.MotorPolicy", b =>
                 {
-                    b.HasOne("GenApp.Domain.Policies.Policy", null)
+                    b.HasOne("GenApp.Domain.Policies.Policy", "Policy")
                         .WithOne()
                         .HasForeignKey("GenApp.Domain.Policies.MotorPolicy", "PolicyNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_motor_policy_policy_number");
+
+                    b.Navigation("Policy");
                 });
 
             modelBuilder.Entity("GenApp.Domain.Policies.Policy", b =>
