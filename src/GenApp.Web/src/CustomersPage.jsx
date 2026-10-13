@@ -238,9 +238,13 @@ export default function CustomersPage() {
                           ref={sectionIndex === 0 && fieldIndex === 0 ? firstFieldRef : undefined}
                           type={f.type ?? "text"}
                           maxLength={f.max}
-                          className={f.upper ? "upper" : undefined}
                           value={draft[f.name]}
-                          onChange={(e) => setDraft({ ...draft, [f.name]: e.target.value })}
+                          // The API upper-cases the postcode (docs/api-design.md section 1). Done here too, with
+                          // English rules: Turkish rules would turn "i" into "İ", which the API would not store.
+                          onChange={(e) => setDraft({
+                            ...draft,
+                            [f.name]: f.upper ? e.target.value.toLocaleUpperCase("en-US") : e.target.value,
+                          })}
                           aria-invalid={errors[f.name] ? "true" : undefined}
                           aria-describedby={errors[f.name] ? `${f.name}-error` : undefined}
                         />

@@ -36,7 +36,6 @@ export default function App() {
             </a>
           ))}
         </nav>
-        <p className="sidebar-foot">COBOL / CICS → ASP.NET Core</p>
       </aside>
       <main className="content">
         <CustomersPage />
