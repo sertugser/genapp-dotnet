@@ -44,7 +44,9 @@ public sealed class CustomerRequest
         DateOfBirth = DateOfBirth,
         HouseName = HouseName,
         HouseNumber = HouseNumber,
-        Postcode = Postcode,
+        // The legacy screen upper-cases the postcode before calling the business program (lgtestc1.cbl:126-127 for
+        // add, :188-189 for update); the API replaces the screen, so it does the same (docs/api-design.md section 1).
+        Postcode = Postcode?.ToUpperInvariant(),
         PhoneMobile = PhoneMobile,
         PhoneHome = PhoneHome,
         EmailAddress = Email,

@@ -9,7 +9,13 @@ builder.Services.AddInfrastructure(
     builder.Configuration.GetConnectionString("GenApp")
     ?? throw new InvalidOperationException("Connection string 'GenApp' is not configured."));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // docs/api-design.md section 3: a rejected request is a 400 Problem Details with type "validation-error"
+        // and the list of invalid fields in "errors".
+        options.ClientErrorMapping[StatusCodes.Status400BadRequest].Link = "validation-error";
+    });
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<DatabaseExceptionHandler>();
 builder.Services.AddSwaggerGen();
