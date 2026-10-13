@@ -31,7 +31,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/", () => "Hello World!");
+// Web interface (docs/architecture.md section 5, decision 1): the React app of src/GenApp.Web, built into
+// wwwroot/assets. It calls the same REST API as the tests. "/" serves wwwroot/index.html.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.MapControllers();
 
 app.Run();

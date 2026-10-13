@@ -13,3 +13,6 @@ obj/
 .idea/
 *.user
 .DS_Store
+
+# Web arayÃ¼zÃ¼ (src/GenApp.Web)
+node_modules/
