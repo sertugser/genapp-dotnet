@@ -1,0 +1,1147 @@
+# cobc (GnuCOBOL) 3.2.0; one process per case
+=================== C0101
+DRIVER case=C0101    program=LGACUS01 EIBCALEN= 32500
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=        0 VALUE=+00000011
+STUB EXEC SQL INSERT INTO CUSTOMER
+STUB DB2INSC CUSTOMERNUMBER=+000000011
+STUB DB2INSC FIRSTNAME=[Andrew    ]
+STUB DB2INSC LASTNAME=[Pandy               ]
+STUB DB2INSC DATEOFBIRTH=[1950-07-11]
+STUB DB2INSC HOUSENAME=[                    ]
+STUB DB2INSC HOUSENUMBER=[34  ]
+STUB DB2INSC POSTCODE=[PI101OO ]
+STUB DB2INSC PHONEMOBILE=[07799 123456        ]
+STUB DB2INSC PHONEHOME=[01962 811234        ]
+STUB DB2INSC EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSC answers SQLCODE=         0
+STUB EXEC CICS LINK PROGRAM(LGACVS01) LENGTH(225)
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000011]
+STUB CICSWRF record=[0000000011Andrew    Pandy               1950-07-11                    34  PI101OO 00007799 123456        01962 811234        A.Pandy@beebhouse.com                                                                               ]
+STUB CICSWRF answers RESP=        0
+STUB EXEC CICS LINK PROGRAM(LGACDB02) LENGTH(32500)
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+000000011
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000011]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0102
+DRIVER case=C0102    program=LGACUS01 EIBCALEN= 32500
+DRIVER counter RESP=        16 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=       16 (VALUE not touched)
+STUB EXEC SQL INSERT INTO CUSTOMER (DEFAULT)
+STUB DB2INSD CUSTOMERNUMBER=DEFAULT
+STUB DB2INSD FIRSTNAME=[Andrew    ]
+STUB DB2INSD LASTNAME=[Pandy               ]
+STUB DB2INSD DATEOFBIRTH=[1950-07-11]
+STUB DB2INSD HOUSENAME=[                    ]
+STUB DB2INSD HOUSENUMBER=[34  ]
+STUB DB2INSD POSTCODE=[PI101OO ]
+STUB DB2INSD PHONEMOBILE=[07799 123456        ]
+STUB DB2INSD PHONEHOME=[01962 811234        ]
+STUB DB2INSD EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSD identity assigned=+001000001
+STUB DB2INSD answers SQLCODE=         0
+STUB EXEC SQL SET :DB2-CUSTOMERNUM-INT = IDENTITY_VAL_LOCAL()
+STUB DB2IDENT identity value=+001000001
+STUB DB2IDENT answers SQLCODE=         0
+STUB EXEC CICS LINK PROGRAM(LGACVS01) LENGTH(225)
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0001000001]
+STUB CICSWRF record=[0001000001Andrew    Pandy               1950-07-11                    34  PI101OO 00007799 123456        01962 811234        A.Pandy@beebhouse.com                                                                               ]
+STUB CICSWRF answers RESP=        0
+STUB EXEC CICS LINK PROGRAM(LGACDB02) LENGTH(32500)
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+001000001
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0001000001]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0102B
+DRIVER case=C0102B   program=LGACUS01 EIBCALEN= 32500
+DRIVER counter RESP=        16 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=      -204
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=       16 (VALUE not touched)
+STUB EXEC SQL INSERT INTO CUSTOMER (DEFAULT)
+STUB DB2INSD CUSTOMERNUMBER=DEFAULT
+STUB DB2INSD FIRSTNAME=[Andrew    ]
+STUB DB2INSD LASTNAME=[Pandy               ]
+STUB DB2INSD DATEOFBIRTH=[1950-07-11]
+STUB DB2INSD HOUSENAME=[                    ]
+STUB DB2INSD HOUSENUMBER=[34  ]
+STUB DB2INSD POSTCODE=[PI101OO ]
+STUB DB2INSD PHONEMOBILE=[07799 123456        ]
+STUB DB2INSD PHONEHOME=[01962 811234        ]
+STUB DB2INSD EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSD identity assigned=+001000001
+STUB DB2INSD answers SQLCODE=         0
+STUB EXEC SQL SET :DB2-CUSTOMERNUM-INT = IDENTITY_VAL_LOCAL()
+STUB DB2IDENT answers SQLCODE=      -204
+STUB EXEC CICS LINK PROGRAM(LGACVS01) LENGTH(225)
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000000]
+STUB CICSWRF record=[0000000000Andrew    Pandy               1950-07-11                    34  PI101OO 00007799 123456        01962 811234        A.Pandy@beebhouse.com                                                                               ]
+STUB CICSWRF answers RESP=        0
+STUB EXEC CICS LINK PROGRAM(LGACDB02) LENGTH(32500)
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+000000000
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000000]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0103
+DRIVER case=C0103    program=LGACUS01 EIBCALEN= 32500
+DRIVER counter RESP=         0 VALUE=         1
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=        0 VALUE=+00000001
+STUB EXEC SQL INSERT INTO CUSTOMER
+STUB DB2INSC CUSTOMERNUMBER=+000000001
+STUB DB2INSC FIRSTNAME=[Andrew    ]
+STUB DB2INSC LASTNAME=[Pandy               ]
+STUB DB2INSC DATEOFBIRTH=[1950-07-11]
+STUB DB2INSC HOUSENAME=[                    ]
+STUB DB2INSC HOUSENUMBER=[34  ]
+STUB DB2INSC POSTCODE=[PI101OO ]
+STUB DB2INSC PHONEMOBILE=[07799 123456        ]
+STUB DB2INSC PHONEHOME=[01962 811234        ]
+STUB DB2INSC EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSC answers SQLCODE=      -803
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000071 message=[                LGACDB01 CNUM=           INSERT CUSTOMER SQLCODE=-00803]
+STUB LGSTSQ length=0000000099 message=[COMMAREA=01ACUS900000000000Andrew    Pandy               1950-07-11                    34  PI101OO ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[90]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000000]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0104
+DRIVER case=C0104    program=LGACUS01 EIBCALEN= 32500
+DRIVER counter RESP=        16 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=      -204 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=       16 (VALUE not touched)
+STUB EXEC SQL INSERT INTO CUSTOMER (DEFAULT)
+STUB DB2INSD CUSTOMERNUMBER=DEFAULT
+STUB DB2INSD FIRSTNAME=[Andrew    ]
+STUB DB2INSD LASTNAME=[Pandy               ]
+STUB DB2INSD DATEOFBIRTH=[1950-07-11]
+STUB DB2INSD HOUSENAME=[                    ]
+STUB DB2INSD HOUSENUMBER=[34  ]
+STUB DB2INSD POSTCODE=[PI101OO ]
+STUB DB2INSD PHONEMOBILE=[07799 123456        ]
+STUB DB2INSD PHONEHOME=[01962 811234        ]
+STUB DB2INSD EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSD answers SQLCODE=      -204
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000071 message=[                LGACDB01 CNUM=           INSERT CUSTOMER SQLCODE=-00204]
+STUB LGSTSQ length=0000000099 message=[COMMAREA=01ACUS900000000000Andrew    Pandy               1950-07-11                    34  PI101OO ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[90]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000000]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0105
+DRIVER case=C0105    program=LGACUS01 EIBCALEN= 32500
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=        14 RESP2=         2
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=        0 VALUE=+00000011
+STUB EXEC SQL INSERT INTO CUSTOMER
+STUB DB2INSC CUSTOMERNUMBER=+000000011
+STUB DB2INSC FIRSTNAME=[Andrew    ]
+STUB DB2INSC LASTNAME=[Pandy               ]
+STUB DB2INSC DATEOFBIRTH=[1950-07-11]
+STUB DB2INSC HOUSENAME=[                    ]
+STUB DB2INSC HOUSENUMBER=[34  ]
+STUB DB2INSC POSTCODE=[PI101OO ]
+STUB DB2INSC PHONEMOBILE=[07799 123456        ]
+STUB DB2INSC PHONEHOME=[01962 811234        ]
+STUB DB2INSC EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSC answers SQLCODE=         0
+STUB EXEC CICS LINK PROGRAM(LGACVS01) LENGTH(225)
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000011]
+STUB CICSWRF record=[0000000011Andrew    Pandy               1950-07-11                    34  PI101OO 00007799 123456        01962 811234        A.Pandy@beebhouse.com                                                                               ]
+STUB CICSWRF answers RESP=       14
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000085 message=[                LGACVS01 CNUM=0000000011 Write file KSDSCUST RESP=+00014 RESP2=+00002]
+STUB LGSTSQ length=0000000099 message=[COMMAREA=01ACUS800000000011Andrew    Pandy               1950-07-11                    34  PI101OO ]
+STUB EXEC CICS ABEND ABCODE(LGV0)
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[80]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000011]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[Y]
+[exit=0]
+=================== C0106
+DRIVER case=C0106    program=LGACUS01 EIBCALEN= 32500
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=      -204 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=        0 VALUE=+00000011
+STUB EXEC SQL INSERT INTO CUSTOMER
+STUB DB2INSC CUSTOMERNUMBER=+000000011
+STUB DB2INSC FIRSTNAME=[Andrew    ]
+STUB DB2INSC LASTNAME=[Pandy               ]
+STUB DB2INSC DATEOFBIRTH=[1950-07-11]
+STUB DB2INSC HOUSENAME=[                    ]
+STUB DB2INSC HOUSENUMBER=[34  ]
+STUB DB2INSC POSTCODE=[PI101OO ]
+STUB DB2INSC PHONEMOBILE=[07799 123456        ]
+STUB DB2INSC PHONEHOME=[01962 811234        ]
+STUB DB2INSC EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSC answers SQLCODE=         0
+STUB EXEC CICS LINK PROGRAM(LGACVS01) LENGTH(225)
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000011]
+STUB CICSWRF record=[0000000011Andrew    Pandy               1950-07-11                    34  PI101OO 00007799 123456        01962 811234        A.Pandy@beebhouse.com                                                                               ]
+STUB CICSWRF answers RESP=        0
+STUB EXEC CICS LINK PROGRAM(LGACDB02) LENGTH(32500)
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+000000011
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=      -204
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000071 message=[                LGACDB02 CNUM=           INSERT SECURITY SQLCODE=-00204]
+STUB LGSTSQ length=0000000099 message=[COMMAREA=02ACUS9800000000115732fec825535eeafb8fac50fee3a8aa0000N                                   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000011]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0107
+DRIVER case=C0107    program=LGACUS01 EIBCALEN= 32500
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000001]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=        0 VALUE=+00000011
+STUB EXEC SQL INSERT INTO CUSTOMER
+STUB DB2INSC CUSTOMERNUMBER=+000000011
+STUB DB2INSC FIRSTNAME=[Andrew    ]
+STUB DB2INSC LASTNAME=[Pandy               ]
+STUB DB2INSC DATEOFBIRTH=[1950-07-11]
+STUB DB2INSC HOUSENAME=[                    ]
+STUB DB2INSC HOUSENUMBER=[34  ]
+STUB DB2INSC POSTCODE=[PI101OO ]
+STUB DB2INSC PHONEMOBILE=[07799 123456        ]
+STUB DB2INSC PHONEHOME=[01962 811234        ]
+STUB DB2INSC EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSC answers SQLCODE=         0
+STUB EXEC CICS LINK PROGRAM(LGACVS01) LENGTH(225)
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000011]
+STUB CICSWRF record=[0000000011Andrew    Pandy               1950-07-11                    34  PI101OO 00007799 123456        01962 811234        A.Pandy@beebhouse.com                                                                               ]
+STUB CICSWRF answers RESP=        0
+STUB EXEC CICS LINK PROGRAM(LGACDB02) LENGTH(32500)
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+000000011
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000011]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0108
+DRIVER case=C0108    program=LGACUS01 EIBCALEN= 32500
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=        0 VALUE=+00000011
+STUB EXEC SQL INSERT INTO CUSTOMER
+STUB DB2INSC CUSTOMERNUMBER=+000000011
+STUB DB2INSC FIRSTNAME=[          ]
+STUB DB2INSC LASTNAME=[                    ]
+STUB DB2INSC DATEOFBIRTH=[1950-07-11]
+STUB DB2INSC HOUSENAME=[                    ]
+STUB DB2INSC HOUSENUMBER=[34  ]
+STUB DB2INSC POSTCODE=[PI101OO ]
+STUB DB2INSC PHONEMOBILE=[07799 123456        ]
+STUB DB2INSC PHONEHOME=[01962 811234        ]
+STUB DB2INSC EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSC answers SQLCODE=         0
+STUB EXEC CICS LINK PROGRAM(LGACVS01) LENGTH(225)
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000011]
+STUB CICSWRF record=[0000000011                              1950-07-11                    34  PI101OO 00007799 123456        01962 811234        A.Pandy@beebhouse.com                                                                               ]
+STUB CICSWRF answers RESP=        0
+STUB EXEC CICS LINK PROGRAM(LGACDB02) LENGTH(32500)
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+000000011
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000011]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0109
+DRIVER case=C0109    program=LGACUS01 EIBCALEN= 32500
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=        0 VALUE=+00000011
+STUB EXEC SQL INSERT INTO CUSTOMER
+STUB DB2INSC CUSTOMERNUMBER=+000000011
+STUB DB2INSC FIRSTNAME=[Andrew    ]
+STUB DB2INSC LASTNAME=[Pandy               ]
+STUB DB2INSC DATEOFBIRTH=[          ]
+STUB DB2INSC HOUSENAME=[                    ]
+STUB DB2INSC HOUSENUMBER=[34  ]
+STUB DB2INSC POSTCODE=[PI101OO ]
+STUB DB2INSC PHONEMOBILE=[07799 123456        ]
+STUB DB2INSC PHONEHOME=[01962 811234        ]
+STUB DB2INSC EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSC answers SQLCODE=         0
+STUB EXEC CICS LINK PROGRAM(LGACVS01) LENGTH(225)
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000011]
+STUB CICSWRF record=[0000000011Andrew    Pandy                                             34  PI101OO 00007799 123456        01962 811234        A.Pandy@beebhouse.com                                                                               ]
+STUB CICSWRF answers RESP=        0
+STUB EXEC CICS LINK PROGRAM(LGACDB02) LENGTH(32500)
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+000000011
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000011]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0110
+DRIVER case=C0110    program=LGACUS01 EIBCALEN=     0
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[      ]
+BEFORE bytes 7-8      =[  ]
+BEFORE bytes 9-18     =[          ]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000045 message=[                LGACUS01 NO COMMAREA RECEIVED]
+STUB EXEC CICS ABEND ABCODE(LGCA)
+AFTER  bytes 1-6   REQUEST-ID  =[      ]
+AFTER  bytes 7-8   RETURN-CODE =[  ]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[Y]
+[exit=0]
+=================== C0111A
+DRIVER case=C0111A   program=LGACUS01 EIBCALEN=    89
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000000]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0111B
+DRIVER case=C0111B   program=LGACUS01 EIBCALEN=     8
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[          ]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0112A
+DRIVER case=C0112A   program=LGACUS01 EIBCALEN=     7
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[9 ]
+BEFORE bytes 9-18     =[          ]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0112B
+DRIVER case=C0112B   program=LGACUS01 EIBCALEN=     1
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[0     ]
+BEFORE bytes 7-8      =[  ]
+BEFORE bytes 9-18     =[          ]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[0     ]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0113
+DRIVER case=C0113    program=LGACUS01 EIBCALEN=    90
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=        0 VALUE=+00000011
+STUB EXEC SQL INSERT INTO CUSTOMER
+STUB DB2INSC CUSTOMERNUMBER=+000000011
+STUB DB2INSC FIRSTNAME=[Andrew    ]
+STUB DB2INSC LASTNAME=[Pandy               ]
+STUB DB2INSC DATEOFBIRTH=[1950-07-11]
+STUB DB2INSC HOUSENAME=[                    ]
+STUB DB2INSC HOUSENUMBER=[34  ]
+STUB DB2INSC POSTCODE=[PI101OO ]
+STUB DB2INSC PHONEMOBILE=[                    ]
+STUB DB2INSC PHONEHOME=[                    ]
+STUB DB2INSC EMAILADDRESS=[                                                                                                    ]
+STUB DB2INSC answers SQLCODE=         0
+STUB EXEC CICS LINK PROGRAM(LGACVS01) LENGTH(225)
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000011]
+STUB CICSWRF record=[0000000011Andrew    Pandy               1950-07-11                    34  PI101OO 000                                                                                                                                            ]
+STUB CICSWRF answers RESP=        0
+STUB EXEC CICS LINK PROGRAM(LGACDB02) LENGTH(32500)
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+000000011
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000011]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== C0114
+DRIVER case=C0114    program=LGACUS01 EIBCALEN= 32500
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[      ]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS LINK PROGRAM(LGACDB01) LENGTH(32500)
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=        0 VALUE=+00000011
+STUB EXEC SQL INSERT INTO CUSTOMER
+STUB DB2INSC CUSTOMERNUMBER=+000000011
+STUB DB2INSC FIRSTNAME=[Andrew    ]
+STUB DB2INSC LASTNAME=[Pandy               ]
+STUB DB2INSC DATEOFBIRTH=[1950-07-11]
+STUB DB2INSC HOUSENAME=[                    ]
+STUB DB2INSC HOUSENUMBER=[34  ]
+STUB DB2INSC POSTCODE=[PI101OO ]
+STUB DB2INSC PHONEMOBILE=[07799 123456        ]
+STUB DB2INSC PHONEHOME=[01962 811234        ]
+STUB DB2INSC EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSC answers SQLCODE=         0
+STUB EXEC CICS LINK PROGRAM(LGACVS01) LENGTH(225)
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000011]
+STUB CICSWRF record=[0000000011Andrew    Pandy               1950-07-11                    34  PI101OO 00007799 123456        01962 811234        A.Pandy@beebhouse.com                                                                               ]
+STUB CICSWRF answers RESP=        0
+STUB EXEC CICS LINK PROGRAM(LGACDB02) LENGTH(32500)
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+000000011
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[      ]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000011]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[000]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== D0116
+DRIVER case=D0116    program=LGACDB01 EIBCALEN=     0
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[      ]
+BEFORE bytes 7-8      =[  ]
+BEFORE bytes 9-18     =[          ]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000071 message=[                LGACDB01 NO COMMAREA RECEIVED                    +00000]
+STUB EXEC CICS ABEND ABCODE(LGCA)
+AFTER  bytes 1-6   REQUEST-ID  =[      ]
+AFTER  bytes 7-8   RETURN-CODE =[  ]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[Y]
+[exit=0]
+=================== D0117A
+DRIVER case=D0117A   program=LGACDB01 EIBCALEN=    89
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000000]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== D0117B
+DRIVER case=D0117B   program=LGACDB01 EIBCALEN=     8
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[          ]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== D0117C
+DRIVER case=D0117C   program=LGACDB01 EIBCALEN=     7
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[9 ]
+BEFORE bytes 9-18     =[          ]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== D0117D
+DRIVER case=D0117D   program=LGACDB01 EIBCALEN=     1
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[0     ]
+BEFORE bytes 7-8      =[  ]
+BEFORE bytes 9-18     =[          ]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   REQUEST-ID  =[0     ]
+AFTER  bytes 7-8   RETURN-CODE =[98]
+AFTER  bytes 9-18  CUSTOMER-NUM=[          ]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== D0118
+DRIVER case=D0118    program=LGACDB01 EIBCALEN=    90
+DRIVER counter RESP=         0 VALUE=         1
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=        0 VALUE=+00000001
+STUB EXEC SQL INSERT INTO CUSTOMER
+STUB DB2INSC CUSTOMERNUMBER=+000000001
+STUB DB2INSC FIRSTNAME=[Andrew    ]
+STUB DB2INSC LASTNAME=[Pandy               ]
+STUB DB2INSC DATEOFBIRTH=[1950-07-11]
+STUB DB2INSC HOUSENAME=[                    ]
+STUB DB2INSC HOUSENUMBER=[34  ]
+STUB DB2INSC POSTCODE=[PI101OO ]
+STUB DB2INSC PHONEMOBILE=[                    ]
+STUB DB2INSC PHONEHOME=[                    ]
+STUB DB2INSC EMAILADDRESS=[                                                                                                    ]
+STUB DB2INSC answers SQLCODE=      -803
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000071 message=[                LGACDB01 CNUM=           INSERT CUSTOMER SQLCODE=-00803]
+STUB LGSTSQ length=0000000099 message=[COMMAREA=01ACUS900000000000Andrew    Pandy               1950-07-11                    34  PI101OO ]
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[90]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000000]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== D0119
+DRIVER case=D0119    program=LGACDB01 EIBCALEN= 32500
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000000]
+BEFORE bytes 91-93    =[777]
+STUB EXEC CICS GET COUNTER(GENAcount) POOL(GENApool)
+STUB CICSCNT answers RESP=        0 VALUE=+00000011
+STUB EXEC SQL INSERT INTO CUSTOMER
+STUB DB2INSC CUSTOMERNUMBER=+000000011
+STUB DB2INSC FIRSTNAME=[Andrew    ]
+STUB DB2INSC LASTNAME=[Pandy               ]
+STUB DB2INSC DATEOFBIRTH=[1950-07-11]
+STUB DB2INSC HOUSENAME=[                    ]
+STUB DB2INSC HOUSENUMBER=[34  ]
+STUB DB2INSC POSTCODE=[PI101OO ]
+STUB DB2INSC PHONEMOBILE=[07799 123456        ]
+STUB DB2INSC PHONEHOME=[01962 811234        ]
+STUB DB2INSC EMAILADDRESS=[A.Pandy@beebhouse.com                                                                               ]
+STUB DB2INSC answers SQLCODE=         0
+STUB EXEC CICS LINK PROGRAM(LGACVS01) LENGTH(225)
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000011]
+STUB CICSWRF record=[0000000011Andrew    Pandy               1950-07-11                    34  PI101OO 77707799 123456        01962 811234        A.Pandy@beebhouse.com                                                                               ]
+STUB CICSWRF answers RESP=        0
+STUB EXEC CICS LINK PROGRAM(LGACDB02) LENGTH(32500)
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+000000011
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=         0
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[00]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000011]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[777]
+AFTER  bytes 94-113 PHONE-MOBILE=[07799 123456        ]
+AFTER  bytes 114-133 PHONE-HOME =[01962 811234        ]
+AFTER  bytes 134-233 EMAIL      =[A.Pandy@beebhouse.com                                                                               ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== D0120
+DRIVER case=D0120    program=LGACDB02 EIBCALEN=     0
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[      ]
+BEFORE bytes 7-8      =[  ]
+BEFORE bytes 9-18     =[          ]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000071 message=[                LGACDB02 NO COMMAREA RECEIVED                    +00000]
+STUB EXEC CICS ABEND ABCODE(LGCA)
+AFTER  bytes 1-6   D2-REQUEST-ID =[      ]
+AFTER  bytes 7-8   D2-RETURN-CODE=[  ]
+AFTER  bytes 9-18  D2-CUSTOMER-NUM=[          ]
+AFTER  bytes 19-50 D2-CUSTSECR-PASS=[                                ]
+AFTER  bytes 51-54 D2-CUSTSECR-COUNT=[    ]
+AFTER  bytes 55    D2-CUSTSECR-STATE=[ ]
+AFTER  bytes 56-32500 D2-CUSTSECR-DATA = all spaces
+AFTER  ABEND-FLAG=[Y]
+[exit=0]
+=================== D0121
+DRIVER case=D0121    program=LGACDB02 EIBCALEN= 32500
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[      ]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000001]
+BEFORE bytes 91-93    =[   ]
+AFTER  bytes 1-6   D2-REQUEST-ID =[      ]
+AFTER  bytes 7-8   D2-RETURN-CODE=[99]
+AFTER  bytes 9-18  D2-CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-50 D2-CUSTSECR-PASS=[5732fec825535eeafb8fac50fee3a8aa]
+AFTER  bytes 51-54 D2-CUSTSECR-COUNT=[0000]
+AFTER  bytes 55    D2-CUSTSECR-STATE=[N]
+AFTER  bytes 56-32500 D2-CUSTSECR-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== D0122A
+DRIVER case=D0122A   program=LGACDB02 EIBCALEN=    55
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[02ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000001]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+000000001
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=      -803
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000071 message=[                LGACDB02 CNUM=           INSERT SECURITY SQLCODE=-00803]
+STUB LGSTSQ length=0000000099 message=[COMMAREA=02ACUS9800000000015732fec825535eeafb8fac50fee3a8aa0000N                                   ]
+AFTER  bytes 1-6   D2-REQUEST-ID =[02ACUS]
+AFTER  bytes 7-8   D2-RETURN-CODE=[98]
+AFTER  bytes 9-18  D2-CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-50 D2-CUSTSECR-PASS=[5732fec825535eeafb8fac50fee3a8aa]
+AFTER  bytes 51-54 D2-CUSTSECR-COUNT=[0000]
+AFTER  bytes 55    D2-CUSTSECR-STATE=[N]
+AFTER  bytes 56-32500 D2-CUSTSECR-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== D0122B
+DRIVER case=D0122B   program=LGACDB02 EIBCALEN=    90
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=         0 RESP2=         0
+BEFORE bytes 1-6      =[02ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000001]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC SQL INSERT INTO CUSTOMER_SECURE
+STUB DB2INSS customerNumber=+000000001
+STUB DB2INSS customerPass=[5732fec825535eeafb8fac50fee3a8aa]
+STUB DB2INSS state_indicator=[N]
+STUB DB2INSS pass_changes=+000000000
+STUB DB2INSS answers SQLCODE=      -803
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000071 message=[                LGACDB02 CNUM=           INSERT SECURITY SQLCODE=-00803]
+STUB LGSTSQ length=0000000099 message=[COMMAREA=02ACUS9800000000015732fec825535eeafb8fac50fee3a8aa0000N                                   ]
+AFTER  bytes 1-6   D2-REQUEST-ID =[02ACUS]
+AFTER  bytes 7-8   D2-RETURN-CODE=[98]
+AFTER  bytes 9-18  D2-CUSTOMER-NUM=[0000000001]
+AFTER  bytes 19-50 D2-CUSTSECR-PASS=[5732fec825535eeafb8fac50fee3a8aa]
+AFTER  bytes 51-54 D2-CUSTSECR-COUNT=[0000]
+AFTER  bytes 55    D2-CUSTSECR-STATE=[N]
+AFTER  bytes 56-32500 D2-CUSTSECR-DATA = all spaces
+AFTER  ABEND-FLAG=[N]
+[exit=0]
+=================== D0125A
+DRIVER case=D0125A   program=LGACVS01 EIBCALEN=    18
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=        14 RESP2=         2
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000011]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000011]
+STUB CICSWRF record=[0000000011                                                                                                                                                                                                                       ]
+STUB CICSWRF answers RESP=       14
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000085 message=[                LGACVS01 CNUM=0000000011 Write file KSDSCUST RESP=+00014 RESP2=+00002]
+STUB LGSTSQ length=0000000099 message=[COMMAREA=01ACUS800000000011                                                                        ]
+STUB EXEC CICS ABEND ABCODE(LGV0)
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[80]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000011]
+AFTER  bytes 19-28 FIRST-NAME  =[          ]
+AFTER  bytes 29-48 LAST-NAME   =[                    ]
+AFTER  bytes 49-58 DOB         =[          ]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[    ]
+AFTER  bytes 83-90 POSTCODE    =[        ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[Y]
+[exit=0]
+=================== D0125B
+DRIVER case=D0125B   program=LGACVS01 EIBCALEN=    90
+DRIVER counter RESP=         0 VALUE=        11
+DRIVER forced SQLCODE INSC=         0 INSD=         0 INSS=         0 IDENT=         0
+DRIVER write RESP=        14 RESP2=         2
+BEFORE bytes 1-6      =[01ACUS]
+BEFORE bytes 7-8      =[99]
+BEFORE bytes 9-18     =[0000000011]
+BEFORE bytes 91-93    =[   ]
+STUB EXEC CICS WRITE FILE(KSDSCUST)
+STUB CICSWRF Write File KSDSCUST length=  225
+STUB CICSWRF key=[0000000011]
+STUB CICSWRF record=[0000000011Andrew    Pandy               1950-07-11                    34  PI101OO                                                                                                                                                ]
+STUB CICSWRF answers RESP=       14
+STUB EXEC CICS ASKTIME ABSTIME(WS-ABSTIME)
+STUB EXEC CICS FORMATTIME ABSTIME(WS-ABSTIME)
+STUB LGSTSQ length=0000000085 message=[                LGACVS01 CNUM=0000000011 Write file KSDSCUST RESP=+00014 RESP2=+00002]
+STUB LGSTSQ length=0000000099 message=[COMMAREA=01ACUS800000000011Andrew    Pandy               1950-07-11                    34  PI101OO ]
+STUB EXEC CICS ABEND ABCODE(LGV0)
+AFTER  bytes 1-6   REQUEST-ID  =[01ACUS]
+AFTER  bytes 7-8   RETURN-CODE =[80]
+AFTER  bytes 9-18  CUSTOMER-NUM=[0000000011]
+AFTER  bytes 19-28 FIRST-NAME  =[Andrew    ]
+AFTER  bytes 29-48 LAST-NAME   =[Pandy               ]
+AFTER  bytes 49-58 DOB         =[1950-07-11]
+AFTER  bytes 59-78 HOUSE-NAME  =[                    ]
+AFTER  bytes 79-82 HOUSE-NUM   =[34  ]
+AFTER  bytes 83-90 POSTCODE    =[PI101OO ]
+AFTER  bytes 91-93 NUM-POLICIES=[   ]
+AFTER  bytes 94-113 PHONE-MOBILE=[                    ]
+AFTER  bytes 114-133 PHONE-HOME =[                    ]
+AFTER  bytes 134-233 EMAIL      =[                                                                                                    ]
+AFTER  bytes 234-32500 POLICY-DATA = all spaces
+AFTER  ABEND-FLAG=[Y]
+[exit=0]

@@ -252,3 +252,21 @@ For a large program, change the copy with a script, not by hand, and check with 
 
 `runs/lgicus01-karsilastir.sh` builds every expected value from the prediction file and compares it with `runs/lgicus01-cikti.txt` byte by byte
 (`[ ]` brackets in the output show trailing spaces). Keep the raw output in `runs/` next to the record.
+
+### More commands (customer-add chain, `runs/lgacus01.md`)
+
+The LGACUS01 chain (LGACUS01, LGACDB01, LGACDB02, LGACVS01) meets commands the tables above do not cover. `convert-lgacus01.py` does the
+conversion, stops on any `EXEC` statement it does not know, and checks the number of replaced statements against the number counted by reading the sources.
+
+| Command | Replacement | Why |
+|---|---|---|
+| `EXEC CICS ABEND` inside a chain (the abending program was `LINK`ed) | `DISPLAY`, `MOVE 'Y' TO ABEND-FLAG` (`EXTERNAL`), `GOBACK`. Every `LINK` replacement checks the flag after the `CALL` and does `GOBACK` too. | A real `ABEND` ends the task. A plain `GOBACK` would let the caller run on and call the next program. The flag carries the abend up to the driver, which can still show the buffer. |
+| `DFHRESP(NORMAL)` | `0` | Translator macro; `NORMAL` is 0. |
+| `EXEC CICS GET COUNTER` | `CALL 'CICSCNT' USING <resp> <value>` | No named counter server. The driver sets the answer (`CNTR-RESP`, `CNTR-VALUE`). |
+| `EXEC CICS WRITE FILE` | `CALL 'CICSWRF' USING <from> <length> <resp>` | No VSAM. The stub shows the key (first 10 bytes of the `FROM` area) and the record; the driver sets `RESP` and `RESP2`. |
+| `EIBRESP2` | `EXTERNAL` field, set by the `CICSWRF` stub | Read by the program for its error message. |
+| `EXEC SQL INSERT ...` | `CALL 'DB2INS<x>' USING SQLCA <host variables in VALUES order>` | No Db2. The stub shows every host variable; it only fills `SQLCODE`. The converter checks the column list against the `VALUES` order. |
+| `EXEC SQL SET :x = IDENTITY_VAL_LOCAL()` | `CALL 'DB2IDENT' USING SQLCA <x>` | No Db2. |
+
+The stubs fill nothing but what the prediction's preconditions ask for (counter value, first identity value, forced error codes). The existing-key rule of the `INSERT`
+stubs (`-803` for customer numbers 1-10) is a rig assumption and is written in the run record.
