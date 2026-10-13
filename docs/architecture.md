@@ -47,7 +47,7 @@ flowchart TB
     user(["Sigorta çalışanı"])
 
     subgraph browser["Tarayıcı"]
-        ui["Web arayüzü<br/>HTML + JavaScript<br/>(müşteri ve 4 poliçe ekranı)"]
+        ui["Web arayüzü<br/>React<br/>(müşteri ve 4 poliçe ekranı)"]
     end
 
     subgraph compose["docker compose"]
@@ -66,7 +66,7 @@ flowchart TB
 
 | Konteyner | Teknoloji | Görevi |
 |---|---|---|
-| Web arayüzü | Statik HTML + JavaScript, `GenApp.Api/wwwroot` | 3270 ekranlarının yerine geçer. Her ekran REST API'yi `fetch` ile çağırır. |
+| Web arayüzü | React (`src/GenApp.Web`), derlenmiş hâli `GenApp.Api/wwwroot` | 3270 ekranlarının yerine geçer. Her ekran REST API'yi `fetch` ile çağırır. |
 | GenApp.Api | ASP.NET Core (.NET 10) | REST API'yi ve web arayüzünün dosyalarını sunar. Uygulamanın tek süreci. |
 | PostgreSQL | PostgreSQL 18 | Db2'nin 8 tablosunun karşılığı; VSAM'ın ayrı bir karşılığı yok (ADR 0003). |
 
@@ -166,11 +166,16 @@ flowchart TB
 
 ### Bu belgede alınan tasarım kararları
 
-1. **Web arayüzü, Api'nin sunduğu statik HTML + JavaScript'tir.** Ekranlar REST API'yi çağırır; arayüz,
-   eşdeğerlik testleriyle aynı sözleşmeyi kullanır (ADR 0002 Bağlam 1). Ayrı bir frontend projesi ve konteyner
-   gerekmez. Razor Pages seçilmedi, çünkü sayfalar Application servislerini doğrudan çağırabilir ve API'yi
-   atlayan ikinci bir yol açar. Ayrı bir SPA (React vb.) ise ekip için ek öğrenme ve ayrı bir derleme hattı
-   demektir.
+1. **Web arayüzü React ile yazılır ve Api tarafından sunulur.** Kaynak kodu `src/GenApp.Web`'dedir
+   (React 19, esbuild ile derlenir); derlenmiş dosyalar `GenApp.Api/wwwroot/assets` altına yazılır ve repoya
+   eklenir, böylece arayüzü açmak için Node.js gerekmez. Ekranlar yalnızca REST API'yi çağırır; arayüz,
+   eşdeğerlik testleriyle aynı sözleşmeyi kullanır (ADR 0002 Bağlam 1). Ayrı bir konteyner gerekmez.
+   Razor Pages seçilmedi, çünkü sayfalar Application servislerini doğrudan çağırabilir ve API'yi atlayan
+   ikinci bir yol açar. *Değişiklik (2026-10-13):* İlk kararda ekip için ek öğrenme ve ayrı derleme adımı
+   gerektirdiği için düz HTML + JavaScript seçilmişti; arayüzün modern bir kullanıcı deneyimi sunması ve
+   18 operasyonun ekranlarının bileşenlerle tutarlı yazılabilmesi için proje yöneticisinin kararıyla React'e
+   geçildi. Bedeli: arayüzü değiştiren kişinin Node.js kurması ve PR'a derleme çıktısını eklemesi gerekir
+   (`src/GenApp.Web/README.md`).
 2. **Uç noktalar controller'larla yazılır.** `[ApiController]`, eksik veya hatalı isteği otomatik olarak 400 ve
    hatalı alanların listesiyle reddeder ([API tasarımı](api-design.md) §3, `98` notu). Kaynak başına bir
    controller, adres tablosuyla bire bir eşleşir.
