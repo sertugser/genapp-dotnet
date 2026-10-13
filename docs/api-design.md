@@ -16,6 +16,8 @@ ve eşdeğerlik testleriyle doğrulanır.
 | Numaralar | Müşteri ve poliçe numaraları tam sayıdır (`1000001`); başta sıfır yazılmaz. |
 | Tarihler | `yyyy-MM-dd` biçimindedir (`2026-10-15`). |
 | Metinler | Cevaplardaki metinlerin sonundaki boşluklar kırpılır (`"Andrew"`, `"Andrew    "` değil). |
+| Boş metin | Metin alanları boş gönderilebilir; eski sistem de boş değeri kontrol etmeden kaydeder. Boş bir metin cevapta `""` olarak döner, `null` dönmez. |
+| Yalnızca cevapta olan alanlar | 4. bölümde "yalnızca cevapta" diye işaretli alanlar (`customerNumber`, `policyNumber`) istek gövdesinde gönderilirse yok sayılır; istek reddedilmez. Eski sistem de müşteri eklerken gelen numarayı yok sayıp yeni numara üretir (`lgacdb01.cbl:285`). |
 | Uzunluk sınırları | Metin alanlarının en fazla uzunluğu eski sistemdeki alan uzunluğuyla aynıdır (bkz. 4). |
 | Eşzamanlılık | Poliçe güncellemesi, sorgulamada dönen `lastChanged` değeriyle yapılır (bkz. 5). |
 | Hata gövdesi | Hatalar RFC 9457 "Problem Details" biçiminde döner ve eski dönüş kodunu taşır (bkz. 3). |
@@ -108,9 +110,25 @@ Notlar:
   (`errors`) döner. COMMAREA uzunluk kuralları yalnızca GnuCOBOL'da test edilir.
 - **`99`:** Yeni sistemde işlem türünü adres belirler; tanınmayan bir işlem için istek kodu
   gönderilemez. Var olmayan bir adres ASP.NET Core tarafından 404 olarak döner.
-- **Kilitlenme ve zaman aşımı:** Veritabanı kilitlenmesi ya da zaman aşımı `503 Service Unavailable`
-  (`type: database-busy`, `returnCode: "90"`) olarak döner. Eski sistemden bilinçli farkı ADR 0002'de
-  (Karar 8) açıklanmıştır.
+- **Kilitlenme ve zaman aşımı:** Bütün operasyonlarda veritabanı kilitlenmesi ya da zaman aşımı
+  `503 Service Unavailable` (`type: database-busy`, `returnCode: "90"`) olarak döner. Eski sistemden
+  bilinçli farkı ADR 0002'de (Karar 8) açıklanmıştır.
+
+### Bilinçli sapmalar ve korunan davranışlar
+
+Yeni sistem eski sistemle aynı davranır. Aşağıdaki durumlarda eski kodun yaptığı ile niyeti
+ayrışıyor ya da eski davranış yeni sistemde oluşamıyor; burada ne yapıldığı tek tek yazılmıştır.
+Gerekçeler ADR 0002'dedir (Karar 8 ve 9). Eşdeğerlik ölçümünde bu satırlar "bilinçli sapma" olarak
+raporlanır, hata sayılmaz.
+
+| Durum | Eski sistem | Yeni sistem | Tür |
+|---|---|---|---|
+| Poliçe güncelle: `lastChanged` uyuşmuyor | `02` yazılır (`lgupdb01.cbl:346`), imleç kapatılırken `00` ile ezilir (`:360`, `:371`); kayıt güncellenmez ama çağırana `00` döner | `409`, `returnCode: "02"` | Bilinçli sapma |
+| Poliçe güncelle: poliçe yok | `01` yazılır (`lgupdb01.cbl:352`), aynı şekilde `00` ile ezilir | `404`, `returnCode: "01"` | Bilinçli sapma |
+| Poliçe güncelle: poliçe okunurken veritabanı hatası | `90` yazılır (`lgupdb01.cbl:354`), aynı şekilde `00` ile ezilir | `500`, `returnCode: "90"` | Bilinçli sapma |
+| Müşteri güncelle: müşteri yok | Db2'de `01` yazılır (`lgucdb01.cbl:173-174`), ardından VSAM okuması başarısız olur ve program `LGV1` ile durur (`lgucvs01.cbl:77-81`); çağırana cevap dönmez | `404`, `returnCode: "01"` | Bilinçli sapma (yeni sistemde VSAM yok) |
+| Kilitlenme ve zaman aşımı | Müşteri sorgulamada `01` (`lgicdb01.cbl:197-198`); diğer operasyonlarda o adımın genel hata kodu (çoğunlukla `90`, ticari liste sorgularında `88`/`89`) | `503`, `returnCode: "90"` | Bilinçli sapma (Karar 8) |
+| Poliçe sil: poliçe yok | `90` döner (`lgdpdb01.cbl:198-199`); kodun hemen üstündeki yorum "bulunamadı başarılı sayılsın" der, ama kod bunu yapmaz | `500`, `returnCode: "90"` | **Korunan davranış:** eski sistemle aynı |
 
 ### Hata gövdesi örneği
 
@@ -226,7 +244,10 @@ taşınır; değerlerin yorumu eski koda bırakılır.
 Poliçe sorgulamasının cevabında `lastChanged` alanı döner. Güncelleme isteği bu değeri aynen geri
 gönderir; değerin biçimini sunucu belirler, istemci onu değiştirmeden kullanır. Sunucu, kayıttaki değerle istekteki değeri karşılaştırır; kayıt arada değişmişse
 güncelleme yapılmaz ve `409 Conflict` (`returnCode: "02"`) döner. İstemci kaydı yeniden sorgulayıp
-tekrar denemelidir. Bu, eski sistemdeki `LASTCHANGED` alanının karşılığıdır.
+tekrar denemelidir. Bu, eski sistemdeki `LASTCHANGED` alanının karşılığıdır. Eski kod bu durumda
+`02` yazar ama çağırana `00` döndürür; yeni sistemin `409` döndürmesi bilinçli bir sapmadır (bkz. 3,
+"Bilinçli sapmalar ve korunan davranışlar"). Müşteri güncellemesinde böyle bir kontrol yoktur; eski
+sistemde de yoktur.
 
 ## 6. Örnek istekler
 
