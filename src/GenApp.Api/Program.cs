@@ -31,7 +31,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/", () => "Hello World!");
+// Web interface (docs/architecture.md section 5, decision 1): static HTML + JavaScript in wwwroot that calls the
+// same REST API as the tests. "/" serves wwwroot/index.html, the customer screen (legacy LGTESTC1, map SSMAPC1).
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.MapControllers();
 
 app.Run();

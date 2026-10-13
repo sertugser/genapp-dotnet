@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GenApp · Müşteri işlemleri</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <!--
+    Customer screen. Replaces the 3270 screen LGTESTC1 (map SSMAPC1 in base/src/ssmap.bms): same fields, same
+    options (1 inquiry, 2 add, 4 update; the legacy menu has no option 3). Every action goes through the REST API
+    (docs/api-design.md section 2.1); the page never touches the database.
+  -->
+  <main class="screen" aria-labelledby="screen-title">
+    <header class="screen-head">
+      <span class="tx-code" title="Eski sistemdeki CICS işlem kodu">SSC1</span>
+      <h1 id="screen-title">Müşteri işlemleri</h1>
+      <span class="system">GenApp</span>
+    </header>
+
+    <form id="customer-form" class="screen-body" novalidate>
+      <fieldset class="options">
+        <legend>Seçenek</legend>
+        <label class="option"><input type="radio" name="option" value="inquire" checked><span class="key">1</span> Sorgula</label>
+        <label class="option"><input type="radio" name="option" value="add"><span class="key">2</span> Ekle</label>
+        <label class="option"><input type="radio" name="option" value="update"><span class="key">4</span> Güncelle</label>
+      </fieldset>
+
+      <p class="hint" id="option-hint">Müşteri numarasını yazıp Enter'a basın.</p>
+
+      <div class="fields">
+        <label for="customerNumber">Müşteri no</label>
+        <div class="field"><input id="customerNumber" name="customerNumber" inputmode="numeric" autocomplete="off" maxlength="10" class="w-10"><span class="len">10</span></div>
+
+        <label for="firstName">Ad</label>
+        <div class="field"><input id="firstName" name="firstName" maxlength="10" class="w-10"><span class="len">10</span></div>
+
+        <label for="lastName">Soyad</label>
+        <div class="field"><input id="lastName" name="lastName" maxlength="20" class="w-20"><span class="len">20</span></div>
+
+        <label for="dateOfBirth">Doğum tarihi</label>
+        <div class="field"><input id="dateOfBirth" name="dateOfBirth" type="date" class="w-date"></div>
+
+        <label for="houseName">Ev adı</label>
+        <div class="field"><input id="houseName" name="houseName" maxlength="20" class="w-20"><span class="len">20</span></div>
+
+        <label for="houseNumber">Ev no</label>
+        <div class="field"><input id="houseNumber" name="houseNumber" maxlength="4" class="w-4"><span class="len">4</span></div>
+
+        <label for="postcode">Posta kodu</label>
+        <div class="field"><input id="postcode" name="postcode" maxlength="8" class="w-8 upper"><span class="len">8</span></div>
+
+        <label for="phoneHome">Telefon: ev</label>
+        <div class="field"><input id="phoneHome" name="phoneHome" maxlength="20" class="w-20"><span class="len">20</span></div>
+
+        <label for="phoneMobile">Telefon: cep</label>
+        <div class="field"><input id="phoneMobile" name="phoneMobile" maxlength="20" class="w-20"><span class="len">20</span></div>
+
+        <label for="email">E-posta</label>
+        <div class="field"><input id="email" name="email" type="email" maxlength="100" class="w-wide"><span class="len">100</span></div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" id="submit">Gönder <kbd>Enter</kbd></button>
+        <button type="button" id="clear" class="secondary">Temizle</button>
+      </div>
+    </form>
+
+    <footer class="status" id="status" role="status" aria-live="polite">Hazır.</footer>
+  </main>
+
+  <script src="js/customers.js"></script>
+</body>
+</html>
