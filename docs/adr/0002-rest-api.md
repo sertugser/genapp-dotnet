@@ -1,7 +1,7 @@
 # ADR 0002: REST API ve dönüş kodu eşlemesi
 
 - **Durum:** Önerildi
-- **Tarih:** 2026-10-10
+- **Tarih:** 2026-10-10 (güncelleme 2026-10-13: Karar 8 bütün operasyonlara genişletildi, Karar 9 eklendi)
 - **İlgili:** [API tasarımı](../api-design.md), [SRS](../srs.md), ADR 0001 (katmanlı mimari), ADR 0003 (veri ve transaction), ADR 0005 (test mimarisi)
 
 ## Bağlam
@@ -67,8 +67,29 @@ değeri güncelleme isteğinde geri gönderilir; uyuşmazsa 409 döner. Bu, eski
 
 **8. Db2'ye özgü kilitlenme ve zaman aşımı durumu bilerek farklı ele alınacak.** Eski sistemde
 müşteri sorgulamada Db2'nin kilitlenme/zaman aşımı kodu (SQLCODE -913) "bulunamadı" (`01`) olarak
-döner. Yeni sistemde PostgreSQL'in kilitlenme ve zaman aşımı hataları `503 Service Unavailable`
+döner (`lgicdb01.cbl:197-198`); poliçe güncellemede (`lgupdb01.cbl:262-263`) ve diğer
+operasyonlarda o adımın genel hata kodu olarak döner: çoğunlukla `90`, ticari poliçe liste
+sorgularında imleç adımlarında `88` ya da `89` (`lgipdb01.cbl:844`, `:856`). Yeni sistemde **bütün operasyonlarda**
+PostgreSQL'in kilitlenme ve zaman aşımı hataları `503 Service Unavailable`
 (`type: database-busy`, `returnCode: "90"`) olarak döner.
+
+**9. Eski davranış korunacak; yalnızca iki durumda bilerek farklı davranılacak.** Yeni sistem eski
+sistemle aynı davranır. Yalnızca şu iki durumda farklı davranır ve her biri bilinçli sapma olarak
+kaydedilir:
+
+- **Eski kodun bir hata yüzünden kendi koyduğu dönüş kodunu ezdiği yerler.** Poliçe güncellemede
+  `LGUPDB01`, çakışmada `02`, poliçe yoksa `01`, okuma hatasında `90` yazar (`lgupdb01.cbl:346`,
+  `:352`, `:354`), ama ardından imleci kapatırken bunu `00` ile ezer (`:360`, `:371`). Çağıran
+  "başarılı" görür, oysa kayıt güncellenmemiştir. Yeni sistem kodun yazdığı değeri döndürür:
+  `409`/`"02"`, `404`/`"01"`, `500`/`"90"`.
+- **Eski davranışın yeni sistemde oluşamadığı yerler.** Müşteri güncellemede müşteri yoksa eski
+  sistem `01` yazar (`lgucdb01.cbl:173-174`), ama ardından VSAM okuması başarısız olur ve program
+  çöker (`lgucvs01.cbl:77-81`). Yeni sistemde VSAM olmadığı için (ADR 0003) `404`/`"01"` döner.
+
+Eski kodun yalnızca yorumda başka bir niyet belirttiği ama tutarlı biçimde çalıştığı yerlerde eski
+davranış korunur. Örnek: var olmayan poliçe silinirken eski kodun yorumu "bulunamadı başarılı
+sayılsın" der, ama kod `90` döndürür (`lgdpdb01.cbl:196-199`); yeni sistem de `500`/`"90"` döndürür.
+Bütün liste [API tasarımı](../api-design.md) 3. bölümdedir.
 
 ## Gerekçe
 
@@ -88,7 +109,15 @@ döner. Yeni sistemde PostgreSQL'in kilitlenme ve zaman aşımı hataları `503 
 - **Neden -913 için farklı davranış:** Kilitlenme geçici bir durumdur; kullanıcıya "kayıt yok"
   demek yanlış bilgi verir ve kullanıcı var olan bir müşteriyi yeniden eklemeye kalkabilir.
   PostgreSQL'de Db2'nin bu koduyla bire bir aynı bir durum da yoktur. Bu durum testte
-  kendiliğinden üretilemediği için eşdeğerlik ölçümünü etkilemez.
+  kendiliğinden üretilemediği için eşdeğerlik ölçümünü etkilemez. Kural bütün operasyonlara
+  uygulanır, çünkü kilitlenmenin anlamı operasyona göre değişmez.
+- **Neden Karar 9'daki iki sapma:** Poliçe güncellemede eski kod kaydı güncellemediği halde
+  çağırana "başarılı" der; bunu kopyalamak kullanıcının değişikliğinin sessizce kaybolması demektir
+  ve SRS 3.2 ile çelişir ("Değiştirilmişse güncellemeyi yapmaz ve bunu bildirir"). Kodun kendisi
+  `02`, `01` ve `90` yazdığı için doğru davranış kodda zaten tanımlıdır; ezilmesi bir programlama hatasıdır. Müşteri güncellemedeki çökme ise VSAM'a
+  bağlıdır ve VSAM'ın olmadığı yeni sistemde üretilemez. Silmedeki `90` ise kodda tutarlı biçimde
+  üretilir ve kullanıcıya veri kaybettirmez; niyet yalnızca bir yorumda geçtiği için eşdeğerlik
+  önceliklidir ve davranış korunur.
 
 ## Değerlendirilen seçenekler
 
@@ -110,7 +139,8 @@ döner. Yeni sistemde PostgreSQL'in kilitlenme ve zaman aşımı hataları `503 
 **Olumsuz ve kabul ettiklerimiz**
 - COMMAREA'ya ait kurallar (`98` gibi) API üzerinden test edilemez; bunlar yalnızca GnuCOBOL'da
   test edilir.
-- Metin kırpma ve -913 kararları, eski sistemle bilinçli olarak farklı olduğumuz iki noktadır.
-  Raporda "bilinçli sapmalar" olarak yazılacaktır.
+- Eski sistemle bilinçli olarak farklı olduğumuz noktalar: metin kırpma (Karar 6), kilitlenme ve
+  zaman aşımı (Karar 8) ve Karar 9'daki dört durum. Tam liste API tasarımının 3. bölümündedir.
+  Eşdeğerlik ölçümünde bu durumlar hata sayılmaz, raporda "bilinçli sapmalar" olarak yazılır.
 - `80`, `81`, `82` kodları VSAM'a aittir; yeni sistemde VSAM için ayrı bir depolama olmadığı için
   (bkz. `docs/database-schema.md`, kesin karar ADR 0003'te) bu kodlar pratikte oluşmayacaktır.
