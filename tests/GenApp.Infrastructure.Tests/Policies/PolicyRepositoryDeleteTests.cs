@@ -8,15 +8,16 @@ namespace GenApp.Infrastructure.Tests.Policies;
 
 /// <summary>
 /// Poliçe sil (eski LGDPDB01): DELETE FROM POLICY WHERE müşteri no AND poliçe no (lgdpdb01.cbl:189-193); tür satırını
-/// ON DELETE CASCADE siler. Kayıt yoksa da başarılıdır: "end result is record does not exist" (:196-197).
+/// ON DELETE CASCADE siler. Kayıt yoksa 0 satır silinir; servis bunu eski koddaki gibi 90'a çevirir (:198-199).
+/// :196-197'deki yorum "kayıt yoksa başarılı" der ama kod 90 döndürür; yeni sistem kodu izler (docs/api-design.md §3).
 /// </summary>
 [Collection(PostgresKoleksiyonu.Ad)]
 public sealed class PolicyRepositoryDeleteTests(PostgresFixture veritabani)
 {
-    private async Task SilAsync(int musteri, int police)
+    private async Task<int> SilAsync(int musteri, int police)
     {
         await using var kapsam = veritabani.Kapsam();
-        await kapsam.ServiceProvider.GetRequiredService<IPolicyRepository>().DeleteAsync(musteri, police);
+        return await kapsam.ServiceProvider.GetRequiredService<IPolicyRepository>().DeleteAsync(musteri, police);
     }
 
     private Task<bool> PoliceVarMiAsync(int police) =>
@@ -31,8 +32,9 @@ public sealed class PolicyRepositoryDeleteTests(PostgresFixture veritabani)
         var musteri = await veritabani.MusteriEkleAsync();
         var eklenen = await veritabani.PoliceEkleAsync(musteri, new MotorPolicy());
 
-        await SilAsync(musteri, eklenen.PolicyNumber);
+        var silinen = await SilAsync(musteri, eklenen.PolicyNumber);
 
+        Assert.Equal(1, silinen);
         Assert.False(await PoliceVarMiAsync(eklenen.PolicyNumber));
         Assert.False(await MotorVarMiAsync(eklenen.PolicyNumber));
     }
@@ -44,19 +46,20 @@ public sealed class PolicyRepositoryDeleteTests(PostgresFixture veritabani)
         var baskasi = await veritabani.MusteriEkleAsync();
         var eklenen = await veritabani.PoliceEkleAsync(sahibi, new MotorPolicy());
 
-        await SilAsync(baskasi, eklenen.PolicyNumber);
+        var silinen = await SilAsync(baskasi, eklenen.PolicyNumber);
 
+        Assert.Equal(0, silinen);
         Assert.True(await PoliceVarMiAsync(eklenen.PolicyNumber));
         Assert.True(await MotorVarMiAsync(eklenen.PolicyNumber));
     }
 
     [Fact]
-    public async Task Olmayan_policeyi_silmek_hata_vermez()
+    public async Task Olmayan_policeyi_silmek_sifir_satir_dondurur()
     {
         var musteri = await veritabani.MusteriEkleAsync();
 
-        var hata = await Record.ExceptionAsync(() => SilAsync(musteri, 999999999));
+        var silinen = await SilAsync(musteri, 999999999);
 
-        Assert.Null(hata);
+        Assert.Equal(0, silinen);
     }
 }

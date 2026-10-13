@@ -11,5 +11,7 @@ public interface IPolicyRepository
 
     void MarkUpdated(Policy policy, DateTime lastChangedFromClient);
 
-    Task DeleteAsync(int customerNumber, int policyNumber, CancellationToken cancellationToken = default);
+    // Returns the number of policy rows deleted. 0 means no such policy for this customer; the service turns
+    // that into return code 90, as LGDPDB01 does (lgdpdb01.cbl:198-199, docs/api-design.md section 3).
+    Task<int> DeleteAsync(int customerNumber, int policyNumber, CancellationToken cancellationToken = default);
 }

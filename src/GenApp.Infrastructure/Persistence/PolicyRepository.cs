@@ -46,9 +46,11 @@ internal sealed class PolicyRepository(GenAppDbContext db, TimeProvider clock) :
         lastChanged.CurrentValue = Now();
     }
 
-    // LGDPDB01 (lgdpdb01.cbl:189-197): one DELETE on policy; ON DELETE CASCADE removes the type row; deleting a
-    // missing policy is not an error. ExecuteDeleteAsync runs at once: a delete is the operation's only write.
-    public Task DeleteAsync(int customerNumber, int policyNumber, CancellationToken cancellationToken = default) =>
+    // LGDPDB01 (lgdpdb01.cbl:189-199): one DELETE on policy; ON DELETE CASCADE removes the type row. The comment at
+    // :196-197 says a missing policy counts as success, but the code at :198-199 returns 90 for SQLCODE 100. The new
+    // system keeps the code's behaviour (docs/api-design.md section 3), so the deleted row count is returned and
+    // the service maps 0 to 90. ExecuteDeleteAsync runs at once: a delete is the operation's only write.
+    public Task<int> DeleteAsync(int customerNumber, int policyNumber, CancellationToken cancellationToken = default) =>
         db.Policies
             .Where(p => p.CustomerNumber == customerNumber && p.PolicyNumber == policyNumber)
             .ExecuteDeleteAsync(cancellationToken);
