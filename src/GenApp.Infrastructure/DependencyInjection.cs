@@ -1,3 +1,4 @@
+using GenApp.Application.Customers;
 using GenApp.Application.Persistence;
 using GenApp.Application.Policies;
 using GenApp.Infrastructure.Persistence;
@@ -16,6 +17,7 @@ public static class DependencyInjection
 
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IPolicyRepository, PolicyRepository>();
 
         return services;
