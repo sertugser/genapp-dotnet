@@ -1,8 +1,9 @@
 namespace GenApp.Domain.Policies;
 
-public class CommercialPolicy
+public class CommercialPolicy : IPolicyDetails
 {
     public int PolicyNumber { get; set; }
+    public Policy? Policy { get; set; }
     public DateTime? RequestDate { get; set; }
     public DateOnly? StartDate { get; set; }
     public DateOnly? RenewalDate { get; set; }

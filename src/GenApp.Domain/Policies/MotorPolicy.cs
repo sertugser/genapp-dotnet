@@ -1,8 +1,9 @@
 namespace GenApp.Domain.Policies;
 
-public class MotorPolicy
+public class MotorPolicy : IPolicyDetails
 {
     public int PolicyNumber { get; set; }
+    public Policy? Policy { get; set; }
     public string? Make { get; set; }
     public string? Model { get; set; }
     public int? Value { get; set; }

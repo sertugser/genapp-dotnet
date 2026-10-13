@@ -1,8 +1,9 @@
 namespace GenApp.Domain.Policies;
 
-public class HousePolicy
+public class HousePolicy : IPolicyDetails
 {
     public int PolicyNumber { get; set; }
+    public Policy? Policy { get; set; }
     public string? PropertyType { get; set; }
     public short? Bedrooms { get; set; }
     public int? Value { get; set; }

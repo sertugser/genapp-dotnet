@@ -1,8 +1,9 @@
 namespace GenApp.Domain.Policies;
 
-public class EndowmentPolicy
+public class EndowmentPolicy : IPolicyDetails
 {
     public int PolicyNumber { get; set; }
+    public Policy? Policy { get; set; }
     public string? Equities { get; set; }
     public string? WithProfits { get; set; }
     public string? ManagedFund { get; set; }
