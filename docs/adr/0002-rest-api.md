@@ -1,7 +1,7 @@
 # ADR 0002: REST API ve dönüş kodu eşlemesi
 
 - **Durum:** Önerildi
-- **Tarih:** 2026-10-10 (güncelleme 2026-10-13: Karar 8 bütün operasyonlara genişletildi, Karar 9 eklendi)
+- **Tarih:** 2026-10-10 (güncelleme 2026-10-13: Karar 8 bütün operasyonlara genişletildi, Karar 9 eklendi; güncelleme 2026-10-16: Karar 9'a iki ezilme yolu, yanlış türden poliçe ve 10 haneli numara eklendi, iki korunan davranış yazıldı)
 - **İlgili:** [API tasarımı](../api-design.md), [SRS](../srs.md), ADR 0001 (katmanlı mimari), ADR 0003 (veri ve transaction), ADR 0005 (test mimarisi)
 
 ## Bağlam
@@ -73,22 +73,34 @@ sorgularında imleç adımlarında `88` ya da `89` (`lgipdb01.cbl:844`, `:856`).
 PostgreSQL'in kilitlenme ve zaman aşımı hataları `503 Service Unavailable`
 (`type: database-busy`, `returnCode: "90"`) olarak döner.
 
-**9. Eski davranış korunacak; yalnızca iki durumda bilerek farklı davranılacak.** Yeni sistem eski
-sistemle aynı davranır. Yalnızca şu iki durumda farklı davranır ve her biri bilinçli sapma olarak
-kaydedilir:
+**9. Eski davranış korunacak; yalnızca aşağıdaki durumlarda bilerek farklı davranılacak.** Yeni
+sistem eski sistemle aynı davranır. Yalnızca şu durumlarda farklı davranır ve her biri bilinçli sapma
+olarak kaydedilir:
 
 - **Eski kodun bir hata yüzünden kendi koyduğu dönüş kodunu ezdiği yerler.** Poliçe güncellemede
   `LGUPDB01`, çakışmada `02`, poliçe yoksa `01`, okuma hatasında `90` yazar (`lgupdb01.cbl:346`,
   `:352`, `:354`), ama ardından imleci kapatırken bunu `00` ile ezer (`:360`, `:371`). Çağıran
-  "başarılı" görür, oysa kayıt güncellenmemiştir. Yeni sistem kodun yazdığı değeri döndürür:
-  `409`/`"02"`, `404`/`"01"`, `500`/`"90"`.
+  "başarılı" görür, oysa kayıt güncellenmemiştir. Aynı ezilme iki yerde daha olur: tür tablosundaki
+  satır güncellenemeyince (`:302-307`) ve `POLICY` güncellemesinden sonraki `SELECT` başarısız olup
+  `SYNCPOINT ROLLBACK` imleci kapattığında `CLOSE`'un `-501` yolunda (`:336-342`, `:372-375`).
+  Yeni sistem kodun yazdığı değeri döndürür: `409`/`"02"`, `404`/`"01"`, `500`/`"90"`.
 - **Eski davranışın yeni sistemde oluşamadığı yerler.** Müşteri güncellemede müşteri yoksa eski
   sistem `01` yazar (`lgucdb01.cbl:173-174`), ama ardından VSAM okuması başarısız olur ve program
   çöker (`lgucvs01.cbl:77-81`). Yeni sistemde VSAM olmadığı için (ADR 0003) `404`/`"01"` döner.
+- **Eski kodun girdiyi denetlemediği için başka bir kayıt üzerinde işlem yaptığı yerler.**
+  - *Poliçe türü:* Poliçe programları `POLICY.POLICYTYPE`'ı hiç okumaz; bir motor poliçesi konut
+    adresinden silinebilir (`lgdpdb01.cbl:189-194`). Yeni sistem poliçenin türü adresteki türle
+    uyuşmuyorsa işlem yapmaz ve `404`/`"01"` döner (sorgula, güncelle ve silde).
+  - *10 haneli numara:* Müşteri ve poliçe numaraları Db2'ye gitmeden 9 haneli alanlara taşınır ve en
+    soldaki hane kesilir (`lgapdb01.cbl:90`, `:176`): `1000000004` müşteri 4 olur. Yeni sistem numarayı
+    kesmez; o numarada kayıt yoksa `404` döner.
 
 Eski kodun yalnızca yorumda başka bir niyet belirttiği ama tutarlı biçimde çalıştığı yerlerde eski
 davranış korunur. Örnek: var olmayan poliçe silinirken eski kodun yorumu "bulunamadı başarılı
 sayılsın" der, ama kod `90` döndürür (`lgdpdb01.cbl:196-199`); yeni sistem de `500`/`"90"` döndürür.
+Eski kodun tutarlı biçimde uyguladığı ama hata olup olmadığı kodda belli olmayan kurallar da
+korunur: poliçe güncellemede ödeme (`payment`) değişmez (`lgupdb01.cbl:319-325`); konut poliçesinde
+boş tür, 0 oda ve 0 değer denetlenmeden kaydedilir (`lgapdb01.cbl:405-425`).
 Bütün liste [API tasarımı](../api-design.md) 3. bölümdedir.
 
 ## Gerekçe
@@ -111,11 +123,14 @@ Bütün liste [API tasarımı](../api-design.md) 3. bölümdedir.
   PostgreSQL'de Db2'nin bu koduyla bire bir aynı bir durum da yoktur. Bu durum testte
   kendiliğinden üretilemediği için eşdeğerlik ölçümünü etkilemez. Kural bütün operasyonlara
   uygulanır, çünkü kilitlenmenin anlamı operasyona göre değişmez.
-- **Neden Karar 9'daki iki sapma:** Poliçe güncellemede eski kod kaydı güncellemediği halde
+- **Neden Karar 9'daki sapmalar:** Poliçe güncellemede eski kod kaydı güncellemediği halde
   çağırana "başarılı" der; bunu kopyalamak kullanıcının değişikliğinin sessizce kaybolması demektir
   ve SRS 3.2 ile çelişir ("Değiştirilmişse güncellemeyi yapmaz ve bunu bildirir"). Kodun kendisi
   `02`, `01` ve `90` yazdığı için doğru davranış kodda zaten tanımlıdır; ezilmesi bir programlama hatasıdır. Müşteri güncellemedeki çökme ise VSAM'a
-  bağlıdır ve VSAM'ın olmadığı yeni sistemde üretilemez. Silmedeki `90` ise kodda tutarlı biçimde
+  bağlıdır ve VSAM'ın olmadığı yeni sistemde üretilemez. Poliçe türü ve 10 haneli numarada eski kod
+  adresteki kayıt yerine başka bir kayıt üzerinde işlem yapar (yanlış türden poliçeyi siler, kesilen
+  numaradaki müşteriye poliçe ekler); bunu kopyalamak kullanıcıya veri kaybettirir. Ödeme ve konut alanlarında ise eski davranış bir veri kaybına yol açmaz ve bilinçli bir
+  iş kuralı olabilir; emin olunamadığı için korunur. Silmedeki `90` ise kodda tutarlı biçimde
   üretilir ve kullanıcıya veri kaybettirmez; niyet yalnızca bir yorumda geçtiği için eşdeğerlik
   önceliklidir ve davranış korunur.
 
@@ -140,7 +155,7 @@ Bütün liste [API tasarımı](../api-design.md) 3. bölümdedir.
 - COMMAREA'ya ait kurallar (`98` gibi) API üzerinden test edilemez; bunlar yalnızca GnuCOBOL'da
   test edilir.
 - Eski sistemle bilinçli olarak farklı olduğumuz noktalar: metin kırpma (Karar 6), kilitlenme ve
-  zaman aşımı (Karar 8) ve Karar 9'daki dört durum. Tam liste API tasarımının 3. bölümündedir.
+  zaman aşımı (Karar 8) ve Karar 9'daki durumlar. Tam liste API tasarımının 3. bölümündedir.
   Eşdeğerlik ölçümünde bu durumlar hata sayılmaz, raporda "bilinçli sapmalar" olarak yazılır.
 - `80`, `81`, `82` kodları VSAM'a aittir; yeni sistemde VSAM için ayrı bir depolama olmadığı için
   (bkz. `docs/database-schema.md`, kesin karar ADR 0003'te) bu kodlar pratikte oluşmayacaktır.
