@@ -1,0 +1,151 @@
+OK    [01IMOT 0] process ended normally
+OK    [01IMOT 100] process ended normally
+OK    [01IMOT -904] process ended normally
+OK    [01IMOT -305] process ended normally
+OK    [01IMOT -803] process ended normally
+OK    [01IMOT -811] process ended normally
+OK    [01IMOT -911] process ended normally
+OK    [01IMOT -913] process ended normally
+OK    [01IMOT -922] process ended normally
+OK    [01IMOT -30081] process ended normally
+OK    [01IMOT +304] process ended normally
+OK    [01IEND 0] process ended normally
+OK    [01IEND 100] process ended normally
+OK    [01IEND -904] process ended normally
+OK    [01IHOU 0] process ended normally
+OK    [01IHOU 100] process ended normally
+OK    [01IHOU -904] process ended normally
+OK    [01ICOM 0] process ended normally
+OK    [01ICOM 100] process ended normally
+OK    [01ICOM -904] process ended normally
+OK    [03ICOM 0] process ended normally
+OK    [03ICOM 100] process ended normally
+OK    [03ICOM -904] process ended normally
+--- 05-01 akış iddiaları (SQLCODE 0): [01IMOT 0]
+OK    rc
+OK    FINAL mark at 178-182
+OK    bytes 183-32500 untouched
+OK    REQUEST-ID unchanged
+OK    CUSTOMER-NUM unchanged
+OK    POLICY-NUM unchanged
+OK    no LGSTSQ message
+OK    SELECT run once
+OK    no ABEND
+--- 05-03 (SQLCODE 100): [01IMOT 100]
+OK    rc
+OK    bytes 29-32500 untouched
+OK    FINAL not written
+OK    no LGSTSQ message
+OK    SELECT run once
+OK    REQUEST-ID unchanged
+--- 05-06 kuralı (SQLCODE -904): [01IMOT -904]
+OK    -904 rc
+OK    -904 bytes 29-32500 untouched
+OK    -904 FINAL not written
+OK    -904 SELECT run once
+OK    -904 msg count
+OK    -904 msg1 (87 bytes, date/time blanked by stub)
+OK    -904 msg1 length
+OK    -904 msg2 ('COMMAREA=' + first 90 bytes)
+OK    -904 msg2 length
+--- 05-06 kuralı (SQLCODE -305): [01IMOT -305]
+OK    -305 rc
+OK    -305 bytes 29-32500 untouched
+OK    -305 FINAL not written
+OK    -305 SELECT run once
+OK    -305 msg count
+OK    -305 msg1 (87 bytes, date/time blanked by stub)
+OK    -305 msg1 length
+OK    -305 msg2 ('COMMAREA=' + first 90 bytes)
+OK    -305 msg2 length
+--- 05-06 kuralı (SQLCODE -803): [01IMOT -803]
+OK    -803 rc
+OK    -803 bytes 29-32500 untouched
+OK    -803 FINAL not written
+OK    -803 SELECT run once
+OK    -803 msg count
+OK    -803 msg1 (87 bytes, date/time blanked by stub)
+OK    -803 msg1 length
+OK    -803 msg2 ('COMMAREA=' + first 90 bytes)
+OK    -803 msg2 length
+--- 05-06 kuralı (SQLCODE -811): [01IMOT -811]
+OK    -811 rc
+OK    -811 bytes 29-32500 untouched
+OK    -811 FINAL not written
+OK    -811 SELECT run once
+OK    -811 msg count
+OK    -811 msg1 (87 bytes, date/time blanked by stub)
+OK    -811 msg1 length
+OK    -811 msg2 ('COMMAREA=' + first 90 bytes)
+OK    -811 msg2 length
+--- 05-06 kuralı (SQLCODE -911): [01IMOT -911]
+OK    -911 rc
+OK    -911 bytes 29-32500 untouched
+OK    -911 FINAL not written
+OK    -911 SELECT run once
+OK    -911 msg count
+OK    -911 msg1 (87 bytes, date/time blanked by stub)
+OK    -911 msg1 length
+OK    -911 msg2 ('COMMAREA=' + first 90 bytes)
+OK    -911 msg2 length
+--- 05-06 kuralı (SQLCODE -913): [01IMOT -913]
+OK    -913 rc
+OK    -913 bytes 29-32500 untouched
+OK    -913 FINAL not written
+OK    -913 SELECT run once
+OK    -913 msg count
+OK    -913 msg1 (87 bytes, date/time blanked by stub)
+OK    -913 msg1 length
+OK    -913 msg2 ('COMMAREA=' + first 90 bytes)
+OK    -913 msg2 length
+--- 05-06 kuralı (SQLCODE -922): [01IMOT -922]
+OK    -922 rc
+OK    -922 bytes 29-32500 untouched
+OK    -922 FINAL not written
+OK    -922 SELECT run once
+OK    -922 msg count
+OK    -922 msg1 (87 bytes, date/time blanked by stub)
+OK    -922 msg1 length
+OK    -922 msg2 ('COMMAREA=' + first 90 bytes)
+OK    -922 msg2 length
+--- 05-06 kuralı (SQLCODE -30081): [01IMOT -30081]
+OK    -30081 rc
+OK    -30081 bytes 29-32500 untouched
+OK    -30081 FINAL not written
+OK    -30081 SELECT run once
+OK    -30081 msg count
+OK    -30081 msg1 (87 bytes, date/time blanked by stub)
+OK    -30081 msg1 length
+OK    -30081 msg2 ('COMMAREA=' + first 90 bytes)
+OK    -30081 msg2 length
+--- 05-06 kuralı (SQLCODE +304): [01IMOT +304]
+OK    +304 rc
+OK    +304 bytes 29-32500 untouched
+OK    +304 FINAL not written
+OK    +304 SELECT run once
+OK    +304 msg count
+OK    +304 msg1 (87 bytes, date/time blanked by stub)
+OK    +304 msg1 length
+OK    +304 msg2 ('COMMAREA=' + first 90 bytes)
+OK    +304 msg2 length
+--- Bilgi için (puanlanmaz): motor dışı kollar
+  [01IEND 0] rc=[00] SQL stubs run=1 messages=0 exit=0 firstmsg=[]
+  [01IEND 100] rc=[01] SQL stubs run=1 messages=0 exit=0 firstmsg=[]
+  [01IEND -904] rc=[90] SQL stubs run=1 messages=2 exit=0 firstmsg=[ LGIPDB01 CNUM=0000000002 PNUM=0000000001 SEL]
+  [01IHOU 0] rc=[00] SQL stubs run=1 messages=0 exit=0 firstmsg=[]
+  [01IHOU 100] rc=[01] SQL stubs run=1 messages=0 exit=0 firstmsg=[]
+  [01IHOU -904] rc=[90] SQL stubs run=1 messages=2 exit=0 firstmsg=[ LGIPDB01 CNUM=0000000002 PNUM=0000000001 SEL]
+  [01ICOM 0] rc=[00] SQL stubs run=1 messages=0 exit=0 firstmsg=[]
+  [01ICOM 100] rc=[01] SQL stubs run=1 messages=0 exit=0 firstmsg=[]
+  [01ICOM -904] rc=[90] SQL stubs run=1 messages=2 exit=0 firstmsg=[ LGIPDB01 CNUM=0000000002 PNUM=0000000001 SEL]
+  [03ICOM 0] rc=[00] SQL stubs run=23 messages=0 exit=0 firstmsg=[]
+  [03ICOM 100] rc=[89] SQL stubs run=1 messages=2 exit=0 firstmsg=[ LGIPDB01 CNUM=0000000002 PNUM=0000000001 SEL]
+  [03ICOM -904] rc=[89] SQL stubs run=1 messages=2 exit=0 firstmsg=[ LGIPDB01 CNUM=0000000002 PNUM=0000000001 SEL]
+  [02ICOM 0] rc=[00] SQL stubs run=1 messages=0 exit=0 firstmsg=[]
+  [02ICOM 100] rc=[01] SQL stubs run=1 messages=0 exit=0 firstmsg=[]
+  [02ICOM -904] rc=[90] SQL stubs run=1 messages=2 exit=0 firstmsg=[ LGIPDB01 CNUM=0000000002 PNUM=0000000001 SEL]
+  [05ICOM 0] rc=[] SQL stubs run=199 messages=0 exit=124 firstmsg=[]
+  [05ICOM 100] rc=[89] SQL stubs run=1 messages=2 exit=0 firstmsg=[ LGIPDB01 CNUM=0000000002 PNUM=0000000001 SEL]
+  [05ICOM -904] rc=[89] SQL stubs run=1 messages=2 exit=0 firstmsg=[ LGIPDB01 CNUM=0000000002 PNUM=0000000001 SEL]
+
+PASS=119 FAIL=0
