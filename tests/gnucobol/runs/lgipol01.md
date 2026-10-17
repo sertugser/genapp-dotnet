@@ -9,7 +9,7 @@
 | Karşılaştırılan tahmin | `tests/predictions/05-motor-inquire.md` (21 satır, 05-01 ... 05-21) |
 | GnuCOBOL | 3.2.0, MSYS2 ucrt64 |
 | Ham çıktı | `runs/lgipol01-cikti.txt` |
-| Karşılaştırma betiği | `runs/lgipol01-karsilastir.sh` |
+| Karşılaştırma betiği | `runs/lgipol01-karsilastir.sh` (çıktısı: `runs/lgipol01-karsilastir-cikti.txt`, 299 kontrol) |
 | Çalıştırma betiği | `runs/lgipol01-calistir.sh` |
 | Dönüşüm betiği | `convert-lgipol01.py` |
 
@@ -159,4 +159,104 @@ Beklenen 21 satırın dağılımı (çalıştırmadan önceki **plan**, sonuç d
 
 ## Sonuç
 
-(Çalıştırmadan sonra doldurulacak.)
+Kurallar `fc54d66` (2026-10-17 14:52) ile commit'lendi; düzenek ondan sonra derlendi ve çalıştırıldı. Hiçbir kural çalıştırmadan sonra değişmedi.
+23 durumun 23'ü `exit=0` ile bitti ve hiçbirinde `RIG ERROR` (desteklenmeyen Db2 deyimi) görülmedi. Bütün karşılaştırmalar `runs/lgipol01-karsilastir.sh`
+ile bayt bayt yapıldı (beklenen değerler yalnızca `05-motor-inquire.md`'den): **299 kontrol, 299 geçti** (253'ü satırların iddiası, 46'sı "süreç normal bitti /
+desteklenmeyen deyime girilmedi" denetimi). Betiğin boş geçmediğini bozulmuş çıktılarla denedim (üç bozulma, hepsi yakalandı).
+
+### Satır satır
+
+| Test no | Durum | Gerçek sonuç | Karar |
+|---|---|---|---|
+| 05-01 | C0501 | `00`; `FORD`+␣×11 / `KA`+␣×13 / `008500` / `LL60LOO` / `ORANGE`+␣×2 / `1000` / `000450` / `000000`; `CA-BROKERID = 0000000000`, `CA-BROKERSREF` ␣×10, `CA-PAYMENT = 000000`; 178-182. baytlar `FINAL`; 183-32500 değişmedi; istek no, müşteri no, poliçe no değişmedi; `SELECT`'e müşteri 2 / poliçe 1 gitti; LGSTSQ'ya mesaj gitmedi | **tuttu** (tarih alanları puanlanmadı: tahmin belirsiz; stub'ın JCL'den aldığı metinler `2011-05-11`, `2012-05-10`, `2011-05-11 17:12:17`, `1999-07-19`) |
+| 05-02 | C0502 | `00`; `DENNIS`+␣×9 / `ENGINE`+␣×9 / `023500` / `FIRE1`+␣×2 / `RED`+␣×5 / `5000` / `002850` / `000012`; broker, ref, ödeme 0 / ␣ / 0; `FINAL`; mesaj yok | **tuttu** (tarihler puanlanmadı; metinler `2011-09-08`, `2012-09-07`, `2011-09-08 13:14:45`, `1973-05-13`) |
+| 05-03 | C0503 | `01`; 29-32500. baytlar boşluk kaldı; `FINAL` yok; mesaj yok | **tuttu** |
+| 05-04 | C0504 | `01`; aynı | **tuttu** |
+| 05-05 | C0505 | `01`; aynı | **tuttu** |
+| 05-06 | C0506 | `90`; alanlar boş, `FINAL` yok; LGSTSQ'ya iki mesaj: (1) 87 bayt, 15 boşluk + ` LGIPDB01 CNUM=0000000002 PNUM=0000000001 SELECT MOTOR `+␣×2` SQLCODE=-00904`; (2) 99 bayt, `COMMAREA=01IMOT90`+`0000000002`+`0000000001`+␣×62 | **tuttu** |
+| 05-07 | C0507 | `00`; 05-01'deki değerler; `CA-REQUEST-ID` `01imot` kaldı | **tuttu** |
+| 05-08 | C0508 | `99`; `SELECT` çalışmadı; alanlar boş; mesaj yok | **tuttu** |
+| 05-09 | C0509 | ABEND `LGCA` görüldü; LGIPDB01 çağrılmadı (`SELECT` yok, `LINK` yok); LGSTSQ'ya tek mesaj, 45 bayt: 15 boşluk + ` LGIPOL01 NO COMMAREA RECEIVED`; döküm gönderilmedi; tampon (hepsi boşluk) değişmedi | **tuttu** |
+| 05-10 | D0510 | ABEND `LGCA`; `SELECT` yok; LGSTSQ'ya tek mesaj, 87 bayt: 15 boşluk + ` LGIPDB01 NO COMMAREA RECEIVED`+␣×36+`+00000`; `CNUM`/`PNUM`/`SQLCODE` sabitleri yok; tampon değişmedi | **tuttu** (`+00000` B2 ile: ön koşul sağlandı) |
+| 05-11 | C0511A (100), C0511B (28), C0511C (169) | üçünde de `00` (`98` değil); 05-01'deki bütün değerler tamponda, 171-182. baytlar dahil (`CA-M-PREMIUM` `000450`, `CA-M-ACCIDENTS` `000000`, `FINAL`); `SELECT` çalıştı; mesaj yok | **tuttu** (B1 ile: tampon 32500 bayt) |
+| 05-12 | D0512A (169), D0512B (28) | ikisinde de `98`; `SELECT` çalıştı; 29-32500. baytlar boşluk; `FINAL` yok; mesaj yok | **tuttu** |
+| 05-13 | D0513 (170) | `00`; `CA-M-PREMIUM = 000450`, `CA-M-ACCIDENTS = 000000`, 178-182. baytlar `FINAL` tamponda; 05-01'in öteki değerleri de; mesaj yok | **tuttu** (B1 ile) |
+| 05-14 | D0514 (100, poliçe 999) | `01` (`98` değil); `SELECT` çalıştı; alanlar boş; mesaj yok | **tuttu** |
+| 05-15 | D0515 (50, Db2 `-904`) | `90`; alanlar boş; LGSTSQ'ya iki mesaj: (1) 05-06'nın birincisiyle aynı 87 bayt; (2) 99 bayt, `COMMAREA=01IMOT90`+`0000000002`+`0000000001`+␣×62 | **tuttu** (hangi dalın çalıştığı puanlanmadı, aşağıda) |
+| 05-16 | C0516 | `00`; `CA-BROKERID = 0000000000`; öteki değerler 05-01 gibi; mesaj yok | **tuttu** (B4 ile; aşağıdaki sınıra bak) |
+| 05-17 | C0517 | `00`; `CA-PAYMENT = 000000`; öteki değerler 05-01 gibi; mesaj yok | **tuttu** (B4 ile; aşağıdaki sınıra bak) |
+| 05-18 | çalıştırılmadı | Düzenek göstergesiz sütunda NULL ve onun `SQLCODE`'unu Db2 gibi üretemez; `-305`'i zorlamak 05-06'dan farksız olur | **belirsiz / ölçülemedi** (tahmin zaten belirsizdi) |
+| 05-19 | C0519 | `00`; stub'a giden müşteri numarası `+000000002` (10 haneli `1000000002`'nin en sol hanesi kesildi); müşteri 2'nin poliçe 1'inin değerleri döndü; `CA-CUSTOMER-NUM` `1000000002` kaldı | **tuttu** (B3 ile: ön koşul sağlandı) |
+| 05-20 | C0520A, C0520B | Müşteri no alanı boşluk: Db2'ye giden değer `0`, `SQLCODE 100`, dönüş kodu `01`. Poliçe no alanı boşluk: aynı (`POLICYNUMBER=0`, `100`, `01`). Alanlara dokunulmadı | **belirsiz** (tahmin iddia etmiyordu). Bu, GnuCOBOL'un boşluğu `0` olarak taşımasıdır; başka derleyicide aynı olacağı söylenemez. |
+| 05-21 | çalıştırılmadı | `CALL`'un hatası (modül yok) CICS'in `LINK` hatasıyla aynı değil; bir şey ölçmezdi | **belirsiz / ölçülemedi** (tahmin zaten belirsizdi) |
+
+### Özet
+
+| | Satır |
+|---|---|
+| tuttu | 18 (05-01 ... 05-17, 05-19) |
+| tutmadı | **0** |
+| belirsiz (puanlanmadı) | 3 (05-18, 05-20, 05-21) |
+
+- **Ana ölçü:** 18 / 18 = **%100**.
+- **Yardımcı ölçü:** 18 / 21 = **%85,7** (`belirsiz` satırlar paydada).
+- Kontrol düzeyi (bilgi için): 253 satır iddiası, 253'ü geçti.
+- Plan ile sonuç aynı: 18 satır puanlanacaktı, 3 satır puanlanmayacaktı (yukarıdaki "Satır başına puanlanan iddialar" bölümünün sonu).
+
+Bu, `tests/results/prediction-accuracy.md`'deki "motor tahminleri henüz ölçülmedi" satırının yerini alacak ilk veridir. O dosyaya dokunmadım: görev yalnızca bu kaydı istiyor.
+
+### Puanlanmayan iddialar (ölçülemedi)
+
+Bunlar tuttu satırlarının içinde yazılı ama düzenek göstermediği için puanlanmadı:
+
+- **LGSTSQ'nun kuyruğa yazdığı kayıt** (05-06, 05-09, 05-10, 05-15): TD `CSMT` ve TS `GENAERRS`'e yazma. LGSTSQ'nun gerçek kodu çalışmadı, stub'ı çalıştı. Ölçülen, LGSTSQ'ya **ne verildiği**.
+- **Tarih ve saat:** `ASKTIME`/`FORMATTIME` `DISPLAY` oldu; mesajlardaki ilk 15 bayt boşluk. Tahmin "tarih, saat" diyor.
+- **`DATE`/`TIMESTAMP` biçimi** (05-01, 05-02): tahmin belirsiz dedi. Gördüğümüz metin stub'ın JCL'den aldığı sabit; gerçek Db2 başka bir biçim döndürebilir.
+- **`< 91` / `ELSE` dalı** (05-06, 05-15): iki durumda LGSTSQ'ya giden metin aynı (B1'e uygun tamponda 51-90. baytlar boşluk). Hangi dalın çalıştığı çıktıdan görünmez;
+  `EIBCALEN = 50 < 91` ve `EIBCALEN = 32500` olduğu için kodu okuyarak `< 91` ve `ELSE` dallarının çalıştığını söyleyebiliriz, ölçemeyiz.
+- **ABEND'in görevi sonlandırması** (05-09, 05-10): düzenekte `DISPLAY` + `GOBACK`. Ölçülen, ABEND'e kadar gidilen yol ve `LGCA` kodu.
+- **Gerçek CICS davranışı** (B1): COMMAREA dışına yazmanın gerçek CICS'te çağıranın tamponuna düşmesi. Düzenekte tampon 32500 bayt ve tek parça; B1 bunu şart koşuyor.
+- **LGIPOL01'in COMMAREA dökümü** (`lgipol01.cbl:124-138`): tahmin ölü kod diyor (Kod gözlemleri 9). İki iç `LGSTSQ` çağrısı **derlendi, hiç çalışmadı**.
+- **Tahmin Kod gözlemleri 10'un uç durumu** (aynı `WORKING-STORAGE` ile ikinci çağrıda eşik 340): her durum ayrı süreçte çalıştığı için denenmedi.
+
+### Düzeneğin sınırları (sonucun nasıl okunacağı)
+
+- **`WHERE` ve birleşim.** 05-03, 05-04 ve 05-05'te `SQLCODE = 100`'ü Db2 değil stub üretti (müşteri ve poliçe numarasının tabloyla eşleşmemesi). COBOL tarafında ölçülen: `SELECT`'e doğru
+  değerlerin gitmesi (dönüşüm betiği `SELECT` metnindeki `WHERE` ana bilgisayar değişkenlerini doğruladı; çıktıda `CUSTOMERNUMBER=` ve `POLICYNUMBER=` göründü) ve `100`'e `01` ile tepki vermesi.
+  Birleşim koşulunun gerçekten bu sonucu verdiği, yani poliçe 4'ün `MOTOR`'da satırının olmadığı bilgisi JCL'den geliyor (`db2cre.jcl`), Db2'den değil.
+- **NULL satırları (05-16, 05-17) zayıf ayırır.** JCL'de `brokerId` ve `payment` zaten 0. NULL olduğunda da sonuç 0 olduğundan çıktı, "taşıma atlandı" ile "0 taşındı" arasını ayırmaz.
+  Ölçülen: gösterge `-1` iken program hata vermeden `00` dönüyor ve alan sıfır. Stub, Db2 kuralına uyarak NULL'da ana bilgisayar değişkenine dokunmaz; ona 0 dışında bir değer koymak sonuç uydurmak olurdu.
+- **Veri satırları** (05-01, 05-02, 05-07, 05-11, 05-13, 05-16, 05-17, 05-19) Db2'nin ne döndürdüğünü değil, COBOL'un dönenleri COMMAREA'ya **doğru yere ve doğru dolguyla** taşıdığını ölçer.
+  Değerler tahminin kaynağıyla aynı JCL'den alındı.
+- **Ön koşullar (B1-B4) düzeneğin kararıdır.** Gerçek CICS ve Db2'de farklı çıkabilirler. "18/18 tuttu", gerçek sistemde 18/18 olacağı anlamına gelmez.
+
+### Çalıştırılan komutların kapsamı
+
+Dönüşüm betiği 36 `EXEC` deyimini çevirdi (LGIPOL01: 8, LGIPDB01: 28; sayılar kaynaktan sayılanla aynı). Çıktıda her çevrilen komutun çalıştığı görülen yeri:
+
+| Komut | Çalıştı mı | Nerede |
+|---|---|---|
+| LGIPOL01 `ABEND`, `ASKTIME`, `FORMATTIME`, ilk `LGSTSQ` | evet | C0509 |
+| LGIPOL01 `LINK LGIPDB01`, son `RETURN` | evet | C0501 |
+| LGIPOL01'in iki iç `LGSTSQ` çağrısı | **hayır** (ölü kod) | derlendi |
+| LGIPDB01 `ABEND` | evet | D0510 |
+| LGIPDB01 `ASKTIME`, `FORMATTIME`, ilk `LGSTSQ` | evet | C0506, D0515 |
+| LGIPDB01 `WRITE-ERROR-MESSAGE`'ın ikinci `LGSTSQ` çağrısı (`< 91` ya da `ELSE` dalı) | evet, ama hangi dalın çalıştığı çıktıdan görünmez | C0506 (`EIBCALEN = 32500`, kodu okuyarak `ELSE`), D0515 (`EIBCALEN = 50`, kodu okuyarak `< 91`). İki dalın ayrı ayrı çalıştığı **ölçülmedi**. |
+| LGIPDB01 motor `SELECT`, `End-Program` `RETURN`, motor `98` `RETURN` | evet | C0501, D0512 |
+| LGIPDB01 öteki dört `RETURN` (endowment, house, commercial 1 ve 2'nin `98` kolları) | **hayır** | derlendi |
+| LGIPDB01 dört motor dışı `SELECT`, altı imleç deyimi | **hayır** | derlendi; girilirse `DB2UNSUP` süreci durdurur |
+| LGIPDB01 iki `DECLARE CURSOR`, üç `INCLUDE` | çalışma zamanı yok | `DECLARE` kaldırıldı, `INCLUDE` → `COPY` |
+
+## Düzenek düzeltmeleri (çalıştırma sırasında)
+
+Çalıştırma sırasında düzeltilen bir şey olmadı: düzenek ilk derlemede temiz derlendi ve ilk çalıştırmada 299 kontrolün 299'u geçti. Çalıştırmadan önce yapılan iki düzeltme:
+
+1. **Kural metni** (kuralları commit'lemeden önce). "Değerlendirme kuralları" 3. madde ilk taslakta 05-15'te `< 91` ve `ELSE` dallarının ayırt edilebileceğini yazıyordu; B1'e uygun
+   tamponda bunlar aynı metni üretir. Cümleyi düzelttim; `fc54d66` düzeltilmiş halidir.
+2. **Stub'ın döngü değişkeni** (`fc54d66`'den sonra, ilk derlemeden önce). `PI` adını `IX` yaptım (GnuCOBOL'da `PI` bir işlev adıdır). Hiçbir şey derlenip çalıştırılmadan önceydi.
+
+Hiçbir düzeltme tahmini ya da programın mantığını değiştirmedi.
+
+## Bug kayıtları
+
+Tutmayan satır olmadığı için Bug Tracker'a **bug etiketli kayıt açılmadı**. Puanlanmayan üç satır (05-18, 05-20, 05-21) tahminin kendi `belirsiz` hücreleridir, bug değildir.
