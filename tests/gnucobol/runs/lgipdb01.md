@@ -88,4 +88,107 @@ Toplam 11 + 12 = 23 durum. `01IXXX` ve `EIBCALEN` kontrolleri (05-08, 05-10, 05-
 
 ## Sonuç
 
-(Çalıştırmadan sonra doldurulacak.)
+Kurallar `8e70aa5` (2026-10-17 16:03) ile commit'lendi; düzenek ondan sonra yazıldı, derlendi ve çalıştırıldı. Hiçbir kural çalıştırmadan sonra değişmedi.
+**Yöntem LGIPDB01 için çalıştı:** `EXEC SQL` bloklarının hepsi sahte `SQLCODE` parçasıyla değişti, program derlendi ve çalıştı; takıldığım bir derleme sorunu olmadı.
+Planlanan 23 durumun 23'ü `exit=0` ile bitti. Bütün karşılaştırmalar `runs/lgipdb01-karsilastir.sh` ile bayt bayt yapıldı (beklenen değerler yalnızca `05-motor-inquire.md`'den ve yukarıdaki kurallardan):
+**119 kontrol, 119 geçti.** Betiğin boş geçmediğini bozulmuş çıktılarla denedim (dönüş kodu, mesaj metni, `FINAL` işareti: üç bozulma, üçü de yakalandı).
+
+### Motor sorgusu: `SQLCODE` → dönüş kodu
+
+Girdi her durumda aynı: `01IMOT`, müşteri 2, poliçe 1, `EIBCALEN = 32500`; dönüş kodu önceden `77`. `SELECT` her durumda bir kez çalıştı.
+
+| `SQLCODE` (sürücünün verdiği) | Tahmin | Gerçek `CA-RETURN-CODE` | LGSTSQ'ya giden | Karar |
+|---|---|---|---|---|
+| `0` | 05-01 akışı: `00`, `FINAL` | `00`; 178-182. baytlar `FINAL`; 183-32500 değişmedi; istek/müşteri/poliçe no değişmedi | mesaj yok | **tuttu** (veri hücreleri puanlanmadı, kural 1) |
+| `100` | 05-03: `01` | `01`; 29-32500 boşluk kaldı; `FINAL` yok | mesaj yok | **tuttu** |
+| `-904` | 05-06: `90` | `90`; alanlar boş; `FINAL` yok | iki mesaj, `SQLCODE=-00904` | **tuttu** |
+| `-305` | 05-06 kuralı | `90` | iki mesaj, `SQLCODE=-00305` | **tuttu** |
+| `-803` | 05-06 kuralı | `90` | iki mesaj, `SQLCODE=-00803` | **tuttu** |
+| `-811` | 05-06 kuralı | `90` | iki mesaj, `SQLCODE=-00811` | **tuttu** |
+| `-911` | 05-06 kuralı | `90` | iki mesaj, `SQLCODE=-00911` | **tuttu** |
+| `-913` | 05-06 kuralı | `90` | iki mesaj, `SQLCODE=-00913` | **tuttu** |
+| `-922` | 05-06 kuralı | `90` | iki mesaj, `SQLCODE=-00922` | **tuttu** |
+| `-30081` | 05-06 kuralı | `90` | iki mesaj, `SQLCODE=-30081` (5 haneye tam sığar) | **tuttu** |
+| `+304` (uyarı kodu) | 05-06 kuralı | `90` | iki mesaj, `SQLCODE=+00304` | **tuttu** |
+
+Hata kodu durumlarında ilk mesaj 87 bayt (15 boşluk + ` LGIPDB01 CNUM=0000000002 PNUM=0000000001 SELECT MOTOR `+␣×2` SQLCODE=`+kod), ikinci mesaj 99 bayt
+(`COMMAREA=01IMOT90`+`0000000002`+`0000000001`+␣×62); bunların hepsi beklentiyle birebir aynı çıktı.
+
+**Özet:** 11 durumun 11'i tuttu, 0 tutmadı. Bu sayılar **tahmin doğruluğuna eklenmez** (yukarıdaki gerekçe). Ne söylediği: "0 ve 100 dışındaki herhangi bir `SQLCODE` `90`'a gider"
+kuralı yalnızca `-904` için değil, işaretli/işaretsiz ve farklı büyüklükte on kod için de tuttu; `SQLCODE`'un işareti ve büyüklüğü dönüş kodunu etkilemiyor, yalnızca mesajdaki sayıyı.
+`+304`'ün `90` olması, programın uyarı kodunu da hata saymasıdır (tahminin "0 ve 100 dışında" ifadesiyle uyumlu).
+
+### Bilgi için: motor dışı kollar (puanlanmadı)
+
+Aynı sahte parça `SELECT`'lerin hepsini ve imleç deyimlerini değiştirdiği için motor dışı kollar da çalıştı. Bunlar için `main`'de bu görevin kapsamında puanlanacak bir tahmin yok (kural 6).
+
+| İstek | `SQLCODE 0` | `100` | `-904` | Not |
+|---|---|---|---|---|
+| `01IEND` (hayat sigortası) | `00` | `01` | `90` | mesajda `SELECT ENDOW` |
+| `01IHOU` (konut) | `00` | `01` | `90` | mesajda `SELECT HOUSE` |
+| `01ICOM` (ticari, tek poliçe) | `00` | `01` | `90` | |
+| `02ICOM` (ticari, poliçe numarasıyla) | `00` | `01` | `90` | çıktıda 1 `SELECT` |
+| `03ICOM` (ticari, müşteri imleci) | `00` | `89` | `89` | `0`: `OPEN` + 21 `FETCH` + `CLOSE` = 23 sahte çağrı, döngü kodun kendi sınırıyla biter |
+| `05ICOM` (ticari, posta kodu imleci) | **bitmedi** | `89` | `89` | `0`: sonsuz döngü, aşağıya bak |
+
+- **İmleç `OPEN`'ında `100` de `89` olur:** `OPEN` sonrası `IF SQLCODE NOT EQUAL 0` her sıfırdan farklı değere `89` yazar ve `END-PROGRAM`'a gider (`lgipdb01.cbl:843-847`, `:926-930`). `100` burada
+  "satır yok" olarak ayrılmaz. Gerçek Db2'nin `OPEN`'da `100` döndürüp döndürmeyeceği kodda yazmıyor (bu kayıtta ölçülemez); `OPEN` için `100`, sahte parçanın verdiği bir girdidir.
+- **`03ICOM 0` neden biter:** her başarılı `FETCH` `ICOM-Record-Count`'u artırır ve 20'yi geçince `SQLCODE`'a `17` yazar (`lgipdb01.cbl:906-908`); döngü `SQLCODE > 0` olunca durur (`:849-850`).
+- **Ek gözlem (ticari kol, hiçbir tahmine bağlı değil):** `EM-SQLREQ` `PIC X(16)` (`lgipdb01.cbl:58`), ticari `SELECT` metni `' SELECT Commercial '` 19 karakter (`:629`); hata mesajında `SELECT Commerci` olarak
+  **16 bayta kesilir** (`01ICOM -904`, `03ICOM -904` çıktısında görülür).
+
+### Takıldığım yer: `05ICOM 0` sonsuz döngü
+
+- **Ne oldu:** `05ICOM` isteği `SQLCODE 0` ile verilince süreç hiç bitmedi. `FETCH Zip_Cursor` her seferinde sahte parçadan `SQLCODE = 0` alıyor, döngü bitmiyor; çıktı aynı iki satırı (`STUB EXEC SQL FETCH Zip_Cursor`,
+  `STUB DB2STUB sets SQLCODE=0`) tekrarlıyor.
+- **Neden:** Zip imleci döngüsü `Perform GET-Commercial-DB2-INFO-5-Cur With Test after Until SQLCODE > 0` ile `SQLCODE > 0` olana kadar döner (`lgipdb01.cbl:932-933`). Müşteri imlecinin döngüsünde 20 kayıtlık sınır
+  vardır (`:906-908`); `GET-Commercial-DB2-INFO-5-Cur`'da böyle bir sayaç yoktur (`:946-990`). Gerçek Db2'de döngü satırlar bitince `100` ile durur. Sahte parça her `FETCH`'e `0` verdiği için satırlar hiç bitmez.
+  Yani **bu bir düzenek sınırıdır** (sahte parça "satır bitti"yi bilmez), program hatası olarak kaydedilmedi.
+- **Sonuç:** "her komuta aynı `SQLCODE`'u ver" yöntemi, `SQLCODE`'un sıraya bağlı değiştiği döngülerde (satır sayısı kadar `0`, sonra `100`) yetmez. Bu durumda sahte parçanın bir **sıra** (örn. "n kez `0`, sonra `100`") bilmesi gerekir; yapılmadı çünkü
+  bu görevin kapsamı (motor sorgusu) bunu istemiyor ve ticari kol için `main`'de tahmin yok.
+- **Olay:** bu durum çıktıyı sınırsız yazdığı için ilk denemede `runs/lgipdb01-cikti.txt` kısa sürede **1,1 GB**'a ulaştı; süreci öldürüp dosyayı sildim. Çalıştırma betiğine durum başına **20 saniye ve 400 satır** sınırı ekledim.
+  Kesilen durum `[exit=124]` ile kayıtlıdır. Sınırdan sonra çıktı 37 KB.
+
+### Çalıştırılan komutların kapsamı
+
+`convert-lgipdb01.py` 28 `EXEC` deyimini çevirdi (sayılar kaynaktan sayılanla aynı).
+
+| Komut | Çalıştı mı | Nerede |
+|---|---|---|
+| Motor `SELECT`, hayat sigortası, konut ve iki ticari `SELECT` (5 deyim) | evet | `01IMOT`, `01IEND`, `01IHOU`, `01ICOM`, `02ICOM` |
+| `Cust_Cursor`: `OPEN`, `FETCH`, `CLOSE` | evet | `03ICOM 0` |
+| `Zip_Cursor`: `OPEN`, `FETCH` | evet | `05ICOM` |
+| `Zip_Cursor`: `CLOSE` | **hayır** | `05ICOM 0` hiç bitmedi, `CLOSE`'a gelinmedi |
+| `ASKTIME`, `FORMATTIME`, `LINK LGSTSQ` (ilk ve ikinci) | evet | `-904` durumları |
+| `RETURN` (`End-Program`) | evet | hepsi |
+| `RETURN` (`98` kolları, beş tane), `ABEND`, `EIBCALEN < 91` dalı | **hayır** | `EIBCALEN` hep 32500; bu kaydın konusu değil (`runs/lgipol01.md` kapsıyor) |
+| 3 `INCLUDE`, 2 `DECLARE CURSOR` | çalışma zamanı yok | `INCLUDE` → `COPY`, `DECLARE` kaldırıldı |
+
+### Ne ölçüldü, ne ölçülemedi
+
+**Ölçülen:** `SQLCODE` verilince programın **kendi** kararı: hangi dönüş kodunu yazdığı, hangi alanlara dokunduğu/dokunmadığı, `FINAL` işaretini yazıp yazmadığı, hata mesajının içeriği ve LGSTSQ'ya kaç mesaj gönderdiği.
+Bu, tahminin "Db2 şu kodu döndürürse" koşullu iddialarının doğrudan karşılığıdır.
+
+**Ölçülemeyen (bu yöntemle):**
+
+- **Veri.** `SQLCODE = 0` iken sahte parça satır getirmez; COMMAREA'ya giden değerler `INITIALIZE`'ın sıfır/boşluğudur. `05-01` ve `05-02`'nin **veri** hücreleri ve ana bilgisayar değişkeni eşlemesi bu düzenekle sınanamaz
+  (onları #28'in `DB2MOTOR` stub'ı sınar; o `SELECT`'in sütun ve `INTO` sırasını da kontrol eder, bu kayıtta kontrol yok).
+- **Gerçek Db2 davranışı.** Db2'nin bir durumda gerçekte hangi `SQLCODE`'u döndüreceği (örn. göstergesiz sütunda `NULL` için `-305`: 05-18 hâlâ belirsiz), hata durumunda ana bilgisayar değişkenlerinin ne olduğu, `SQLSTATE`,
+  kilit/zaman aşımı kodlarının ne zaman çıktığı, imleç davranışı.
+- **`EXEC SQL` ön derleyicisi.** `PROCESS SQL` ve `INCLUDE`/`DECLARE` yönergelerinin Db2 tarafındaki etkisi (host variable–sütun tür uyumu, bağlama). Burada yalnızca metin düzeyinde çevrildi.
+- **LGSTSQ'nun kuyruğa yazdığı kayıt ve gerçek tarih/saat** (önceki ölçümlerdeki gibi).
+
+## Düzenek düzeltmeleri (çalıştırma sırasında)
+
+1. **Altı bilgi durumu eklendi.** İlk çalıştırmada (23 durum) `02ICOM` ve `05ICOM` hiç çalışmadığı için bu iki `SELECT`/imleç deyiminin çalışıp çalışmadığı bilinmiyordu. `02ICOM` ve `05ICOM` için `0`, `100`, `-904`
+   durumlarını ekledim (`runs/lgipdb01-calistir.sh`). Bunlar kurallarda zaten "bilgi için, puanlanmaz" sınıfındaydı; **puanlanan durumları etkilemez**. İlk 23 durumun çıktısı yeniden çalıştırmada **birebir aynı** (`diff` ile doğrulandı,
+   423 satır).
+2. **Zaman ve çıktı sınırı.** `05ICOM 0` yüzünden eklendi (yukarıda).
+3. **Karşılaştırma betiği.** "Süreç normal bitti" denetimi yalnızca planlanan 23 durumu kapsıyor; eklenen altı durumun çıkış kodu bilgi bölümünde.
+
+Hiçbir düzeltme tahmini, kuralları ya da programın mantığını değiştirmedi.
+
+## Bug kayıtları
+
+Tutmayan durum olmadığı için Bug Tracker'a **bug etiketli kayıt açılmadı**. `05ICOM 0` sonsuz döngüsü bir düzenek sınırıdır (sahte parça satır sayısını bilmez), tahmin satırı yoktur ve program hatası olarak
+kaydedilmedi. Ticari kolda `EM-SQLREQ`'nun 16 bayta kesilmesi bir gözlemdir; hiçbir tahmin satırıyla çelişmediği için kayıt açılmadı.
