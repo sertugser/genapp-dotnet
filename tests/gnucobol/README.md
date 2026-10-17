@@ -270,3 +270,21 @@ conversion, stops on any `EXEC` statement it does not know, and checks the numbe
 
 The stubs fill nothing but what the prediction's preconditions ask for (counter value, first identity value, forced error codes). The existing-key rule of the `INSERT`
 stubs (`-803` for customer numbers 1-10) is a rig assumption and is written in the run record.
+
+### More commands (policy-inquire chain, `runs/lgipol01.md`)
+
+LGIPDB01 serves four policy types, but a prediction covers one (motor, `05-motor-inquire.md`). `convert-lgipol01.py` converts the whole program,
+supports the statements of the motor branch and makes every other Db2 statement stop the run if a case ever reaches it.
+
+| Command | Replacement | Why |
+|---|---|---|
+| `EXEC SQL SELECT ... INTO ... INDICATOR` (motor) | `CALL 'DB2MOTOR' USING SQLCA <the two WHERE host variables> <INTO variables, each indicator right after its variable>` | No Db2. The stub keeps the `POLICY` and `MOTOR` rows a case needs (values of `db2cre.jcl`) and evaluates the join and the `WHERE` itself. The converter checks the column list, the `INTO` list and the `WHERE` text against the order the stub expects. For a NULL column the driver sets `DB2FORCE-NULL`: the stub sets the indicator to `-1` and leaves the host variable alone (the Db2 rule). |
+| `EXEC SQL DECLARE ... CURSOR` | removed, a comment line stays | A declaration, not a statement that runs. |
+| Other `SELECT`, `OPEN`, `FETCH`, `CLOSE` | `CALL 'DB2UNSUP' USING SQLCA` | No prediction covers them. The stub prints `RIG ERROR`, sets return code 12 and stops the process; it never sets `SQLCODE`. A case that reaches it is invalid. |
+| `EXEC SQL INCLUDE LGPOLICY` | `COPY LGPOLICY.` | Same as `SQLCA` and `LGCMAREA`. |
+
+Two details of the driver:
+
+- The return code is set **before** the call to a value the program never produces. In LGIPDB01 `99` is a real result (unknown request code), so the driver uses `77`, not `99` as in step 7.
+- A case is a program and a start state: the chain (driver, LGIPOL01, LGIPDB01) or LGIPDB01 called directly. LGIPDB01's own `EIBCALEN` checks cannot be reached through LGIPOL01, because `LINK ... LENGTH(32500)`
+  gives it 32500, so those rows call it directly.
