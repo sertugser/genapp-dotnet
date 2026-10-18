@@ -237,8 +237,8 @@ model, value ve reg number yeniden yazılır
 
 1. **Kodun set ettiği code'u döndür.** `CLOSE-PCURSOR`'ın return code'u ezmesi ADR 0002
    karar 9'da bilinçli sapma olarak kayıtlı: yeni sistem `02` için 409, `01` için 404, `90`
-   için 500 döndürecek. ADR'de sayılan satırlar 346, 352 ve 354. Aynı ezilme iki yerde daha
-   oluyor ve aynı ilkeyle ele alınmalı:
+   için 500 döndürecek. ADR'de satır 346, 352 ve 354'ün yanında şu iki ezilme yolu da kayıtlı;
+   ikisi de aynı ilkeyle ele alınır:
    - `MOTOR` update'i başarısız olunca ([lgupdb01.cbl:302-307](../../base/src/lgupdb01.cbl#L302-L307)).
    - `SYNCPOINT ROLLBACK`'ten sonraki -501 yolunda ([372-375](../../base/src/lgupdb01.cbl#L372-L375)).
 2. **`POLICY` update'inin error'u kontrol edilmiyor.** 12. adımdaki `IF SQLCODE NOT EQUAL 0`,
