@@ -28,7 +28,7 @@ müşteri yoksa `01`). Kararı etkileyen noktalar:
 
 | Tür | Sorduğu soru | Yer | Durum |
 |---|---|---|---|
-| **Eşdeğerlik** | Yeni sistem aynı girdiye eskisiyle aynı sonucu veriyor mu? | `tests/GenApp.EquivalenceTests` | Var: 13 test, 7 operasyon (müşteri 4 test, motor 9 test); CI'da müşterinin 3 operasyonu çalışır |
+| **Eşdeğerlik** | Yeni sistem aynı girdiye eskisiyle aynı sonucu veriyor mu? | `tests/GenApp.EquivalenceTests` | Var: 29 test, 11 operasyon (müşteri 4, motor 9, konut 16 test); CI'da müşterinin 3 operasyonu çalışır |
 | **Entegrasyon** | API ve PostgreSQL birlikte baştan sona çalışıyor mu? Cevaba ek olarak sonucun veritabanında oluştuğu da kontrol edilir. | `tests/GenApp.IntegrationTests` | Planlanan (#68): her dilim için en az bir test. Projede henüz test yok. |
 | **Mutasyon** | Testlerimiz hataları yakalıyor mu? Araç koda bilerek küçük hatalar koyar (`>` yerine `>=`); yakalananların oranı **mutasyon skorudur**. | Stryker.NET | Planlanan (#53): `src/` üzerinde çalıştırılır, sonuç `tests/results/mutation.md`'ye yazılır. #53 CI'dan söz etmez; bu ADR elle çalıştırmayı önerir. Repoda henüz Stryker kurulumu yok. |
 
@@ -37,7 +37,7 @@ entegrasyon testi, tepede az sayıda yavaş uçtan uca test öneren modeldir. Te
 vardır: eşdeğerlik ve planlanan entegrasyon testleri (#68'de "uçtan uca") API'yi HTTP ile çağırır, gerçek PostgreSQL'e
 bağlanır; test ekibi birim testi yazmaz (Değerlendirilen seçenekler). GnuCOBOL çalıştırmaları (ADR 0004) elle yapılır
 (`tests/gnucobol/README.md`), CI'da çalışmaz. Mutasyon testi katman değil, bir ölçüdür. **Hız ve maliyet ölçülmedi:**
-müşteri testleri her PR'da CI'da çalışır, ama süreleri ayrıca ölçülmedi; motor testleri yalnızca derlenir, çünkü motor kodu henüz yok. Yük testi (#84, SRS NFR-01..03) kapsam dışıdır.
+müşteri testleri her PR'da CI'da çalışır, ama süreleri ayrıca ölçülmedi; motor ve konut testleri yalnızca derlenir, çünkü o operasyonların kodu henüz yok. Yük testi (#84, SRS NFR-01..03) kapsam dışıdır.
 
 ### 2. Tahmin tablosundan teste
 

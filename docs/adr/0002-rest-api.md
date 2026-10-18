@@ -1,7 +1,7 @@
 # ADR 0002: REST API ve dönüş kodu eşlemesi
 
 - **Durum:** Önerildi
-- **Tarih:** 2026-10-10 (güncelleme 2026-10-13: Karar 8 bütün operasyonlara genişletildi, Karar 9 eklendi; güncelleme 2026-10-16: Karar 9'a iki ezilme yolu, yanlış türden poliçe ve 10 haneli numara eklendi, iki korunan davranış yazıldı)
+- **Tarih:** 2026-10-10 (güncelleme 2026-10-13: Karar 8 bütün operasyonlara genişletildi, Karar 9 eklendi; güncelleme 2026-10-16: Karar 9'a iki ezilme yolu, yanlış türden poliçe ve 10 haneli numara eklendi, iki korunan davranış yazıldı; güncelleme 2026-10-18: Karar 9'a ticari sorgu durumları eklendi)
 - **İlgili:** [API tasarımı](../api-design.md), [SRS](../srs.md), ADR 0001 (katmanlı mimari), ADR 0003 (veri ve transaction), ADR 0005 (test mimarisi)
 
 ## Bağlam
@@ -94,6 +94,12 @@ olarak kaydedilir:
   - *10 haneli numara:* Müşteri ve poliçe numaraları Db2'ye gitmeden 9 haneli alanlara taşınır ve en
     soldaki hane kesilir (`lgapdb01.cbl:90`, `:176`): `1000000004` müşteri 4 olur. Yeni sistem numarayı
     kesmez; o numarada kayıt yoksa `404` döner.
+- **Ticari liste sorgularında eski davranışın veriyi kaybettirdiği ya da bitmediği yerler.** Müşteri
+  ve posta koduyla sorguda her kayıt bir öncekinin üzerine yazılır ve yalnızca son kayıt kalır
+  (`lgipdb01.cbl:901-904`, `:983-986`); yeni sistem bütün kayıtları liste olarak döndürür, kayıt
+  yoksa boş liste ile `200` döner. `FETCH` hatasında eski döngü bitmez (`:850`, `:933`); yeni sistem
+  `500`/`"90"` döner. Ticari sorgular `brokerId`, `brokersReference` ve `payment`'ı okumaz; yeni sistem
+  kayıttaki değerleri döndürür.
 
 Eski kodun yalnızca yorumda başka bir niyet belirttiği ama tutarlı biçimde çalıştığı yerlerde eski
 davranış korunur. Örnek: var olmayan poliçe silinirken eski kodun yorumu "bulunamadı başarılı
