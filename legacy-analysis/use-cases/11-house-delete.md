@@ -138,8 +138,8 @@ yapısı için bkz. [08-house-add.md](08-house-add.md).
 
    Eski sistemi yanlış tipteki policy'yi silmekten VSAM error'u koruyor. Yeni sistemde VSAM
    yok (ADR 0003); C# kodu tipi kontrol etmezse başka tipte bir policy'yi gerçekten siler.
-   Tip kontrolü eklenmeli. Bu durumda hangi code'un döneceğine (eski sistemin `81`'i yeni
-   sistemde yok) ekipçe karar verilmeli.
+   Tip kontrolü eklenmeli. ADR 0002 karar 9'a göre policy'nin tipi adresteki tiple uyuşmazsa
+   hiçbir şey silinmez ve `404` / `"01"` döner (eski sistemin `81`'i yeni sistemde yok).
 3. **Customer number da eşleşmeli.** `DELETE` iki number'a birden bakıyor; başka bir
    customer'ın policy number'ı `100` → `90` döner.
 4. **Rollback'i screen yapıyor.** VSAM error'u ABEND değil normal return olduğu için Db2
