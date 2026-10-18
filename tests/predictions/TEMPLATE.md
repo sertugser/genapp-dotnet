@@ -35,8 +35,8 @@ Her tahmin satırı aşağıdaki iki türden **yalnızca birine** atanır.
 7. **`EXEC CICS ABEND` ile biten yollar** bütün dosyalarda aynı biçimde yazılır ve `belirsiz`
    sayılmaz. "Beklenen dönüş kodu" hücresine iki sonuç yazılır:
    - **Gerçek CICS:** Görev sonlanır, çağırana dönüş kodu ulaşmaz. Görevin henüz kesinleşmemiş
-     (`SYNCPOINT` yapılmamış) Db2 değişiklikleri geri alınır [CICS bilgisi]. VSAM değişikliklerinin
-     geri alınması dosyanın CICS tanımına bağlıdır, kodda görülmez: `belirsiz`.
+     (`SYNCPOINT` yapılmamış) Db2 ve VSAM değişiklikleri geri alınır [CICS bilgisi]. VSAM dosyaları
+     `LOG(UNDO)` ile, yani geri alınabilir olarak tanımlıdır (`KSDSCUST`: `adef121.jcl:20`, `KSDSPOLY`: `:45`).
    - **Düzenekte:** `ABEND` yerine mesaj ve `GOBACK` gelir (`docs/adr/0004-legacy-test-harness.md`,
      Karar 2); `ABEND`'den önce yazılan dönüş kodu (örn. `CA-RETURN-CODE = '90'`) çağırana görünür.
      Düzenekte geri alma yoktur.
