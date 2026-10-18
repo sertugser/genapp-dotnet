@@ -28,7 +28,7 @@ müşteri yoksa `01`). Kararı etkileyen noktalar:
 
 | Tür | Sorduğu soru | Yer | Durum |
 |---|---|---|---|
-| **Eşdeğerlik** | Yeni sistem aynı girdiye eskisiyle aynı sonucu veriyor mu? | `tests/GenApp.EquivalenceTests` | Var: 4 test, 3 operasyon |
+| **Eşdeğerlik** | Yeni sistem aynı girdiye eskisiyle aynı sonucu veriyor mu? | `tests/GenApp.EquivalenceTests` | Var: 29 test, 11 operasyon (müşteri 4, motor 9, konut 16 test); CI'da müşterinin 3 operasyonu çalışır |
 | **Entegrasyon** | API ve PostgreSQL birlikte baştan sona çalışıyor mu? Cevaba ek olarak sonucun veritabanında oluştuğu da kontrol edilir. | `tests/GenApp.IntegrationTests` | Planlanan (#68): her dilim için en az bir test. Projede henüz test yok. |
 | **Mutasyon** | Testlerimiz hataları yakalıyor mu? Araç koda bilerek küçük hatalar koyar (`>` yerine `>=`); yakalananların oranı **mutasyon skorudur**. | Stryker.NET | Planlanan (#53): `src/` üzerinde çalıştırılır, sonuç `tests/results/mutation.md`'ye yazılır. #53 CI'dan söz etmez; bu ADR elle çalıştırmayı önerir. Repoda henüz Stryker kurulumu yok. |
 
@@ -37,7 +37,7 @@ entegrasyon testi, tepede az sayıda yavaş uçtan uca test öneren modeldir. Te
 vardır: eşdeğerlik ve planlanan entegrasyon testleri (#68'de "uçtan uca") API'yi HTTP ile çağırır, gerçek PostgreSQL'e
 bağlanır; test ekibi birim testi yazmaz (Değerlendirilen seçenekler). GnuCOBOL çalıştırmaları (ADR 0004) elle yapılır
 (`tests/gnucobol/README.md`), CI'da çalışmaz. Mutasyon testi katman değil, bir ölçüdür. **Hız ve maliyet ölçülmedi:**
-4 test yalnızca derlendi, hiç çalıştırılmadı (#101). Yük testi (#84, SRS NFR-01..03) kapsam dışıdır.
+müşteri testleri her PR'da CI'da çalışır, ama süreleri ayrıca ölçülmedi; motor ve konut testleri yalnızca derlenir, çünkü o operasyonların kodu henüz yok. Yük testi (#84, SRS NFR-01..03) kapsam dışıdır.
 
 ### 2. Tahmin tablosundan teste
 
@@ -75,7 +75,7 @@ Müşteri dilimindeki 66 tahminin 42'si arayüz kuralıdır. 24 iş kuralının 
 `<COBOL_PROGRAMI>_satir_<N>_<durum>_<kod>_doner`. Program ve satır, tahmin tablosunun "Tahminin dayandığı COBOL satırı"
 sütunundaki, dönüş kodunu belirleyen satırdır; `<durum>` girdinin kısa anlatımı, `<kod>` eski dönüş kodudur. Örnek:
 `LGICDB01_satir_196_kayit_yok_01_doner` (tahmin 02-02, `lgicdb01.cbl:196`: `SQLCODE = 100` → `CA-RETURN-CODE '01'`).
-Mevcut 4 test bu biçimdedir. **Neden:** izlenebilirlik. Kırmızı testin adı bakılacak COBOL satırını gösterir; tahmin,
+Mevcut testler bu biçimdedir. **Neden:** izlenebilirlik. Kırmızı testin adı bakılacak COBOL satırını gösterir; tahmin,
 GnuCOBOL ölçümü (`tests/gnucobol/README.md`, "Measured runs"; LGICUS01, #99) ve C# testi aynı satır üzerinden eşlenir.
 
 ### 4. Eşdeğerlik testleri API'yi dışarıdan çağırır
@@ -97,7 +97,8 @@ Her test operasyonunu xUnit'in `[Trait]` etiketiyle (teste bir ad-değer çifti 
 `musteri-guncelle`, `motor-ekle`, `motor-sorgula`, `motor-guncelle`, `motor-sil`, `konut-ekle`, `konut-sorgula`,
 `konut-guncelle`, `konut-sil`, `hayat-ekle`, `hayat-sorgula`, `hayat-guncelle`, `hayat-sil`, `ticari-ekle`,
 `ticari-sorgula` (dört ticari sorgulama biçiminin hepsi, `docs/api-design.md` §2.5), `ticari-sil`. CI yalnızca
-`tests/active-operations.txt`'te adı geçen operasyonların testlerini çalıştırır; dosya bugün boştur.
+`tests/active-operations.txt`'te adı geçen operasyonların testlerini çalıştırır; dosyada bugün müşterinin üç
+operasyonu (`musteri-ekle`, `musteri-sorgula`, `musteri-guncelle`) vardır.
 
 **Neden:** Testler koddan önce `main`'e girer (Bağlam 1). Kodu olmayan operasyonun testi çalışsa kırmızı olurdu; NFR-10
 gereği testleri geçmeyen değişikliğin `main`'e girmemesi gerektiği için (Bağlam 2) test PR'ı birleştirilemezdi.
