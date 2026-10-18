@@ -26,14 +26,15 @@ Bu dosyadaki tahminler kaynak türüyle etiketlidir:
 - **[CICS bilgisi]**: kodda yazmayan ama ekipçe kesin kabul edilen CICS davranışı. Bu dosyada üç madde: 1, 2 ve 4 (3. madde konut dosyası 10'a özgü: SYNCPOINT ROLLBACK):
   1. `LINK … LENGTH(n)` ile çağrılan program `EIBCALEN = n` görür. Bu yüzden zincirdeki alt programın uzunluk kontrolü en dıştaki
      çağıranın uzunluğuna bakmaz.
-  2. `EXEC CICS ABEND` görevi sonlandırır; `HANDLE ABEND` olmadığı için denetim çağırana dönmez.
+  2. `EXEC CICS ABEND` görevi sonlandırır; `HANDLE ABEND` olmadığı için denetim çağırana dönmez. Görevin kesinleşmemiş Db2 ve
+     VSAM değişiklikleri geri alınır (`TEMPLATE.md` madde 7; VSAM dosyaları `LOG(UNDO)` ile tanımlı: `adef121.jcl:20`, `:45`).
   4. LINK edilen programdaki `EXEC CICS RETURN` denetimi LINK eden programa, `LINK` deyiminden sonraki deyime döndürür; çağrılan
      programın COMMAREA'ya yazdıkları çağırana görünür.
 
   Düzenek bu davranışları ölçmez ([belge, kodla doğrulanmadı] `0004-legacy-test-harness.md:107-109`); düzenekteki karşılıkları B1
   (LINK), B8 (ABEND) ve `RETURN` → `GOBACK` ([belge, kodla doğrulanmadı] `0004-legacy-test-harness.md:44-46`).
-- **C (belirsizlik grubu)**: sonucu kodda tanımlı olmayan, çalışma ortamına bağlı davranış: gerçek CICS (ABEND sonrası iş biriminin
-  geri alınması, görev sonu, LINK hatası, COMMAREA'sız çağrı), gerçek Db2 (iş birimi, zaman damgası biçimi, NULL, kimlik değerinin
+- **C (belirsizlik grubu)**: sonucu kodda tanımlı olmayan, çalışma ortamına bağlı davranış: gerçek CICS (görev sonu, LINK hatası,
+  COMMAREA'sız çağrı), gerçek Db2 (iş birimi, zaman damgası biçimi, NULL, kimlik değerinin
   harcanması, kodda yazmayan hata kodları), gerçek VSAM ya da derleyici (sayısal olmayan içeriğin `COMP` alana taşınması). "(C)"
   işaretli hücre **belirsiz**dir: ne ön koşul koduyla ne [Db2 bilgisi] ya da [CICS bilgisi] ile kesinleştirilmiştir ve düzenekte
   ölçülmez. [belge, kodla doğrulanmadı] `0004-legacy-test-harness.md:107-109`.
@@ -147,8 +148,8 @@ sağlanmazsa tahmin geçersizdir ve "Ön koşullu satırlar" tablosundaki son s�
 
 11. **Sürpriz 7: INSERT COMMERCIAL hatasında ABEND ve geri alma yorumu.** `SQLCODE` ≠ 0 → `'90'`, hata mesajı, `ABEND 'LGSQ'`
     (`lgapdb01.cbl:547-551`). Yorum "Issue Abend to cause backout of update to Policy table" der (`lgapdb01.cbl:550`); kodda `SYNCPOINT
-    ROLLBACK` ya da `DELETE` yoktur, `POLICY` satırını geri alacak bir deyim bulunmaz. **Yorum-kod çelişkisi:** geri alma tamamen
-    CICS'in ABEND işlemine bağlıdır (C). Düzenekte (B8) LGAPDB01 `GOBACK` ile döner, LGAPOL01 `lgapol01.cbl:126`'dan döner, çağıran
+    ROLLBACK` ya da `DELETE` yoktur; geri almayı `ABEND`'in kendisi yapar. Yorum gerçek CICS davranışıyla uyumludur: gerçek CICS'te
+    çağırana `'90'` ulaşmaz ve `POLICY` satırı geri alınır ([CICS bilgisi] 2, `TEMPLATE.md` madde 7). Düzenekte (B8) LGAPDB01 `GOBACK` ile döner, LGAPOL01 `lgapol01.cbl:126`'dan döner, çağıran
     `'90'`'ı görür; `POLICY` satırı yerinde kalır, `COMMERCIAL` satırı yoktur, LGAPVS01 çağrılmaz. ABEND'den sonraki `RETURN`
     (`lgapdb01.cbl:552`) iki ortamda da ulaşılamaz.
 
@@ -193,7 +194,6 @@ sağlanmazsa tahmin geçersizdir ve "Ön koşullu satırlar" tablosundaki son s�
     (`lgstsq.cbl:25-28`) 9 ve 11 bayt aşar; o baytların içeriği bellek düzenine bağlıdır (C).
 
 15. **Sürpriz 11: yorum-kod çelişkileri.** Gerçek akış her yerde koda göre yazıldı.
-    - `lgapdb01.cbl:550`: "backout" yorumu; kodda geri alma yok (Kod gözlemleri 11).
     - `lgapdb01.cbl:238`: "Request is not recognised" yorumunun bulunduğu kol ulaşılamaz (Kod gözlemleri 5).
     - `lgapol01.cbl:153`: "Write 90 bytes or as much as we have of commarea"; LGAPOL01'de bu bloğa ulaşılamaz, çünkü tek çağrı yeri
       `EIBCALEN = 0` yoludur (`lgapol01.cbl:98-100`, `lgapol01.cbl:154`). [belge, kodla doğrulanmadı] aynı gözlem:
@@ -220,10 +220,10 @@ sağlanmazsa tahmin geçersizdir ve "Ön koşullu satırlar" tablosundaki son s�
 | 16-01 | LGAPOL01 çağrılır. `EIBCALEN = 32500`. `CA-REQUEST-ID = '01ACOM'`. `CA-CUSTOMER-NUM = 0000000001` (müşteri 1 var: `db2cre.jcl:437`). `CA-POLICY-NUM = 0000000000`. Poliçe alanlarında poliçe 10'un, ticari alanlarda `COMMERCIAL` 10'un değerleri (alan alan: "16-01 girdi ve beklenen değerler"). | `CA-RETURN-CODE = '00'` (`lgapdb01.cbl:293`) | `CA-POLICY-NUM = 0001000001` (B4, B6); `CA-LASTCHANGED` = yeni `POLICY` satırının `lastChanged` değeri (B4); diğer alanlar değişmez. Db2'de `POLICY` 1000001 (`policyType = 'C'`) ve `COMMERCIAL` 1000001 (`RequestDate` = `CA-LASTCHANGED`), VSAM'da 64 baytlık `'C'` kaydı ("16-01'den sonra Db2'de ve VSAM'da beklenen durum"). LGSTSQ'ya LINK yok. | `lgapol01.cbl:105`, `lgapol01.cbl:121-126`, `lgapdb01.cbl:198-200`, `lgapdb01.cbl:268-321`, `lgapdb01.cbl:234-235`, `lgapdb01.cbl:486-547`, `lgapdb01.cbl:243-250`, `lgapvs01.cbl:99-108`, `lgapvs01.cbl:135-142`, `lgapvs01.cbl:151-153` | İş kuralı |
 | 16-02 | 16-01 ile aynı, ama `CA-B-Customer = 'Burnley Football Club TURF MOOR STADIUM'` + ␣×216 (39 baytlık metin; parçaları `db2cre.jcl:1235`, `db2cre.jcl:1231`, `db2cre.jcl:1236`). | `CA-RETURN-CODE = '00'` (`lgapdb01.cbl:293`) | 16-01 gibi (`CA-POLICY-NUM = 0001000001`, B4, B6); `COMMERCIAL.Customer` 39 baytlık metnin tamamı; VSAM kaydının 34-64. baytları `'Burnley Football Club TURF MOOR'` (31 bayt), `' STADIUM'` VSAM'a yazılmaz. | `lgapdb01.cbl:532`, `lgapvs01.cbl:34`, `lgapvs01.cbl:108` | İş kuralı |
 | 16-03 | 16-01 ile aynı, ama `CA-CUSTOMER-NUM = 0000000000` (müşteri 0 yok: örnek müşteriler 1-10, `db2cre.jcl:437` … `db2cre.jcl:743`; yeni müşteri numaraları 1000001'den başlar, `db2cre.jcl:111-112`). INSERT POLICY `SQLCODE = -530` [Db2 bilgisi]. | `CA-RETURN-CODE = '70'` (`lgapdb01.cbl:296`) | `CA-POLICY-NUM = 0000000000` ve `CA-LASTCHANGED` değişmez. `POLICY` ve `COMMERCIAL` satırı yok; LGAPVS01 çağrılmaz, VSAM kaydı yok. LGSTSQ'ya 2 LINK (LGAPDB01'den): (1) `ERROR-MSG`, 87 bayt: `' LGAPDB01'`, `' CNUM=0000000000'`, `' PNUM='` + ␣×10, `' INSERT POLICY'` + ␣×2, `' SQLCODE=-00530'`; (2) `CA-ERROR-MSG`, 99 bayt: `'COMMAREA='` + COMMAREA'nın 1-90. baytları (7-8. baytlar `'70'`). | `lgapdb01.cbl:179`, `lgapdb01.cbl:267`, `lgapdb01.cbl:295-298`, `lgapdb01.cbl:564-578`, `lgapdb01.cbl:587-592`, `lgapol01.cbl:126`; [Db2 bilgisi] (`-530`), [CICS bilgisi] 1 ve 4 | İş kuralı |
-| 16-04 | 16-01 ile aynı; INSERT POLICY `SQLCODE = -911` (B4; `0` ve `-530` dışındaki her değer aynı yolu izler). | `CA-RETURN-CODE = '90'` (`lgapdb01.cbl:301`) | `CA-POLICY-NUM` ve `CA-LASTCHANGED` değişmez. `POLICY` ve `COMMERCIAL` satırı yok; VSAM kaydı yok. LGSTSQ'ya 2 LINK: (1) `ERROR-MSG`: `' LGAPDB01'`, `' CNUM=0000000001'`, `' PNUM='` + ␣×10, `' INSERT POLICY'` + ␣×2, `' SQLCODE=-00911'`; (2) `CA-ERROR-MSG` (7-8. baytlar `'90'`). | `lgapdb01.cbl:300-303`, `lgapdb01.cbl:564-578`, `lgapdb01.cbl:587-592`, `lgapol01.cbl:126` | İş kuralı |
-| 16-05 | 16-01 ile aynı; INSERT COMMERCIAL `SQLCODE = -911` (B4; `0` dışındaki her değer aynı yolu izler), önceki deyimler `0`. | `CA-RETURN-CODE = '90'` (`lgapdb01.cbl:548`); düzenekte (B8) | `CA-POLICY-NUM = 0001000001` (B6); `CA-LASTCHANGED` = yeni `POLICY.lastChanged` (B4). `ABEND 'LGSQ'` (`lgapdb01.cbl:551`): düzenekte mesaj + `GOBACK`. `POLICY` 1000001 satırını kod silmez (düzenekte kalır; gerçek CICS'te geri alınması belirsiz, C). `COMMERCIAL` satırı yok; LGAPVS01 çağrılmaz, VSAM kaydı yok. LGSTSQ'ya 2 LINK: (1) `ERROR-MSG`: `' CNUM=0000000001'`, `' PNUM=0001000001'`, `' INSERT COMMER'` + ␣×2, `' SQLCODE=-00911'`; (2) `CA-ERROR-MSG` (7-8. baytlar `'90'`, 19-28. baytlar `0001000001`). | `lgapdb01.cbl:311-313`, `lgapdb01.cbl:498`, `lgapdb01.cbl:547-551`, `lgapdb01.cbl:562-592`, `lgapol01.cbl:126` | İş kuralı |
+| 16-04 | 16-01 ile aynı; INSERT POLICY `SQLCODE = -904` (B4; `0` ve `-530` dışındaki her değer aynı yolu izler). | `CA-RETURN-CODE = '90'` (`lgapdb01.cbl:301`) | `CA-POLICY-NUM` ve `CA-LASTCHANGED` değişmez. `POLICY` ve `COMMERCIAL` satırı yok; VSAM kaydı yok. LGSTSQ'ya 2 LINK: (1) `ERROR-MSG`: `' LGAPDB01'`, `' CNUM=0000000001'`, `' PNUM='` + ␣×10, `' INSERT POLICY'` + ␣×2, `' SQLCODE=-00904'`; (2) `CA-ERROR-MSG` (7-8. baytlar `'90'`). | `lgapdb01.cbl:300-303`, `lgapdb01.cbl:564-578`, `lgapdb01.cbl:587-592`, `lgapol01.cbl:126` | İş kuralı |
+| 16-05 | 16-01 ile aynı; INSERT COMMERCIAL `SQLCODE = -904` (B4; `0` dışındaki her değer aynı yolu izler), önceki deyimler `0`. | `CA-RETURN-CODE = '90'` (`lgapdb01.cbl:548`); düzenekte (B8). Gerçek CICS'te çağırana ulaşmaz ([CICS bilgisi] 2) | `CA-POLICY-NUM = 0001000001` (B6); `CA-LASTCHANGED` = yeni `POLICY.lastChanged` (B4). `ABEND 'LGSQ'` (`lgapdb01.cbl:551`): düzenekte mesaj + `GOBACK`. `POLICY` 1000001 satırını kod silmez (düzenekte kalır; gerçek CICS'te geri alınması belirsiz, C). `COMMERCIAL` satırı yok; LGAPVS01 çağrılmaz, VSAM kaydı yok. LGSTSQ'ya 2 LINK: (1) `ERROR-MSG`: `' CNUM=0000000001'`, `' PNUM=0001000001'`, `' INSERT COMMER'` + ␣×2, `' SQLCODE=-00904'`; (2) `CA-ERROR-MSG` (7-8. baytlar `'90'`, 19-28. baytlar `0001000001`). | `lgapdb01.cbl:311-313`, `lgapdb01.cbl:498`, `lgapdb01.cbl:547-551`, `lgapdb01.cbl:562-592`, `lgapol01.cbl:126` | İş kuralı |
 | 16-06 | 16-01 ile aynı; VSAM WRITE `RESP = DUPREC` (B4; `NORMAL` dışındaki her değer aynı yolu izler). | `CA-RETURN-CODE = '80'` (`lgapvs01.cbl:144`) | `CA-POLICY-NUM = 0001000001` (B6); `CA-LASTCHANGED` = yeni `POLICY.lastChanged` (B4). `POLICY` ve `COMMERCIAL` 1000001 satırları yazılmış kalır; kod geri almaz (gerçek ortamda kalıcılığı C). VSAM kaydı yazılmaz. LGSTSQ'ya 2 LINK (LGAPVS01'den): (1) `ERROR-MSG`, 101 bayt: `' LGAPVS01'`, `' PNUM=0001000001'`, `' CNUM=0000000001'`, `' Write file KSDSPOLY'`, `' RESP='` + `WS-RESP` (düzeneğin DUPREC için verdiği değer), `' RESP2='` + `EIBRESP2`; (2) `CA-ERROR-MSG` (7-8. baytlar `'80'`). | `lgapvs01.cbl:142-147`, `lgapvs01.cbl:155-172`, `lgapvs01.cbl:180-185`, `lgapdb01.cbl:250`, `lgapol01.cbl:126` | İş kuralı |
-| 16-07 | 16-01 ile aynı, ama `CA-LASTCHANGED = '2011-08-23 10:44:34'` + ␣×7 (`db2cre.jcl:1185`); `SELECT LASTCHANGED` `SQLCODE = -911` (B4; host değişkeni yazılmaz). | `CA-RETURN-CODE = '00'` (`lgapdb01.cbl:293`) | `CA-POLICY-NUM = 0001000001` (B6); `CA-LASTCHANGED` girdideki değer kalır. `COMMERCIAL` 1000001'in `RequestDate`'i girdideki `CA-LASTCHANGED`; `POLICY` 1000001'in `lastChanged`'i INSERT anının zaman damgası (ikisi farklı). VSAM kaydı 16-01 gibi. LGSTSQ'ya LINK yok (SELECT'in `SQLCODE`'u kontrol edilmez). | `lgapdb01.cbl:316-322`, `lgapdb01.cbl:525`, `lgapdb01.cbl:547` | İş kuralı |
+| 16-07 | 16-01 ile aynı, ama `CA-LASTCHANGED = '2011-08-23 10:44:34'` + ␣×7 (`db2cre.jcl:1185`); `SELECT LASTCHANGED` `SQLCODE = -904` (B4; host değişkeni yazılmaz). | `CA-RETURN-CODE = '00'` (`lgapdb01.cbl:293`) | `CA-POLICY-NUM = 0001000001` (B6); `CA-LASTCHANGED` girdideki değer kalır. `COMMERCIAL` 1000001'in `RequestDate`'i girdideki `CA-LASTCHANGED`; `POLICY` 1000001'in `lastChanged`'i INSERT anının zaman damgası (ikisi farklı). VSAM kaydı 16-01 gibi. LGSTSQ'ya LINK yok (SELECT'in `SQLCODE`'u kontrol edilmez). | `lgapdb01.cbl:316-322`, `lgapdb01.cbl:525`, `lgapdb01.cbl:547` | İş kuralı |
 | 16-08 | 16-01 ile aynı, ama `CA-REQUEST-ID = '01acom'` (küçük harf). | `CA-RETURN-CODE = '99'` (`lgapdb01.cbl:204`) | `CA-POLICY-NUM` değişmez. Db2 ve VSAM değişmez; LGAPVS01'e ve LGSTSQ'ya LINK yok. | `lgapdb01.cbl:184`, `lgapdb01.cbl:202-205`, `lgapol01.cbl:126`; [CICS bilgisi] 1 ve 4 | Arayüz (COMMAREA) kuralı |
 | 16-09 | LGAPOL01 çağrılır. `EIBCALEN = 27`. İlk 27 bayt 16-01 gibi (`'01ACOM'`, müşteri 1). | `CA-RETURN-CODE = '98'` (`lgapol01.cbl:114`) | LGAPDB01'e LINK yok; Db2 ve VSAM değişmez; LGSTSQ'ya LINK yok. | `lgapol01.cbl:105`, `lgapol01.cbl:109`, `lgapol01.cbl:113-116` | Arayüz (COMMAREA) kuralı |
 | 16-10 | LGAPOL01 çağrılır. `EIBCALEN = 0` (COMMAREA yok). | Yok (COMMAREA yok); `ABEND 'LGCA'` (`lgapol01.cbl:101`), düzenekte mesaj + `GOBACK` (B8) | LGSTSQ'ya 1 LINK: `ERROR-MSG`, 45 bayt: `' LGAPOL01'` + `' NO COMMAREA RECEIVED'`. LGAPDB01 çağrılmaz; Db2 ve VSAM değişmez. | `lgapol01.cbl:98-102`, `lgapol01.cbl:137-152`, `lgapol01.cbl:154` | Arayüz (COMMAREA) kuralı |
@@ -323,7 +323,7 @@ dalın alınmadığı bir ticari teste bağlandı. Ulaşılamayan dallar "kapsam
 | 28 | `lgapdb01.cbl:488-496`: dokuz ticari sayısal alan → COMP (ticari) | 16-01 | Sayısal olmayan içerik C (Kod gözlemleri 16). |
 | 29 | `lgapdb01.cbl:499-545`: INSERT COMMERCIAL (ticari) | 16-01, 16-02 | |
 | 30 | `lgapdb01.cbl:547-551`: `SQLCODE` ≠ 0 → `'90'` + mesaj + `ABEND 'LGSQ'` (ticari) | 16-05 | |
-| 31 | `lgapdb01.cbl:550` ile `lgapdb01.cbl:551`: geri alma yorumu ile gerçek akış (ticari) | 16-05 | Yorum-kod çelişkisi (Kod gözlemleri 11). |
+| 31 | `lgapdb01.cbl:550` ile `lgapdb01.cbl:551`: geri alma yorumu ile gerçek akış (ticari) | 16-05 | Yorum gerçek CICS davranışıyla uyumlu (Kod gözlemleri 11). |
 | 32 | `lgapdb01.cbl:552`: ABEND'den sonraki RETURN (ticari) | – | Kapsam dışı: ulaşılamaz (Kod gözlemleri 11). |
 | 33 | `lgapdb01.cbl:243-246`: `LINK LGAPVS01 LENGTH(32500)` (ortak) | 16-01 | LINK hatası kapsam dışı: kodda dal yok, sonuç C. |
 | 34 | `lgapdb01.cbl:250`: RETURN (ortak) | 16-01, 16-06 | |
@@ -359,7 +359,7 @@ dalın alınmadığı bir ticari teste bağlandı. Ulaşılamayan dallar "kapsam
 | 16-01 | B4, B6, [CICS bilgisi] 1 ve 4 | `'00'`, `CA-POLICY-NUM = 0001000001`, `CA-LASTCHANGED` = yeni `POLICY.lastChanged` | Düzenekte host değişkenlerine değer konmazsa `CA-POLICY-NUM = 0000000000` (`lgapdb01.cbl:117`, `lgapdb01.cbl:159`) ve `CA-LASTCHANGED` girdideki gibi kalır; dönüş kodu yine `'00'`. Gerçek Db2'de sayaç ilerlemişse numara 1000001'den büyüktür (B6). |
 | 16-02 | B4, B6, [CICS bilgisi] 1 ve 4 | 16-01 gibi; VSAM'da Customer'ın ilk 31 baytı | 16-01 ile aynı; 31 bayt kesmesi ön koşula bağlı değildir. |
 | 16-04 | B4 | `'90'` | `SQLCODE = 0` → 16-01; `-530` → 16-03. |
-| 16-05 | B4, B6, B8 | Düzenekte `'90'`, `POLICY` satırı kalır | Gerçek CICS'te ABEND görevi sonlandırır ([CICS bilgisi] 2); çağıranın `'90'`'ı görmesi ve `POLICY` satırının geri alınması C. `SQLCODE = 0` → 16-01. |
+| 16-05 | B4, B6, B8 | Düzenekte `'90'`, `POLICY` satırı kalır | Gerçek CICS'te ABEND görevi sonlandırır: çağırana `'90'` ulaşmaz, `POLICY` satırı geri alınır ([CICS bilgisi] 2). `SQLCODE = 0` → 16-01. |
 | 16-06 | B4, B6 | `'80'`, Db2 satırları kalır | `RESP = NORMAL` → 16-01. Gerçek ortamda Db2 satırlarının kalıcılığı C. |
 | 16-07 | B4, B6 | `'00'`, `CA-LASTCHANGED` ve `RequestDate` girdideki değer | SELECT başarılıysa 16-01. Düzenek başarısız SELECT'te host değişkenine yazarsa `CA-LASTCHANGED` ve `RequestDate` o değer olur. |
 | 16-10 | B8 | ABEND mesajı ve `GOBACK`; LGSTSQ'ya 1 LINK | Gerçek CICS'te görev `LGCA` ile sonlanır ([CICS bilgisi] 2); COMMAREA olmadığı için dönüş kodu zaten yoktur. |
@@ -378,7 +378,6 @@ Bütün satırı belirsiz olanlar 16-18, 16-21 ve 16-23'tür. Diğer satırlarda
 
 | Test no | Belirsiz olan hücre | Neden belirsiz |
 |---|---|---|
-| 16-05 | Beklenen veri: gerçek CICS'te `POLICY` satırının geri alınması ve çağıranın `'90'`'ı görmesi | `lgapdb01.cbl:550` yalnızca yorum; kodda `SYNCPOINT ROLLBACK` yok. [CICS bilgisi] 2: ABEND görevi sonlandırır; iş biriminin geri alınması C. Düzenekteki sonuç ön koşullu satırlarda. |
 | 16-06 | Beklenen veri: `POLICY` ve `COMMERCIAL` satırlarının gerçek ortamda kalıcılığı | Kod satırları geri almaz (`lgapvs01.cbl:142-147`); görev sonunda kalıcı olmaları CICS'in görev sonu davranışına bağlı (C). |
 | 16-15 | Beklenen veri: VSAM anahtarının 2-21. baytları; gerçek CICS'te sonuç | Anahtar baytları boşluk içeren 9(10) alanlardan X(10)'a taşınır (`lgapvs01.cbl:100-101`); içerik derleyiciye bağlıdır (C). Gerçek CICS'te `EIBCALEN = 0` iken COMMAREA yoktur (C). Düzenekteki dönüş kodu ve akış ön koşullu satırlarda (B1, B4). |
 | 16-18 | Dönüş kodu ve beklenen veri (`'98'` olmadığı kesin) | 29-1202. baytlar boşluk (B1): `CA-BROKERID`, `CA-PAYMENT` (`lgapdb01.cbl:264-265`) ve ticari sayısal alanlar (`lgapdb01.cbl:488-496`) boşlukla `COMP`'a taşınır (derleyiciye bağlı, C); `CA-ISSUE-DATE` ve `CA-EXPIRY-DATE` boşlukla `DATE` sütunlarına yazılır (`lgapdb01.cbl:281-282`; Db2'ye bağlı, C). `'98'` değil: LGAPOL01 28'i geçirir (`lgapol01.cbl:113`), LGAPDB01 32500 görür ([CICS bilgisi] 1; `lgapdb01.cbl:210`), başka hiçbir satır `'98'` yazmaz. |
@@ -420,12 +419,10 @@ satırın veri durumunu B4 ile kendisi kurarsa satırlar birbirinden bağımsız
 Ekip kararı gerektiren, tahminleri etkileyen sorular. Tahminler bu soruların cevabını varsaymaz; varsayım gereken yerde ön koşul
 kodu kullanıldı.
 
-1. **`-911` örnek değeri.** 16-04, 16-05 ve 16-07'de "diğer hata" için `-911` seçildi. Kod bu değeri ayırt etmez (yalnızca `0`,
-   `-530` ve "diğer"), bu yüzden düzenekteki tahmin değişmez. Ama gerçek Db2'de `-911`'in iş birimini geri aldığı bilinir; bu,
-   "gerçek Db2'de ne olur" sütunlarını değiştirir (örneğin 16-07'de `POLICY` satırı geri alınır ve INSERT COMMERCIAL yabancı anahtar
-   hatası alabilir). Bu dosyada [Db2 bilgisi] olarak kullanılmadı. Ekip iş birimini geri almayan bir örnek değer mi seçmeli?
-2. **ABEND sonrası geri alma ölçülecek mi?** 16-05'in gerçek ortam sonucu (iş biriminin geri alınması) düzenekte ölçülemez. Ekip bu
-   davranışı ayrıca (gerçek CICS/Db2 ile) ölçmeyi mi, yoksa C olarak bırakmayı mı seçer?
+1. **`-911` örnek değeri.** Karar verildi: "diğer hata" örneği olarak iş birimini geri almayan `-904` kullanılır; satırlar
+   buna göre güncellendi. (`-911` kilitlenme kodudur ve yeni sistemde `503`'e eşlenir, ADR 0002 Karar 8.)
+2. **ABEND sonrası geri alma.** Karar verildi (`TEMPLATE.md` madde 7): gerçek CICS'te geri alınır ([CICS bilgisi] 2); düzenekte
+   ölçülmez, düzenekte görülen sonuç B8'dir.
 3. **Kimlik sayacı.** Başarısız INSERT'lerin kimlik değeri harcayıp harcamadığı ve `CACHE 20`'nin etkisi (Test sırası 2) gerçek
    Db2'de sıfırlamasız çalıştırmada beklenen numaraları belirler. Ekip ekleme satırlarından önce her seferinde sıfırlamayı mı seçer?
 4. **LGSTSQ'nun kendisi test edilecek mi?** Satırlar yalnızca LGSTSQ'ya gönderileni tahmin eder. Kuyruk kaydının 95 baytı aşan
