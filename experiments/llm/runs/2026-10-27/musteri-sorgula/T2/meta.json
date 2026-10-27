@@ -1,0 +1,25 @@
+{
+  "operasyon": "musteri-sorgula",
+  "tekrar": 2,
+  "model_istenen": "claude-opus-5-5",
+  "model_donen": "claude-opus-5-5",
+  "zaman_utc": "2026-10-27T14:34:04+00:00",
+  "talimat_sha256": "68f0815d7d0d907bcadaeddd5ad2dd765afc8d58bb19937164a5c077e5ec54dd",
+  "kullanim": {
+    "input_tokens": 29563,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 6038,
+    "output_tokens_details": {
+      "thinking_tokens": 1657
+    },
+    "service_tier": "standard",
+    "inference_geo": "global",
+    "speed": "standard"
+  },
+  "durdurma_nedeni": "end_turn"
+}

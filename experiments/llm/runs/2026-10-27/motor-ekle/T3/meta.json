@@ -1,0 +1,25 @@
+{
+  "operasyon": "motor-ekle",
+  "tekrar": 3,
+  "model_istenen": "claude-opus-5-5",
+  "model_donen": "claude-opus-5-5",
+  "zaman_utc": "2026-10-27T14:43:13+00:00",
+  "talimat_sha256": "6da9b8dc8442f0cd4352e6c1ce861c35d1a871777725869da45b4ef784d3594a",
+  "kullanim": {
+    "input_tokens": 38572,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 11280,
+    "output_tokens_details": {
+      "thinking_tokens": 3685
+    },
+    "service_tier": "standard",
+    "inference_geo": "global",
+    "speed": "standard"
+  },
+  "durdurma_nedeni": "end_turn"
+}
