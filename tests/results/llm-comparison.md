@@ -34,8 +34,8 @@ Bütünleşik düzende (beş operasyonun LLM kodu birlikte, README "B") T1, T2 v
 
 ### Sınır: bu sonuç neyi kapsıyor, neyi kapsamıyor
 
-- **Sonuç bu beş operasyon içindir, 18 operasyona genellenmez.** Kapsam rastgele seçilmedi: API kredisi 54 çağrıya
-  yetmediği için, üç tekrarı kredi bitmeden tamamlanan operasyonlar (müşteri ve motor grubu) kaldı
+- **Sonuç bu beş operasyon içindir, 18 operasyona genellenmez.** Kapsam rastgele seçilmedi: çalıştırma ekip kararıyla 16 çağrıda durduruldu
+  ve çalıştırma sırasında ilk gelen, üç tekrarı da tamamlanan operasyonlar (müşteri ve motor grubu) ölçüldü
   ([`experiments/llm/README.md`](../../experiments/llm/README.md), Değişiklik kaydı). Hayat, konut ve ticari operasyonlar
   ile motor güncelle ve sil çevirtilmedi ya da ölçülmedi.
 - **En karmaşık davranışlar kapsam dışında kaldı.** Bunlar `docs/api-design.md` §3'te "bilinçli sapma" olarak yazılan,
@@ -52,6 +52,9 @@ Bütünleşik düzende (beş operasyonun LLM kodu birlikte, README "B") T1, T2 v
 - **Girdiler aynı değil, tam adil de değil.** LLM'e `docs/api-design.md` bilinçli sapmalarıyla verildi; elle yazan ekip
   de görmüştü. LLM'in COBOL'u kendi başına yorumlayıp yorumlayamadığı bu deneyde ayrıca ölçülmedi.
   GenApp açık bir IBM örneğidir; modelin eğitiminde görmüş olması dışlanamaz.
+- **Aynı model ailesi.** Bizim kodumuz da Claude Code yardımıyla yazıldı. Karşılaştırma insan ile yapay zekâ
+  arasında değil, analiz, tahmin, test ve incelemeyle adım adım yazılan kod ile COBOL'dan tek seferde, düzeltmesiz
+  çevrilen kod arasındadır.
 - **Tek model, tek tarih** (`claude-opus-5-5`, 2026-10-27).
 
 ## 2. LLM'in hataları
