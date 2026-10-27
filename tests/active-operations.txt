@@ -8,3 +8,9 @@ motor-ekle
 motor-sorgula
 motor-guncelle
 motor-sil
+
+# Konut poliçesi
+konut-ekle
+konut-sorgula
+konut-guncelle
+konut-sil
