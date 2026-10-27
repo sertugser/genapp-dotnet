@@ -1,0 +1,388 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="3dcf5226-a2f3-403e-b136-c6bc49c4915e" name="oguz@LAPTOP-DQIAC5DL 2026-10-27 20:47:46" runUser="LAPTOP-DQIAC5DL\oguz" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-27T20:47:46.4718716+03:00" queuing="2026-10-27T20:47:46.4718720+03:00" start="2026-10-27T20:47:44.0345292+03:00" finish="2026-10-27T20:47:46.5397511+03:00" />
+  <TestSettings name="default" id="ac6920ff-1039-4d70-b195-40c1a008f285">
+    <Deployment runDeploymentRoot="oguz_LAPTOP-DQIAC5DL_2026-10-27_20_47_46" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="f164877e-d4ef-40aa-88bf-19b0de649eeb" testId="61991833-7801-82a7-95f4-197ee58c8b73" testName="GenApp.EquivalenceTests.Musteri.MusteriGuncelleTests.LGUCDB01_satir_124_musteri_var_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:01.4469996" startTime="2026-10-27T20:47:44.8847506+03:00" endTime="2026-10-27T20:47:46.3362540+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f164877e-d4ef-40aa-88bf-19b0de649eeb" />
+    <UnitTestResult executionId="64ef574f-e238-4623-9612-585233a83414" testId="da47c959-b8ee-f220-ba69-2f6bb642eee8" testName="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_194_musteri_var_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0962722" startTime="2026-10-27T20:47:46.2359711+03:00" endTime="2026-10-27T20:47:46.3230904+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="64ef574f-e238-4623-9612-585233a83414" />
+    <UnitTestResult executionId="3b62c10d-75c1-4e94-b044-719994e86ade" testId="cc71a69d-3357-6e7a-c072-9180ab2e22e3" testName="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_612_police_yok_01_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0098246" startTime="2026-10-27T20:47:46.4339543+03:00" endTime="2026-10-27T20:47:46.4441850+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3b62c10d-75c1-4e94-b044-719994e86ade" />
+    <UnitTestResult executionId="5cb2c94c-946f-4fae-81e0-ab68078b7306" testId="6fa52da9-5756-9dd2-b227-e1e615709ea1" testName="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_612_baska_musterinin_policesi_01_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0242386" startTime="2026-10-27T20:47:46.4582657+03:00" endTime="2026-10-27T20:47:46.4687490+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5cb2c94c-946f-4fae-81e0-ab68078b7306" />
+    <UnitTestResult executionId="26fe3310-1736-4e98-95a8-4688884e4989" testId="0181bca6-3759-be9b-c8b2-faac7529cdf0" testName="GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_293_police_eklenir_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:01.4745574" startTime="2026-10-27T20:47:44.8847966+03:00" endTime="2026-10-27T20:47:46.3647072+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="26fe3310-1736-4e98-95a8-4688884e4989" />
+    <UnitTestResult executionId="c7af5b08-c8f8-483d-a4f4-44d2d1863afe" testId="842f91f4-6cb5-08a8-9d37-9995a7e04cc0" testName="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_196_kayit_yok_01_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:01.3306844" startTime="2026-10-27T20:47:44.8848109+03:00" endTime="2026-10-27T20:47:46.2254266+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c7af5b08-c8f8-483d-a4f4-44d2d1863afe" />
+    <UnitTestResult executionId="440243d4-6185-4a23-9113-b3c3c421f23e" testId="10b70a71-8a2b-876c-cbe3-973ca23b0ead" testName="GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_296_musteri_yok_70_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0351345" startTime="2026-10-27T20:47:46.3648700+03:00" endTime="2026-10-27T20:47:46.4002436+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="440243d4-6185-4a23-9113-b3c3c421f23e" />
+    <UnitTestResult executionId="3e06d960-82d0-4ed3-adf9-84c07937cb5c" testId="aae87e32-6c60-0622-9a30-73c102f9527d" testName="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_258_police_var_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0152731" startTime="2026-10-27T20:47:46.4182956+03:00" endTime="2026-10-27T20:47:46.4338204+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3e06d960-82d0-4ed3-adf9-84c07937cb5c" />
+    <UnitTestResult executionId="da7b8fad-ae98-4dc3-85d7-91817ee8df7d" testId="85479b8a-c8fb-a80b-52d0-964d28696140" testName="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_598_prim_ve_kaza_sifirdan_farkli_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:01.5283199" startTime="2026-10-27T20:47:44.8836126+03:00" endTime="2026-10-27T20:47:46.4181705+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="da7b8fad-ae98-4dc3-85d7-91817ee8df7d" />
+    <UnitTestResult executionId="fd9c1307-e3d0-423f-b048-c62fbb030b8f" testId="9d36b622-896a-af36-3b73-2cc7ef9cac17" testName="GenApp.EquivalenceTests.Musteri.MusteriEkleTests.LGACDB01_satir_156_musteri_eklenir_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:01.4143566" startTime="2026-10-27T20:47:44.8847789+03:00" endTime="2026-10-27T20:47:46.3033952+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fd9c1307-e3d0-423f-b048-c62fbb030b8f" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GenApp.EquivalenceTests.Musteri.MusteriGuncelleTests.LGUCDB01_satir_124_musteri_var_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="61991833-7801-82a7-95f4-197ee58c8b73">
+      <Execution id="f164877e-d4ef-40aa-88bf-19b0de649eeb" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Musteri.MusteriGuncelleTests" name="LGUCDB01_satir_124_musteri_var_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_258_police_var_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="aae87e32-6c60-0622-9a30-73c102f9527d">
+      <Execution id="3e06d960-82d0-4ed3-adf9-84c07937cb5c" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorSorgulaTests" name="LGIPDB01_satir_258_police_var_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_194_musteri_var_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="da47c959-b8ee-f220-ba69-2f6bb642eee8">
+      <Execution id="64ef574f-e238-4623-9612-585233a83414" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests" name="LGICDB01_satir_194_musteri_var_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_598_prim_ve_kaza_sifirdan_farkli_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="85479b8a-c8fb-a80b-52d0-964d28696140">
+      <Execution id="da7b8fad-ae98-4dc3-85d7-91817ee8df7d" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorSorgulaTests" name="LGIPDB01_satir_598_prim_ve_kaza_sifirdan_farkli_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_196_kayit_yok_01_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="842f91f4-6cb5-08a8-9d37-9995a7e04cc0">
+      <Execution id="c7af5b08-c8f8-483d-a4f4-44d2d1863afe" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests" name="LGICDB01_satir_196_kayit_yok_01_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Musteri.MusteriEkleTests.LGACDB01_satir_156_musteri_eklenir_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="9d36b622-896a-af36-3b73-2cc7ef9cac17">
+      <Execution id="fd9c1307-e3d0-423f-b048-c62fbb030b8f" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Musteri.MusteriEkleTests" name="LGACDB01_satir_156_musteri_eklenir_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_612_baska_musterinin_policesi_01_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="6fa52da9-5756-9dd2-b227-e1e615709ea1">
+      <Execution id="5cb2c94c-946f-4fae-81e0-ab68078b7306" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorSorgulaTests" name="LGIPDB01_satir_612_baska_musterinin_policesi_01_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_293_police_eklenir_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="0181bca6-3759-be9b-c8b2-faac7529cdf0">
+      <Execution id="26fe3310-1736-4e98-95a8-4688884e4989" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorEkleTests" name="LGAPDB01_satir_293_police_eklenir_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_296_musteri_yok_70_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="10b70a71-8a2b-876c-cbe3-973ca23b0ead">
+      <Execution id="440243d4-6185-4a23-9113-b3c3c421f23e" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorEkleTests" name="LGAPDB01_satir_296_musteri_yok_70_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_612_police_yok_01_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="cc71a69d-3357-6e7a-c072-9180ab2e22e3">
+      <Execution id="3b62c10d-75c1-4e94-b044-719994e86ade" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorSorgulaTests" name="LGIPDB01_satir_612_police_yok_01_doner" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="61991833-7801-82a7-95f4-197ee58c8b73" executionId="f164877e-d4ef-40aa-88bf-19b0de649eeb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="da47c959-b8ee-f220-ba69-2f6bb642eee8" executionId="64ef574f-e238-4623-9612-585233a83414" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cc71a69d-3357-6e7a-c072-9180ab2e22e3" executionId="3b62c10d-75c1-4e94-b044-719994e86ade" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6fa52da9-5756-9dd2-b227-e1e615709ea1" executionId="5cb2c94c-946f-4fae-81e0-ab68078b7306" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0181bca6-3759-be9b-c8b2-faac7529cdf0" executionId="26fe3310-1736-4e98-95a8-4688884e4989" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="842f91f4-6cb5-08a8-9d37-9995a7e04cc0" executionId="c7af5b08-c8f8-483d-a4f4-44d2d1863afe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="10b70a71-8a2b-876c-cbe3-973ca23b0ead" executionId="440243d4-6185-4a23-9113-b3c3c421f23e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="aae87e32-6c60-0622-9a30-73c102f9527d" executionId="3e06d960-82d0-4ed3-adf9-84c07937cb5c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="85479b8a-c8fb-a80b-52d0-964d28696140" executionId="da7b8fad-ae98-4dc3-85d7-91817ee8df7d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9d36b622-896a-af36-3b73-2cc7ef9cac17" executionId="fd9c1307-e3d0-423f-b048-c62fbb030b8f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="10" executed="10" passed="10" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.14)&#xD;
+[xUnit.net 00:00:00.14]   Discovering: GenApp.EquivalenceTests&#xD;
+[xUnit.net 00:00:00.20]   Discovered:  GenApp.EquivalenceTests&#xD;
+[xUnit.net 00:00:00.22]   Starting:    GenApp.EquivalenceTests&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (43ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (43ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (43ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (43ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@customerNumber='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT c.customer_number, c.date_of_birth, c.email_address, c.first_name, c.house_name, c.house_number, c.last_name, c.phone_home, c.phone_mobile, c.postcode&#xD;
+      FROM customer AS c&#xD;
+      WHERE c.customer_number = @customerNumber&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@customerNumber='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT c.customer_number, c.date_of_birth, c.email_address, c.first_name, c.house_name, c.house_number, c.last_name, c.phone_home, c.phone_mobile, c.postcode&#xD;
+      FROM customer AS c&#xD;
+      WHERE c.customer_number = @customerNumber&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (6ms) [Parameters=[@p='?', @p2='?', @p3='?' (DbType = Date), @p4='?', @p5='?', @p6='?', @p7='?', @p8='?', @p9='?', @customer_CustomerNumber='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']&#xD;
+      UPDATE customer AS c&#xD;
+      SET first_name = @p,&#xD;
+          last_name = @p2,&#xD;
+          date_of_birth = @p3,&#xD;
+          house_name = @p4,&#xD;
+          house_number = @p5,&#xD;
+          postcode = @p6,&#xD;
+          phone_mobile = @p7,&#xD;
+          phone_home = @p8,&#xD;
+          email_address = @p9&#xD;
+      WHERE c.customer_number = @customer_CustomerNumber&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@customerNumber='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT c.customer_number, c.date_of_birth, c.email_address, c.first_name, c.house_name, c.house_number, c.last_name, c.phone_home, c.phone_mobile, c.postcode&#xD;
+      FROM customer AS c&#xD;
+      WHERE c.customer_number = @customerNumber&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int16), @p3='?' (DbType = Int32), @p4='?' (DbType = Date), @p5='?' (DbType = Date), @p6='?' (DbType = DateTime2), @p7='?' (DbType = Int32), @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO policy (broker_id, brokers_reference, commission, customer_number, expiry_date, issue_date, last_changed, payment, policy_type)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING policy_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int16), @p3='?' (DbType = Int32), @p4='?' (DbType = Date), @p5='?' (DbType = Date), @p6='?' (DbType = DateTime2), @p7='?' (DbType = Int32), @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO policy (broker_id, brokers_reference, commission, customer_number, expiry_date, issue_date, last_changed, payment, policy_type)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING policy_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@p9='?' (DbType = Int32), @p10='?' (DbType = Int32), @p11='?' (DbType = Int16), @p12='?', @p13='?', @p14='?', @p15='?' (DbType = Int32), @p16='?', @p17='?' (DbType = Int32), @p18='?' (DbType = Date)], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO motor (policy_number, accidents, cc, colour, make, model, premium, reg_number, value, year_of_manufacture)&#xD;
+      VALUES (@p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@p9='?' (DbType = Int32), @p10='?' (DbType = Int32), @p11='?' (DbType = Int16), @p12='?', @p13='?', @p14='?', @p15='?' (DbType = Int32), @p16='?', @p17='?' (DbType = Int32), @p18='?' (DbType = Date)], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO motor (policy_number, accidents, cc, colour, make, model, premium, reg_number, value, year_of_manufacture)&#xD;
+      VALUES (@p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18);&#xD;
+fail: Microsoft.EntityFrameworkCore.Database.Command[20102]&#xD;
+      Failed executing DbCommand (9ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int16), @p3='?' (DbType = Int32), @p4='?' (DbType = Date), @p5='?' (DbType = Date), @p6='?' (DbType = DateTime2), @p7='?' (DbType = Int32), @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO policy (broker_id, brokers_reference, commission, customer_number, expiry_date, issue_date, last_changed, payment, policy_type)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING policy_number;&#xD;
+fail: Microsoft.EntityFrameworkCore.Update[10000]&#xD;
+      An exception occurred in the database while saving changes for context type 'GenApp.Infrastructure.Persistence.GenAppDbContext'.&#xD;
+      Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.&#xD;
+       ---&gt; Npgsql.PostgresException (0x80004005): 23503: insert or update on table "policy" violates foreign key constraint "fk_policy_customer_customer_number"&#xD;
+      DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.&#xD;
+         at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+        Exception data:&#xD;
+          Severity: ERROR&#xD;
+          SqlState: 23503&#xD;
+          MessageText: insert or update on table "policy" violates foreign key constraint "fk_policy_customer_customer_number"&#xD;
+          Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.&#xD;
+          SchemaName: public&#xD;
+          TableName: policy&#xD;
+          ConstraintName: fk_policy_customer_customer_number&#xD;
+          File: ri_triggers.c&#xD;
+          Line: 2772&#xD;
+          Routine: ri_ReportViolation&#xD;
+         --- End of inner exception stack trace ---&#xD;
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)&#xD;
+         at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)&#xD;
+      Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.&#xD;
+       ---&gt; Npgsql.PostgresException (0x80004005): 23503: insert or update on table "policy" violates foreign key constraint "fk_policy_customer_customer_number"&#xD;
+      DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.&#xD;
+         at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+        Exception data:&#xD;
+          Severity: ERROR&#xD;
+          SqlState: 23503&#xD;
+          MessageText: insert or update on table "policy" violates foreign key constraint "fk_policy_customer_customer_number"&#xD;
+          Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.&#xD;
+          SchemaName: public&#xD;
+          TableName: policy&#xD;
+          ConstraintName: fk_policy_customer_customer_number&#xD;
+          File: ri_triggers.c&#xD;
+          Line: 2772&#xD;
+          Routine: ri_ReportViolation&#xD;
+         --- End of inner exception stack trace ---&#xD;
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)&#xD;
+         at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@policyNumber='?' (DbType = Int32), @customerNumber='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT m.policy_number, m.accidents, m.cc, m.colour, m.make, m.model, m.premium, m.reg_number, m.value, m.year_of_manufacture, p.policy_number, p.broker_id, p.brokers_reference, p.commission, p.customer_number, p.expiry_date, p.issue_date, p.last_changed, p.payment, p.policy_type&#xD;
+      FROM motor AS m&#xD;
+      INNER JOIN policy AS p ON m.policy_number = p.policy_number&#xD;
+      WHERE m.policy_number = @policyNumber AND p.customer_number = @customerNumber&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int16), @p3='?' (DbType = Int32), @p4='?' (DbType = Date), @p5='?' (DbType = Date), @p6='?' (DbType = DateTime2), @p7='?' (DbType = Int32), @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO policy (broker_id, brokers_reference, commission, customer_number, expiry_date, issue_date, last_changed, payment, policy_type)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING policy_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p9='?' (DbType = Int32), @p10='?' (DbType = Int32), @p11='?' (DbType = Int16), @p12='?', @p13='?', @p14='?', @p15='?' (DbType = Int32), @p16='?', @p17='?' (DbType = Int32), @p18='?' (DbType = Date)], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO motor (policy_number, accidents, cc, colour, make, model, premium, reg_number, value, year_of_manufacture)&#xD;
+      VALUES (@p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@policyNumber='?' (DbType = Int32), @customerNumber='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT m.policy_number, m.accidents, m.cc, m.colour, m.make, m.model, m.premium, m.reg_number, m.value, m.year_of_manufacture, p.policy_number, p.broker_id, p.brokers_reference, p.commission, p.customer_number, p.expiry_date, p.issue_date, p.last_changed, p.payment, p.policy_type&#xD;
+      FROM motor AS m&#xD;
+      INNER JOIN policy AS p ON m.policy_number = p.policy_number&#xD;
+      WHERE m.policy_number = @policyNumber AND p.customer_number = @customerNumber&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@policyNumber='?' (DbType = Int32), @customerNumber='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT m.policy_number, m.accidents, m.cc, m.colour, m.make, m.model, m.premium, m.reg_number, m.value, m.year_of_manufacture, p.policy_number, p.broker_id, p.brokers_reference, p.commission, p.customer_number, p.expiry_date, p.issue_date, p.last_changed, p.payment, p.policy_type&#xD;
+      FROM motor AS m&#xD;
+      INNER JOIN policy AS p ON m.policy_number = p.policy_number&#xD;
+      WHERE m.policy_number = @policyNumber AND p.customer_number = @customerNumber&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int16), @p3='?' (DbType = Int32), @p4='?' (DbType = Date), @p5='?' (DbType = Date), @p6='?' (DbType = DateTime2), @p7='?' (DbType = Int32), @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO policy (broker_id, brokers_reference, commission, customer_number, expiry_date, issue_date, last_changed, payment, policy_type)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING policy_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p9='?' (DbType = Int32), @p10='?' (DbType = Int32), @p11='?' (DbType = Int16), @p12='?', @p13='?', @p14='?', @p15='?' (DbType = Int32), @p16='?', @p17='?' (DbType = Int32), @p18='?' (DbType = Date)], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO motor (policy_number, accidents, cc, colour, make, model, premium, reg_number, value, year_of_manufacture)&#xD;
+      VALUES (@p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@policyNumber='?' (DbType = Int32), @customerNumber='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT m.policy_number, m.accidents, m.cc, m.colour, m.make, m.model, m.premium, m.reg_number, m.value, m.year_of_manufacture, p.policy_number, p.broker_id, p.brokers_reference, p.commission, p.customer_number, p.expiry_date, p.issue_date, p.last_changed, p.payment, p.policy_type&#xD;
+      FROM motor AS m&#xD;
+      INNER JOIN policy AS p ON m.policy_number = p.policy_number&#xD;
+      WHERE m.policy_number = @policyNumber AND p.customer_number = @customerNumber&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+[xUnit.net 00:00:01.83]   Finished:    GenApp.EquivalenceTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

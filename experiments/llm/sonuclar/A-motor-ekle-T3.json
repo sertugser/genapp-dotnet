@@ -1,0 +1,22 @@
+{
+  "derleme": true,
+  "testler": {
+    "GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_293_police_eklenir_00_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_296_musteri_yok_70_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    }
+  },
+  "ad": "A-motor-ekle-T3",
+  "operasyonlar": [
+    "motor-ekle"
+  ],
+  "tekrar": "T3",
+  "commit": "6e3dbb79418c389488af195e1e3fb3850cde6e88",
+  "dislanan_action": [
+    "MotorPoliciesController.Add"
+  ]
+}

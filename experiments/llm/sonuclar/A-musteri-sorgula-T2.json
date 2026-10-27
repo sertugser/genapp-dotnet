@@ -1,0 +1,22 @@
+{
+  "derleme": true,
+  "testler": {
+    "GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_194_musteri_var_00_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_196_kayit_yok_01_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    }
+  },
+  "ad": "A-musteri-sorgula-T2",
+  "operasyonlar": [
+    "musteri-sorgula"
+  ],
+  "tekrar": "T2",
+  "commit": "6e3dbb79418c389488af195e1e3fb3850cde6e88",
+  "dislanan_action": [
+    "CustomersController.Inquire"
+  ]
+}
