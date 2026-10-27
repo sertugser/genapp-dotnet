@@ -9,6 +9,17 @@ public interface IPolicyRepository
     Task<PolicyRecord<TDetails>?> FindAsync<TDetails>(int customerNumber, int policyNumber, CancellationToken cancellationToken = default)
         where TDetails : class, IPolicyDetails;
 
+    // LGIPDB01 02ICOM: the commercial policy with this number, whoever its customer is (lgipdb01.cbl:778-781).
+    Task<PolicyRecord<CommercialPolicy>?> FindCommercialAsync(int policyNumber, CancellationToken cancellationToken = default);
+
+    // LGIPDB01 03ICOM: every commercial policy of this customer (Cust_Cursor, lgipdb01.cbl:89-118). Empty when none.
+    Task<IReadOnlyList<PolicyRecord<CommercialPolicy>>> FindCommercialByCustomerAsync(
+        int customerNumber, CancellationToken cancellationToken = default);
+
+    // LGIPDB01 05ICOM: every commercial policy with exactly this postcode (Zip_Cursor, lgipdb01.cbl:120-149).
+    Task<IReadOnlyList<PolicyRecord<CommercialPolicy>>> FindCommercialByPostcodeAsync(
+        string postcode, CancellationToken cancellationToken = default);
+
     // The policy's type letter (M, H, E, C), or null when this customer has no such policy. A delete checks it first:
     // the legacy DELETE ignores the type (lgdpdb01.cbl:189-194), the new system deletes nothing and returns 01 when
     // the type does not match the address (docs/api-design.md section 3).
