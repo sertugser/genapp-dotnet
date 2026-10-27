@@ -10,12 +10,19 @@ namespace GenApp.Api.Policies;
 public abstract record PolicyResponse
 {
     protected PolicyResponse(Policy policy)
+        : this(policy, policy.IssueDate, policy.ExpiryDate, policy.LastChanged)
+    {
+    }
+
+    // For a type whose inquiry reads the dates from its own table instead of POLICY (commercial: STARTDATE,
+    // RENEWALDATE and REQUESTDATE, 17-commercial-inquire.md note 1).
+    protected PolicyResponse(Policy policy, DateOnly? issueDate, DateOnly? expiryDate, DateTime lastChanged)
     {
         PolicyNumber = policy.PolicyNumber;
         CustomerNumber = policy.CustomerNumber;
-        IssueDate = policy.IssueDate;
-        ExpiryDate = policy.ExpiryDate;
-        LastChanged = policy.LastChanged;
+        IssueDate = issueDate;
+        ExpiryDate = expiryDate;
+        LastChanged = lastChanged;
         BrokerId = policy.BrokerId ?? 0;
         BrokersReference = ResponseText.Of(policy.BrokersReference);
         Payment = policy.Payment ?? 0;

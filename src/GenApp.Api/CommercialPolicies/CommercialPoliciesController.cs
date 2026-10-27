@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using GenApp.Api.Policies;
 using GenApp.Application;
 using GenApp.Application.Policies;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,8 @@ namespace GenApp.Api.CommercialPolicies;
 [Produces("application/json")]
 public sealed class CommercialPoliciesController(CommercialPolicyService service) : ControllerBase
 {
+    private const string TypeName = "ticari poliçesi";
+
     /// <summary>Ticari poliçe ekle (LGAPOL01, 01ACOM).</summary>
     [HttpPost]
     [ProducesResponseType<CommercialPolicyResponse>(StatusCodes.Status201Created)]
@@ -22,7 +25,7 @@ public sealed class CommercialPoliciesController(CommercialPolicyService service
         var result = await service.AddAsync(request.ToPolicy(customerNumber), request.ToCommercialPolicy(), cancellationToken);
         if (!result.IsSuccess)
         {
-            return ReturnCodeProblems.For(result.ReturnCode, $"{customerNumber} numaralı müşteri bulunamadı.").ToResult();
+            return PolicyProblems.CustomerNotFound(result.ReturnCode, customerNumber);
         }
 
         var policy = CommercialPolicyResponse.From(result.Value!);
@@ -39,7 +42,7 @@ public sealed class CommercialPoliciesController(CommercialPolicyService service
 
         return result.IsSuccess
             ? Ok(CommercialPolicyResponse.From(result.Value!))
-            : Problem(result.ReturnCode, customerNumber, policyNumber);
+            : PolicyProblems.For(result.ReturnCode, customerNumber, policyNumber, TypeName);
     }
 
     /// <summary>Ticari poliçe sorgula: yalnızca poliçe numarasıyla (LGIPOL01, 02ICOM).</summary>
@@ -86,11 +89,6 @@ public sealed class CommercialPoliciesController(CommercialPolicyService service
 
         return returnCode == ReturnCodes.Success
             ? NoContent()
-            : Problem(returnCode, customerNumber, policyNumber);
+            : PolicyProblems.For(returnCode, customerNumber, policyNumber, TypeName);
     }
-
-    private static IActionResult Problem(string returnCode, int customerNumber, int policyNumber) =>
-        ReturnCodeProblems.For(returnCode, returnCode == ReturnCodes.DatabaseError
-            ? $"{customerNumber} numaralı müşterinin {policyNumber} numaralı poliçesi silinemedi."
-            : $"{customerNumber} numaralı müşterinin {policyNumber} numaralı ticari poliçesi bulunamadı.").ToResult();
 }
