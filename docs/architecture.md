@@ -87,7 +87,7 @@ GenApp.Api ──────────────► GenApp.Application ─�
 | `GenApp.Domain` | Varlıklar ve kendi verisine bakan kurallar; hiçbir pakete bağlı değil | — |
 | `GenApp.Application` | Operasyon servisleri, girdi kuralları, dönüş kodu üretimi, transaction sınırı; veri erişim arayüzleri | Domain |
 | `GenApp.Infrastructure` | EF Core, `GenAppDbContext`, repository ve unit of work uygulamaları, migration'lar | Application, Domain |
-| `GenApp.Api` | Controller'lar, istek/cevap tipleri, dönüş kodu → HTTP eşlemesi, web arayüzü, DI kayıtları | Application, Infrastructure (yalnızca kayıt için) |
+| `GenApp.Api` | Controller'lar, istek/cevap tipleri, dönüş kodu → HTTP eşlemesi, web arayüzü, DI kayıtları | Application, Infrastructure (yalnızca kayıt için); Domain varlıklarını Application üzerinden kullanır (istek → varlık, varlık → cevap dönüşümü) |
 
 Temel kurallar:
 
@@ -99,8 +99,8 @@ Temel kurallar:
 
 ## 5. Bileşen diyagramı
 
-Katmanların içindeki ana parçalar. İsimler hedef yapıdır; bugün kodda yalnızca Domain varlıkları ve
-Infrastructure'daki `GenAppDbContext`, tablo eşlemeleri ve migration'lar vardır (#15).
+Katmanların içindeki ana parçalar. Müşteri, motor, konut ve hayat sigortası dilimleri kodda vardır; ticari poliçe
+servisi ve controller'ı henüz yoktur (#50).
 
 ```mermaid
 flowchart TB
@@ -155,10 +155,11 @@ flowchart TB
 |---|---|---|---|
 | Web arayüzü (`wwwroot`) | Api | Müşteri ve dört poliçe türü için birer ekran (NFR-13) | LGTESTC1, LGTESTP1–P4 |
 | `CustomersController`, 4 poliçe controller'ı | Api | Adresler ve HTTP yöntemleri ([API tasarımı](api-design.md) §2); `[ApiController]` doğrulaması eksik/hatalı isteği 400 ile reddeder | — (ekran → iş çağrısı) |
+| `PolicyRequest`, `PolicyResponse`, `PolicyProblems` | Api | Dört poliçe türünde ortak olan alanlar (§4.2), doğrulamaları ve hata mesajları; tür sınıfları yalnızca kendi alanlarını ekler | `CA-POLICY-COMMON` |
 | Dönüş kodu → HTTP eşlemesi | Api | ADR 0002'deki tabloyu tek yerde uygular, `returnCode`'lu Problem Details üretir | — |
 | `CustomerService` | Application | Müşteri ekle, sorgula, güncelle | LGACUS01, LGICUS01, LGUCUS01 |
-| 4 poliçe servisi | Application | Poliçe türü başına ekle, sorgula, güncelle (ticari hariç), sil | LGAPOL01, LGIPOL01, LGUPOL01, LGDPOL01 |
-| `ICustomerRepository`, `IPolicyRepository` | Application (arayüz) / Infrastructure (uygulama) | Operasyona özgü okuma ve yazma metotları | `*DB01`, `*DB02` programları |
+| `PolicyService<TDetails>` ve 4 poliçe servisi | Application | Ortak akış (dönüş kodları 70/01/02/90, tür kontrolü, iyimser kilitleme) taban sınıfta; tür servisi yalnızca tür harfini ve güncellenen alanları (eski `UPDATE ... SET` listesi) verir. Ekle, sorgula, güncelle (ticari hariç), sil | LGAPOL01, LGIPOL01, LGUPOL01, LGDPOL01 → LGAPDB01, LGIPDB01, LGUPDB01, LGDPDB01 |
+| `ICustomerRepository`, `IPolicyRepository` | Application (arayüz) / Infrastructure (uygulama) | Operasyona özgü okuma ve yazma metotları; her veritabanı çağrısı `DatabaseErrors.RunAsync` ile sarılır, hata Application tipine çevrilir (ADR 0001) | `*DB01`, `*DB02` programları |
 | `IUnitOfWork` | Application (arayüz) / Infrastructure (uygulama) | Transaction başlat, kaydet, onayla | CICS unit of work, `SYNCPOINT ROLLBACK` |
 | Varlıklar | Domain | Tabloların C# karşılıkları | Db2 tabloları |
 | COMMAREA modeli | Domain | `lgcmarea.cpy`'nin nesne modeli (#20) | `LGCMAREA` |

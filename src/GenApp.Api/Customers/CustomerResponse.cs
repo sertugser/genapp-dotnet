@@ -2,8 +2,7 @@ using GenApp.Domain.Customers;
 
 namespace GenApp.Api.Customers;
 
-// Customer fields of docs/api-design.md section 4.1. Texts are trimmed (ADR 0002 decision 6) and an empty text is
-// returned as "", never null (section 1).
+// Customer fields of docs/api-design.md section 4.1. Texts go through ResponseText.
 public sealed record CustomerResponse(
     int CustomerNumber,
     string FirstName,
@@ -18,15 +17,13 @@ public sealed record CustomerResponse(
 {
     public static CustomerResponse From(Customer customer) => new(
         customer.CustomerNumber,
-        Text(customer.FirstName),
-        Text(customer.LastName),
+        ResponseText.Of(customer.FirstName),
+        ResponseText.Of(customer.LastName),
         customer.DateOfBirth,
-        Text(customer.HouseName),
-        Text(customer.HouseNumber),
-        Text(customer.Postcode),
-        Text(customer.PhoneMobile),
-        Text(customer.PhoneHome),
-        Text(customer.EmailAddress));
-
-    private static string Text(string? value) => value?.TrimEnd() ?? "";
+        ResponseText.Of(customer.HouseName),
+        ResponseText.Of(customer.HouseNumber),
+        ResponseText.Of(customer.Postcode),
+        ResponseText.Of(customer.PhoneMobile),
+        ResponseText.Of(customer.PhoneHome),
+        ResponseText.Of(customer.EmailAddress));
 }

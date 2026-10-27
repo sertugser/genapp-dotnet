@@ -28,31 +28,13 @@ internal sealed class UnitOfWork(GenAppDbContext db) : IUnitOfWork
         }
     }
 
-    public async Task<ITransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return new Transaction(await db.Database.BeginTransactionAsync(cancellationToken));
-        }
-        catch (Exception e) when (DatabaseErrors.IsDatabaseError(e))
-        {
-            throw DatabaseErrors.Translate(e);
-        }
-    }
+    public async Task<ITransaction> BeginTransactionAsync(CancellationToken cancellationToken = default) =>
+        new Transaction(await DatabaseErrors.RunAsync(() => db.Database.BeginTransactionAsync(cancellationToken)));
 
     private sealed class Transaction(IDbContextTransaction transaction) : ITransaction
     {
-        public async Task CommitAsync(CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception e) when (DatabaseErrors.IsDatabaseError(e))
-            {
-                throw DatabaseErrors.Translate(e);
-            }
-        }
+        public Task CommitAsync(CancellationToken cancellationToken = default) =>
+            DatabaseErrors.RunAsync(() => transaction.CommitAsync(cancellationToken));
 
         public ValueTask DisposeAsync() => transaction.DisposeAsync();
     }

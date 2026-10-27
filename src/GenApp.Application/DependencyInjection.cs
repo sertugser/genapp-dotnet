@@ -11,6 +11,8 @@ public static class DependencyInjection
         services.AddScoped<CustomerService>();
         services.AddScoped<MotorPolicyService>();
         services.AddScoped<HousePolicyService>();
+        services.AddScoped<CommercialPolicyService>();
+        services.AddScoped<EndowmentPolicyService>();
 
         return services;
     }

@@ -14,3 +14,14 @@ konut-ekle
 konut-sorgula
 konut-guncelle
 konut-sil
+
+# Hayat sigortası poliçesi
+hayat-ekle
+hayat-sorgula
+hayat-guncelle
+hayat-sil
+
+# Ticari poliçe
+ticari-ekle
+ticari-sorgula
+ticari-sil
