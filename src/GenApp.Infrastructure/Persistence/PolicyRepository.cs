@@ -37,6 +37,13 @@ internal sealed class PolicyRepository(GenAppDbContext db, TimeProvider clock) :
         return details is null ? null : new PolicyRecord<TDetails>(details.Policy!, details);
     }
 
+    // Reads only the type column; nothing is tracked.
+    public Task<string?> FindTypeAsync(int customerNumber, int policyNumber, CancellationToken cancellationToken = default) =>
+        db.Policies
+            .Where(p => p.CustomerNumber == customerNumber && p.PolicyNumber == policyNumber)
+            .Select(p => p.PolicyType)
+            .SingleOrDefaultAsync(cancellationToken);
+
     // LGUPDB01 (lgupdb01.cbl:278, :322): EF Core sends UPDATE ... WHERE last_changed = <client's value>.
     // Without setting OriginalValue, EF Core would compare against the value it just read and never find a conflict.
     public void MarkUpdated(Policy policy, DateTime lastChangedFromClient)
