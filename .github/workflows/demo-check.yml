@@ -1,0 +1,92 @@
+# Demo kontrolü (#54): sistemi docker compose ile sıfırdan kurar (boş veritabanı, migration, örnek veri) ve
+# web arayüzünü gerçek bir tarayıcıda 18 operasyon ve hata durumlarıyla dener (tests/demo/demo-check.js).
+# Her PR'da çalışmaz: elle (Actions > Demo kontrolü > Run workflow) ya da tests/demo veya bu dosya değişince çalışır.
+# Sonuç tablosu iş özetinde ve PR yorumunda görünür; ekran görüntüleri "demo-check" artifact'ındadır.
+
+name: Demo kontrolü
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "tests/demo/**"
+      - ".github/workflows/demo-check.yml"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  demo-check:
+    name: Demo kontrolü
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      # Issue #54: "docker compose down -v" ile silip "docker compose up --build" ile baştan kur.
+      - name: Sistemi sıfırdan kur
+        run: |
+          docker compose down -v
+          docker compose up --build -d
+
+      - name: API'nin açılmasını bekle
+        run: |
+          for i in $(seq 1 90); do
+            if curl -fs http://localhost:8080/api/customers/1 > /dev/null; then echo "API hazır"; exit 0; fi
+            sleep 5
+          done
+          docker compose ps -a
+          docker compose logs
+          exit 1
+
+      - name: Kurulum durumunu göster (migration ve örnek veri)
+        run: |
+          docker compose ps -a
+          docker compose logs migrate seed
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Playwright'i kur
+        working-directory: tests/demo
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Web arayüzünü dene
+        env:
+          BASE_URL: http://localhost:8080
+          OUT: ${{ runner.temp }}/demo-check
+        run: node tests/demo/demo-check.js
+
+      - name: Sonuç tablosunu iş özetine yaz
+        if: always()
+        run: cat "${{ runner.temp }}/demo-check/results.md" >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Sonuç tablosunu PR'a yorum olarak yaz
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          f="${{ runner.temp }}/demo-check/results.md"
+          [ -f "$f" ] || exit 0
+          jq -Rs '{body: .}' "$f" > body.json
+          curl -fsS -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+            --data @body.json > /dev/null
+
+      - name: Ekran görüntülerini sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-check
+          path: ${{ runner.temp }}/demo-check
+
+      - name: API günlüğünü göster
+        if: always()
+        run: docker compose logs api | tail -200
