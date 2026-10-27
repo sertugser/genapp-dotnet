@@ -195,3 +195,23 @@ nav { display: flex; flex-direction: column; gap: 4px; }
   .search input { width: 140px; }
   .record-actions { margin-left: 0; }
 }
+
+/* Policy screens */
+.search input.search-short { width: 110px; }
+.search input.search-short + input.search-short { border-left: 1px solid var(--line); padding-left: 10px; }
+.nav-item:not(.disabled):not(.active):hover { background: #16231c; color: #ffffff; }
+.field-inline { margin: 0 0 0 8px; clear: none; min-width: 160px; }
+.field-inline input { width: 160px; }
+.record-sub + .record-sub { margin-top: 2px; }
+.record-sub svg { width: 14px; height: 14px; }
+.sections-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1300px) {
+  .sections-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1000px) {
+  .sections-4 { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .search input.search-short { width: 90px; }
+  .field-inline { margin-left: 0; }
+}

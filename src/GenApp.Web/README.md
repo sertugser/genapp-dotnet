@@ -25,5 +25,6 @@ Arayüzde bir değişiklik yapan PR, `npm run build` çıktısını (`wwwroot/as
 | `src/main.jsx` | Giriş noktası |
 | `src/App.jsx` | Kenar menü ve sayfa düzeni |
 | `src/CustomersPage.jsx` | Müşteri ekranı (eski LGTESTC1 / SSMAPC1) |
+| `src/PoliciesPage.jsx` | Motor ve konut poliçesi ekranları: sorgula ve ekle (eski LGTESTP1 / SSMAPP1, LGTESTP3 / SSMAPP3) |
 | `src/api.js` | API çağrıları ve hata mesajları |
 | `src/styles.css` | Görünüm |
