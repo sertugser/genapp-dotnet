@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="37c45133-7432-4e8f-ab37-c5a75ac96d2e" name="oguz@LAPTOP-DQIAC5DL 2026-10-27 20:49:45" runUser="LAPTOP-DQIAC5DL\oguz" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-27T20:49:45.0273576+03:00" queuing="2026-10-27T20:49:45.0273580+03:00" start="2026-10-27T20:49:43.6928647+03:00" finish="2026-10-27T20:49:45.0715329+03:00" />
+  <TestSettings name="default" id="032d5e66-0216-4f3e-816c-bb9e301478f9">
+    <Deployment runDeploymentRoot="oguz_LAPTOP-DQIAC5DL_2026-10-27_20_49_45" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="809be9a5-326c-4607-bf3f-7a56b45611c6" testId="da47c959-b8ee-f220-ba69-2f6bb642eee8" testName="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_194_musteri_var_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0138254" startTime="2026-10-27T20:49:44.8516421+03:00" endTime="2026-10-27T20:49:44.8572792+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="809be9a5-326c-4607-bf3f-7a56b45611c6" />
+    <UnitTestResult executionId="9b7368d2-2b76-493f-9f4e-854de3bcf8ed" testId="6fa52da9-5756-9dd2-b227-e1e615709ea1" testName="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_612_baska_musterinin_policesi_01_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0079973" startTime="2026-10-27T20:49:44.8819924+03:00" endTime="2026-10-27T20:49:44.8901674+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9b7368d2-2b76-493f-9f4e-854de3bcf8ed" />
+    <UnitTestResult executionId="b7aab268-5bd9-484e-ae63-d08a88437f0e" testId="aae87e32-6c60-0622-9a30-73c102f9527d" testName="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_258_police_var_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0088596" startTime="2026-10-27T20:49:44.8663164+03:00" endTime="2026-10-27T20:49:44.8754391+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b7aab268-5bd9-484e-ae63-d08a88437f0e" />
+    <UnitTestResult executionId="048d1ce3-2891-4fd7-8749-fcddbea5c3e9" testId="10b70a71-8a2b-876c-cbe3-973ca23b0ead" testName="GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_296_musteri_yok_70_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0260371" startTime="2026-10-27T20:49:44.9931412+03:00" endTime="2026-10-27T20:49:44.9949566+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="048d1ce3-2891-4fd7-8749-fcddbea5c3e9" />
+    <UnitTestResult executionId="4bac0c63-2f8a-4136-9364-797d7a8b88f2" testId="85479b8a-c8fb-a80b-52d0-964d28696140" testName="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_598_prim_ve_kaza_sifirdan_farkli_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.5708031" startTime="2026-10-27T20:49:44.2915502+03:00" endTime="2026-10-27T20:49:44.8661744+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4bac0c63-2f8a-4136-9364-797d7a8b88f2" />
+    <UnitTestResult executionId="8ffee8b9-cebd-48b4-a071-93a979903fea" testId="9d36b622-896a-af36-3b73-2cc7ef9cac17" testName="GenApp.EquivalenceTests.Musteri.MusteriEkleTests.LGACDB01_satir_156_musteri_eklenir_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.6009255" startTime="2026-10-27T20:49:44.2915262+03:00" endTime="2026-10-27T20:49:44.8971791+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8ffee8b9-cebd-48b4-a071-93a979903fea" />
+    <UnitTestResult executionId="6af296ea-7fa8-407a-acf0-f62df3a7e004" testId="cc71a69d-3357-6e7a-c072-9180ab2e22e3" testName="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_612_police_yok_01_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0058849" startTime="2026-10-27T20:49:44.8755806+03:00" endTime="2026-10-27T20:49:44.8818474+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6af296ea-7fa8-407a-acf0-f62df3a7e004" />
+    <UnitTestResult executionId="50e84163-9ef9-4e43-a1fd-4ccef66ee906" testId="61991833-7801-82a7-95f4-197ee58c8b73" testName="GenApp.EquivalenceTests.Musteri.MusteriGuncelleTests.LGUCDB01_satir_124_musteri_var_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.5520337" startTime="2026-10-27T20:49:44.2915393+03:00" endTime="2026-10-27T20:49:44.8517469+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="50e84163-9ef9-4e43-a1fd-4ccef66ee906" />
+    <UnitTestResult executionId="5976da1f-1121-4b88-84a0-8869ae7322c4" testId="842f91f4-6cb5-08a8-9d37-9995a7e04cc0" testName="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_196_kayit_yok_01_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.5418411" startTime="2026-10-27T20:49:44.2914967+03:00" endTime="2026-10-27T20:49:44.8413033+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5976da1f-1121-4b88-84a0-8869ae7322c4" />
+    <UnitTestResult executionId="05f05248-4022-4ce8-b78e-7bb1c21f6af5" testId="0181bca6-3759-be9b-c8b2-faac7529cdf0" testName="GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_293_police_eklenir_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.6729341" startTime="2026-10-27T20:49:44.2903037+03:00" endTime="2026-10-27T20:49:44.9684160+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="05f05248-4022-4ce8-b78e-7bb1c21f6af5" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GenApp.EquivalenceTests.Musteri.MusteriGuncelleTests.LGUCDB01_satir_124_musteri_var_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="61991833-7801-82a7-95f4-197ee58c8b73">
+      <Execution id="50e84163-9ef9-4e43-a1fd-4ccef66ee906" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Musteri.MusteriGuncelleTests" name="LGUCDB01_satir_124_musteri_var_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_258_police_var_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="aae87e32-6c60-0622-9a30-73c102f9527d">
+      <Execution id="b7aab268-5bd9-484e-ae63-d08a88437f0e" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorSorgulaTests" name="LGIPDB01_satir_258_police_var_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_194_musteri_var_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="da47c959-b8ee-f220-ba69-2f6bb642eee8">
+      <Execution id="809be9a5-326c-4607-bf3f-7a56b45611c6" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests" name="LGICDB01_satir_194_musteri_var_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_598_prim_ve_kaza_sifirdan_farkli_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="85479b8a-c8fb-a80b-52d0-964d28696140">
+      <Execution id="4bac0c63-2f8a-4136-9364-797d7a8b88f2" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorSorgulaTests" name="LGIPDB01_satir_598_prim_ve_kaza_sifirdan_farkli_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_196_kayit_yok_01_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="842f91f4-6cb5-08a8-9d37-9995a7e04cc0">
+      <Execution id="5976da1f-1121-4b88-84a0-8869ae7322c4" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests" name="LGICDB01_satir_196_kayit_yok_01_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Musteri.MusteriEkleTests.LGACDB01_satir_156_musteri_eklenir_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="9d36b622-896a-af36-3b73-2cc7ef9cac17">
+      <Execution id="8ffee8b9-cebd-48b4-a071-93a979903fea" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Musteri.MusteriEkleTests" name="LGACDB01_satir_156_musteri_eklenir_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_612_baska_musterinin_policesi_01_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="6fa52da9-5756-9dd2-b227-e1e615709ea1">
+      <Execution id="9b7368d2-2b76-493f-9f4e-854de3bcf8ed" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorSorgulaTests" name="LGIPDB01_satir_612_baska_musterinin_policesi_01_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_293_police_eklenir_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="0181bca6-3759-be9b-c8b2-faac7529cdf0">
+      <Execution id="05f05248-4022-4ce8-b78e-7bb1c21f6af5" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorEkleTests" name="LGAPDB01_satir_293_police_eklenir_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_296_musteri_yok_70_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="10b70a71-8a2b-876c-cbe3-973ca23b0ead">
+      <Execution id="048d1ce3-2891-4fd7-8749-fcddbea5c3e9" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorEkleTests" name="LGAPDB01_satir_296_musteri_yok_70_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_612_police_yok_01_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="cc71a69d-3357-6e7a-c072-9180ab2e22e3">
+      <Execution id="6af296ea-7fa8-407a-acf0-f62df3a7e004" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Motor.MotorSorgulaTests" name="LGIPDB01_satir_612_police_yok_01_doner" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="da47c959-b8ee-f220-ba69-2f6bb642eee8" executionId="809be9a5-326c-4607-bf3f-7a56b45611c6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6fa52da9-5756-9dd2-b227-e1e615709ea1" executionId="9b7368d2-2b76-493f-9f4e-854de3bcf8ed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="aae87e32-6c60-0622-9a30-73c102f9527d" executionId="b7aab268-5bd9-484e-ae63-d08a88437f0e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="10b70a71-8a2b-876c-cbe3-973ca23b0ead" executionId="048d1ce3-2891-4fd7-8749-fcddbea5c3e9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="85479b8a-c8fb-a80b-52d0-964d28696140" executionId="4bac0c63-2f8a-4136-9364-797d7a8b88f2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9d36b622-896a-af36-3b73-2cc7ef9cac17" executionId="8ffee8b9-cebd-48b4-a071-93a979903fea" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cc71a69d-3357-6e7a-c072-9180ab2e22e3" executionId="6af296ea-7fa8-407a-acf0-f62df3a7e004" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="61991833-7801-82a7-95f4-197ee58c8b73" executionId="50e84163-9ef9-4e43-a1fd-4ccef66ee906" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="842f91f4-6cb5-08a8-9d37-9995a7e04cc0" executionId="5976da1f-1121-4b88-84a0-8869ae7322c4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0181bca6-3759-be9b-c8b2-faac7529cdf0" executionId="05f05248-4022-4ce8-b78e-7bb1c21f6af5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="10" executed="10" passed="10" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.14)&#xD;
+[xUnit.net 00:00:00.11]   Discovering: GenApp.EquivalenceTests&#xD;
+[xUnit.net 00:00:00.15]   Discovered:  GenApp.EquivalenceTests&#xD;
+[xUnit.net 00:00:00.17]   Starting:    GenApp.EquivalenceTests&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+warn: GenApp.Llm.MotorEkle.MotorPolicyAddService[0]&#xD;
+      LGAPDB01 INSERT POLICY: m��teri bulunamad�. CNUM=999999999&#xD;
+      Npgsql.PostgresException (0x80004005): 23503: insert or update on table "policy" violates foreign key constraint "fk_policy_customer_customer_number"&#xD;
+      DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.&#xD;
+         at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at GenApp.Llm.MotorEkle.MotorPolicyAddRepository.InsertAsync(MotorPolicyInsertData data, CancellationToken cancellationToken) in C:\w\agac\src\GenApp.Api\Llm\motor-ekle\MotorPolicyAddRepository.cs:line 74&#xD;
+        Exception data:&#xD;
+          Severity: ERROR&#xD;
+          SqlState: 23503&#xD;
+          MessageText: insert or update on table "policy" violates foreign key constraint "fk_policy_customer_customer_number"&#xD;
+          Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.&#xD;
+          SchemaName: public&#xD;
+          TableName: policy&#xD;
+          ConstraintName: fk_policy_customer_customer_number&#xD;
+          File: ri_triggers.c&#xD;
+          Line: 2772&#xD;
+          Routine: ri_ReportViolation&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+[xUnit.net 00:00:00.90]   Finished:    GenApp.EquivalenceTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="47d0e1a6-ffe8-4cb5-80af-a7042ad5e57c" name="oguz@LAPTOP-DQIAC5DL 2026-10-27 20:48:24" runUser="LAPTOP-DQIAC5DL\oguz" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-27T20:48:24.9079716+03:00" queuing="2026-10-27T20:48:24.9079719+03:00" start="2026-10-27T20:48:22.9369877+03:00" finish="2026-10-27T20:48:24.9451193+03:00" />
+  <TestSettings name="default" id="f18fd321-17f7-4a89-930b-51b361cad621">
+    <Deployment runDeploymentRoot="oguz_LAPTOP-DQIAC5DL_2026-10-27_20_48_24" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="57fb22c2-8ca5-479c-a3de-718ff9a5d97c" testId="da47c959-b8ee-f220-ba69-2f6bb642eee8" testName="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_194_musteri_var_00_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.7091666" startTime="2026-10-27T20:48:24.1440883+03:00" endTime="2026-10-27T20:48:24.8467436+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="57fb22c2-8ca5-479c-a3de-718ff9a5d97c" />
+    <UnitTestResult executionId="3f2211f0-a920-4ce7-bb0d-1377b528f1b8" testId="842f91f4-6cb5-08a8-9d37-9995a7e04cc0" testName="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_196_kayit_yok_01_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.5120015" startTime="2026-10-27T20:48:23.6173116+03:00" endTime="2026-10-27T20:48:24.1361516+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3f2211f0-a920-4ce7-bb0d-1377b528f1b8" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_194_musteri_var_00_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="da47c959-b8ee-f220-ba69-2f6bb642eee8">
+      <Execution id="57fb22c2-8ca5-479c-a3de-718ff9a5d97c" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests" name="LGICDB01_satir_194_musteri_var_00_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_196_kayit_yok_01_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="842f91f4-6cb5-08a8-9d37-9995a7e04cc0">
+      <Execution id="3f2211f0-a920-4ce7-bb0d-1377b528f1b8" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests" name="LGICDB01_satir_196_kayit_yok_01_doner" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="da47c959-b8ee-f220-ba69-2f6bb642eee8" executionId="57fb22c2-8ca5-479c-a3de-718ff9a5d97c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="842f91f4-6cb5-08a8-9d37-9995a7e04cc0" executionId="3f2211f0-a920-4ce7-bb0d-1377b528f1b8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="2" executed="2" passed="2" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.14)&#xD;
+[xUnit.net 00:00:00.12]   Discovering: GenApp.EquivalenceTests&#xD;
+[xUnit.net 00:00:00.16]   Discovered:  GenApp.EquivalenceTests&#xD;
+[xUnit.net 00:00:00.18]   Starting:    GenApp.EquivalenceTests&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (6ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+[xUnit.net 00:00:01.44]   Finished:    GenApp.EquivalenceTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

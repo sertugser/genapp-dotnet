@@ -1,0 +1,18 @@
+{
+  "derleme": true,
+  "testler": {
+    "GenApp.EquivalenceTests.Musteri.MusteriGuncelleTests.LGUCDB01_satir_124_musteri_var_00_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    }
+  },
+  "ad": "A-musteri-guncelle-T2",
+  "operasyonlar": [
+    "musteri-guncelle"
+  ],
+  "tekrar": "T2",
+  "commit": "6e3dbb79418c389488af195e1e3fb3850cde6e88",
+  "dislanan_action": [
+    "CustomersController.Update"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "derleme": true,
+  "testler": {
+    "GenApp.EquivalenceTests.Musteri.MusteriGuncelleTests.LGUCDB01_satir_124_musteri_var_00_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_194_musteri_var_00_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_612_police_yok_01_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_612_baska_musterinin_policesi_01_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_293_police_eklenir_00_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Musteri.MusteriSorgulaTests.LGICDB01_satir_196_kayit_yok_01_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Motor.MotorEkleTests.LGAPDB01_satir_296_musteri_yok_70_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_258_police_var_00_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Motor.MotorSorgulaTests.LGIPDB01_satir_598_prim_ve_kaza_sifirdan_farkli_00_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Musteri.MusteriEkleTests.LGACDB01_satir_156_musteri_eklenir_00_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    }
+  },
+  "ad": "baz",
+  "operasyonlar": [
+    "musteri-ekle",
+    "musteri-sorgula",
+    "musteri-guncelle",
+    "motor-ekle",
+    "motor-sorgula"
+  ],
+  "tekrar": null,
+  "commit": "6e3dbb79418c389488af195e1e3fb3850cde6e88",
+  "dislanan_action": []
+}
