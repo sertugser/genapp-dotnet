@@ -1,0 +1,26 @@
+{
+  "derleme": true,
+  "testler": {
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y08_olmayan_musteriyi_guncelle_404_01_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y10_guncellemede_uzun_soyad_400_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y09_guncellemede_posta_kodu_buyuk_harfe_cevrilir": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    }
+  },
+  "ad": "Y-musteri-guncelle-T1",
+  "operasyonlar": [
+    "musteri-guncelle"
+  ],
+  "tekrar": "T1",
+  "commit": "99328c016384308aa11f61998eaa180709c06e8f",
+  "dislanan_action": [
+    "CustomersController.Update"
+  ]
+}

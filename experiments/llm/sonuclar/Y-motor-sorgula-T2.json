@@ -1,0 +1,26 @@
+{
+  "derleme": true,
+  "testler": {
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y14_baska_turden_police_404_01_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y16_sorguda_alanlar_eklenenle_ayni_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y15_sayi_olmayan_police_numarasi_404_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    }
+  },
+  "ad": "Y-motor-sorgula-T2",
+  "operasyonlar": [
+    "motor-sorgula"
+  ],
+  "tekrar": "T2",
+  "commit": "99328c016384308aa11f61998eaa180709c06e8f",
+  "dislanan_action": [
+    "MotorPoliciesController.Inquire"
+  ]
+}
