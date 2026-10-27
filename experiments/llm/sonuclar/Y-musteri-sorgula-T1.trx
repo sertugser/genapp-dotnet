@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="ec0c87d1-2ac9-4292-b88d-9e73bb0558b4" name="oguz@LAPTOP-DQIAC5DL 2026-10-27 21:12:17" runUser="LAPTOP-DQIAC5DL\oguz" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-27T21:12:17.5058372+03:00" queuing="2026-10-27T21:12:17.5058377+03:00" start="2026-10-27T21:12:16.0991606+03:00" finish="2026-10-27T21:12:17.5119634+03:00" />
+  <TestSettings name="default" id="d92d27aa-41fb-4182-812e-cd45e3019c20">
+    <Deployment runDeploymentRoot="oguz_LAPTOP-DQIAC5DL_2026-10-27_21_12_17" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="d0822d3d-eed1-43f9-a99a-cf1da469e195" testId="d3b46ab3-a03d-9cf1-c2f7-b77d33c1ea17" testName="GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y07_on_haneli_numara_kesilmez_404_01_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.4976652" startTime="2026-10-27T21:12:16.8137433+03:00" endTime="2026-10-27T21:12:17.3184771+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d0822d3d-eed1-43f9-a99a-cf1da469e195" />
+    <UnitTestResult executionId="ba2d5f59-9f26-4fdc-a530-dafe9d91f2b2" testId="12aabbf5-3565-bf89-c786-95d0fb9c3fad" testName="GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y06_sayi_olmayan_numara_404_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0156093" startTime="2026-10-27T21:12:17.3288442+03:00" endTime="2026-10-27T21:12:17.3362590+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ba2d5f59-9f26-4fdc-a530-dafe9d91f2b2" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y06_sayi_olmayan_numara_404_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="12aabbf5-3565-bf89-c786-95d0fb9c3fad">
+      <Execution id="ba2d5f59-9f26-4fdc-a530-dafe9d91f2b2" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Yoklama.YoklamaTests" name="Y06_sayi_olmayan_numara_404_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y07_on_haneli_numara_kesilmez_404_01_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="d3b46ab3-a03d-9cf1-c2f7-b77d33c1ea17">
+      <Execution id="d0822d3d-eed1-43f9-a99a-cf1da469e195" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Yoklama.YoklamaTests" name="Y07_on_haneli_numara_kesilmez_404_01_doner" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="d3b46ab3-a03d-9cf1-c2f7-b77d33c1ea17" executionId="d0822d3d-eed1-43f9-a99a-cf1da469e195" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="12aabbf5-3565-bf89-c786-95d0fb9c3fad" executionId="ba2d5f59-9f26-4fdc-a530-dafe9d91f2b2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="2" executed="2" passed="2" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.14)&#xD;
+[xUnit.net 00:00:00.17]   Discovering: GenApp.EquivalenceTests&#xD;
+[xUnit.net 00:00:00.21]   Discovered:  GenApp.EquivalenceTests&#xD;
+[xUnit.net 00:00:00.24]   Starting:    GenApp.EquivalenceTests&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+[xUnit.net 00:00:00.80]   Finished:    GenApp.EquivalenceTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

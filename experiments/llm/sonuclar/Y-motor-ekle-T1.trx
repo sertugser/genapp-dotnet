@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="bb818bac-25bf-46cf-b23a-c332d69a2a54" name="oguz@LAPTOP-DQIAC5DL 2026-10-27 21:12:44" runUser="LAPTOP-DQIAC5DL\oguz" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-27T21:12:44.9452615+03:00" queuing="2026-10-27T21:12:44.9452617+03:00" start="2026-10-27T21:12:43.0825720+03:00" finish="2026-10-27T21:12:44.9488217+03:00" />
+  <TestSettings name="default" id="a88ee2a5-c7a2-4ac5-a958-683280767eb1">
+    <Deployment runDeploymentRoot="oguz_LAPTOP-DQIAC5DL_2026-10-27_21_12_44" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="6c72c6b6-f3b1-4e20-9149-ea1e599e8854" testId="bb82dc72-75fa-33c7-179d-bf8ea4432640" testName="GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y12_istekteki_police_numarasi_yok_sayilir" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0407294" startTime="2026-10-27T21:12:44.7337191+03:00" endTime="2026-10-27T21:12:44.7682128+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6c72c6b6-f3b1-4e20-9149-ea1e599e8854" />
+    <UnitTestResult executionId="3ac360c5-f5d2-4abb-a16d-dacd8736f8f0" testId="5506d08d-90de-7168-e705-94b6f33b2cdb" testName="GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y13_gecersiz_tarih_400_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:01.0846134" startTime="2026-10-27T21:12:43.6347987+03:00" endTime="2026-10-27T21:12:44.7259637+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3ac360c5-f5d2-4abb-a16d-dacd8736f8f0" />
+    <UnitTestResult executionId="51957017-d5b6-402e-ab26-ffe22e6f393d" testId="e79442c9-cc8b-5ea7-70fd-c7bd1196bcef" testName="GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y11_uzun_marka_400_doner" computerName="LAPTOP-DQIAC5DL" duration="00:00:00.0669108" startTime="2026-10-27T21:12:44.7687842+03:00" endTime="2026-10-27T21:12:44.8354329+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="51957017-d5b6-402e-ab26-ffe22e6f393d" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y12_istekteki_police_numarasi_yok_sayilir" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="bb82dc72-75fa-33c7-179d-bf8ea4432640">
+      <Execution id="6c72c6b6-f3b1-4e20-9149-ea1e599e8854" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Yoklama.YoklamaTests" name="Y12_istekteki_police_numarasi_yok_sayilir" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y11_uzun_marka_400_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="e79442c9-cc8b-5ea7-70fd-c7bd1196bcef">
+      <Execution id="51957017-d5b6-402e-ab26-ffe22e6f393d" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Yoklama.YoklamaTests" name="Y11_uzun_marka_400_doner" />
+    </UnitTest>
+    <UnitTest name="GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y13_gecersiz_tarih_400_doner" storage="c:\w\agac\tests\genapp.equivalencetests\bin\debug\net10.0\genapp.equivalencetests.dll" id="5506d08d-90de-7168-e705-94b6f33b2cdb">
+      <Execution id="3ac360c5-f5d2-4abb-a16d-dacd8736f8f0" />
+      <TestMethod codeBase="C:\w\agac\tests\GenApp.EquivalenceTests\bin\Debug\net10.0\GenApp.EquivalenceTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GenApp.EquivalenceTests.Yoklama.YoklamaTests" name="Y13_gecersiz_tarih_400_doner" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="bb82dc72-75fa-33c7-179d-bf8ea4432640" executionId="6c72c6b6-f3b1-4e20-9149-ea1e599e8854" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5506d08d-90de-7168-e705-94b6f33b2cdb" executionId="3ac360c5-f5d2-4abb-a16d-dacd8736f8f0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e79442c9-cc8b-5ea7-70fd-c7bd1196bcef" executionId="51957017-d5b6-402e-ab26-ffe22e6f393d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="3" executed="3" passed="3" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.14)&#xD;
+[xUnit.net 00:00:00.08]   Discovering: GenApp.EquivalenceTests&#xD;
+[xUnit.net 00:00:00.13]   Discovered:  GenApp.EquivalenceTests&#xD;
+[xUnit.net 00:00:00.14]   Starting:    GenApp.EquivalenceTests&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\w\agac\src\GenApp.Api&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (23ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Date), @p1='?', @p2='?', @p3='?', @p4='?', @p5='?', @p6='?', @p7='?', @p8='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer (date_of_birth, email_address, first_name, house_name, house_number, last_name, phone_home, phone_mobile, postcode)&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)&#xD;
+      RETURNING customer_number;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?', @p2='?' (DbType = Int32), @p3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO customer_secure (customer_number, customer_pass, pass_changes, state_indicator)&#xD;
+      VALUES (@p0, @p1, @p2, @p3);&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+[xUnit.net 00:00:01.37]   Finished:    GenApp.EquivalenceTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

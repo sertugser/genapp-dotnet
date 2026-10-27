@@ -1,0 +1,26 @@
+{
+  "derleme": true,
+  "testler": {
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y13_gecersiz_tarih_400_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y12_istekteki_police_numarasi_yok_sayilir": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y11_uzun_marka_400_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    }
+  },
+  "ad": "Y-motor-ekle-T3",
+  "operasyonlar": [
+    "motor-ekle"
+  ],
+  "tekrar": "T3",
+  "commit": "99328c016384308aa11f61998eaa180709c06e8f",
+  "dislanan_action": [
+    "MotorPoliciesController.Add"
+  ]
+}

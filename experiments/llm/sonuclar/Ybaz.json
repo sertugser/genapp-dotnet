@@ -1,0 +1,80 @@
+{
+  "derleme": true,
+  "testler": {
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y13_gecersiz_tarih_400_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y09_guncellemede_posta_kodu_buyuk_harfe_cevrilir": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y16_sorguda_alanlar_eklenenle_ayni_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y08_olmayan_musteriyi_guncelle_404_01_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y02_uzun_ad_400_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y03_gecersiz_dogum_tarihi_400_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y07_on_haneli_numara_kesilmez_404_01_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y10_guncellemede_uzun_soyad_400_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y15_sayi_olmayan_police_numarasi_404_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y11_uzun_marka_400_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y05_bos_metin_cevapta_bos_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y06_sayi_olmayan_numara_404_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y01_posta_kodu_buyuk_harfe_cevrilir": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y12_istekteki_police_numarasi_yok_sayilir": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y04_istekteki_musteri_numarasi_yok_sayilir": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    },
+    "GenApp.EquivalenceTests.Yoklama.YoklamaTests.Y14_baska_turden_police_404_01_doner": {
+      "sonuc": "Passed",
+      "mesaj": ""
+    }
+  },
+  "ad": "Ybaz",
+  "operasyonlar": [
+    "musteri-ekle",
+    "musteri-sorgula",
+    "musteri-guncelle",
+    "motor-ekle",
+    "motor-sorgula"
+  ],
+  "tekrar": null,
+  "commit": "99328c016384308aa11f61998eaa180709c06e8f",
+  "dislanan_action": []
+}

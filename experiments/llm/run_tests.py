@@ -56,6 +56,9 @@ def kopya_olustur(is_dizini, commit):
         t.extractall(hedef)
     api = os.path.join(hedef, "src", "GenApp.Api")
     shutil.copy(os.path.join(KOK, "experiments", "llm", "harness", "LlmIzoleKonvansiyonu.cs"), api)
+    yoklama = os.path.join(hedef, "tests", "GenApp.EquivalenceTests", "Yoklama")
+    os.makedirs(yoklama)
+    shutil.copy(os.path.join(KOK, "experiments", "llm", "yoklama", "YoklamaTests.cs"), yoklama)
     prog = os.path.join(api, "Program.cs")
     metin = open(prog, encoding="utf-8").read()
     assert metin.count("builder.Services.AddControllers()") == 1, "Program.cs beklenen biçimde değil"
@@ -91,7 +94,7 @@ def trx_oku(yol):
     return testler
 
 
-def calistir_bir(ad, agac, dotnet, env, operasyonlar, dislanan, hedef_klasor):
+def calistir_bir(ad, agac, dotnet, env, operasyonlar, dislanan, hedef_klasor, iz="Operasyon"):
     """Derle, filtreli testleri çalıştır, sonucu {derleme, testler} olarak döndür."""
     env = dict(env)
     env["LLM_DISLANAN_ACTIONLAR"] = ";".join(dislanan)
@@ -100,7 +103,7 @@ def calistir_bir(ad, agac, dotnet, env, operasyonlar, dislanan, hedef_klasor):
     if kod != 0:
         hatalar = sorted({l.strip() for l in cikti.splitlines() if "error" in l})[:15]
         return {"derleme": False, "derleme_hatalari": hatalar, "testler": {}}
-    filtre = "|".join(f"Operasyon={o}" for o in operasyonlar)
+    filtre = "|".join(f"{iz}={o}" for o in operasyonlar)
     trx = f"{ad}.trx"
     kod, cikti = calistir([dotnet, "test", proje, "--no-build", "--filter", filtre, "--logger", f"trx;LogFileName={trx}",
                            "--results-directory", os.path.join(agac, "TestResults")], agac, env)
@@ -137,6 +140,11 @@ def main():
     for op in KAPSAM:
         for t in TEKRARLAR:
             plan.append((f"A-{op}-{t}", [op], [KAPSAM[op]], t))
+    # ek yoklama (ölçüm dışı): aynı A düzeni, "Yoklama" etiketli testler; "Ybaz" elle yazılmış kodu sınar
+    plan.append(("Ybaz", list(KAPSAM), [], None))
+    for op in KAPSAM:
+        for t in TEKRARLAR:
+            plan.append((f"Y-{op}-{t}", [op], [KAPSAM[op]], t))
     for t in TEKRARLAR:
         plan.append((f"B-{t}", list(KAPSAM), list(KAPSAM.values()), t))
 
@@ -148,7 +156,8 @@ def main():
         elif os.path.exists(os.path.join(agac, "src", "GenApp.Api", "Llm")):
             shutil.rmtree(os.path.join(agac, "src", "GenApp.Api", "Llm"))
         print(f"== {ad}", flush=True)
-        sonuc = calistir_bir(ad, agac, a.dotnet, env, ops, dislanan, cikti)
+        sonuc = calistir_bir(ad, agac, a.dotnet, env, ops, dislanan, cikti,
+                            "Yoklama" if ad.startswith("Y") else "Operasyon")
         sonuc.update({"ad": ad, "operasyonlar": ops, "tekrar": tekrar, "commit": commit, "dislanan_action": dislanan})
         with open(os.path.join(cikti, f"{ad}.json"), "w", encoding="utf-8") as f:
             json.dump(sonuc, f, ensure_ascii=False, indent=2)
