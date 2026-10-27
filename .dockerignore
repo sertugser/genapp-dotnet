@@ -1,0 +1,17 @@
+# Build context of the Dockerfile: only what the API image needs goes in.
+**/bin/
+**/obj/
+**/node_modules/
+.git/
+.github/
+.vs/
+.idea/
+.env
+**/.DS_Store
+
+# Not needed in the image
+base/
+docs/
+legacy-analysis/
+tests/
+src/GenApp.Web/

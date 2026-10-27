@@ -97,6 +97,6 @@ bir değişken (`lgipdb01.cbl:169`). Kapsamdaki 18 operasyonun hiçbiri bu tablo
 
 ## Yerelde kurulum
 
-    docker compose up -d
+    docker compose up -d postgres
     dotnet tool restore
     dotnet ef database update --project src/GenApp.Infrastructure --startup-project src/GenApp.Api
