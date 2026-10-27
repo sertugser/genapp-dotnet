@@ -1,5 +1,5 @@
-# docker compose up: PostgreSQL, then the migrations (once), then the API with the web interface on
-# http://localhost:8080. For the database only (dotnet run, tests): docker compose up -d postgres
+# docker compose up: PostgreSQL, then the migrations (once), then the sample data, then the API with the web interface
+# on http://localhost:8080. For the database only (dotnet run, tests): docker compose up -d postgres
 
 x-connection-string: &connection-string
   Host=postgres;Port=5432;Database=genapp;Username=${POSTGRES_USER:-genapp};Password=${POSTGRES_PASSWORD:-genapp_dev}
@@ -32,6 +32,18 @@ services:
       postgres:
         condition: service_healthy
 
+  # Loads the Db2 sample data (customers and policies 1-10 of base/cntl/db2cre.jcl) and exits. Rows already there are
+  # skipped, so it runs on every "up" without duplicating them (tools/GenApp.SampleData, #51).
+  seed:
+    build:
+      context: .
+      target: seed
+    environment:
+      ConnectionStrings__GenApp: *connection-string
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
   # REST API and web interface. Development shows the OpenAPI page at /swagger (docs/api-design.md section 1).
   api:
     build:
@@ -43,7 +55,7 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:
-      migrate:
+      seed:
         condition: service_completed_successfully
 
 volumes:
