@@ -9,8 +9,9 @@
 .env
 **/.DS_Store
 
-# Not needed in the image
+# Not needed in the image (from base/ only the Db2 sample data of the seed stage)
 base/
+!base/cntl/db2cre.jcl
 docs/
 legacy-analysis/
 tests/
