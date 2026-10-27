@@ -8,6 +8,31 @@ namespace GenApp.Infrastructure.Persistence;
 // Turns database failures into the Application's exception types (ADR 0001 decision 3).
 internal static class DatabaseErrors
 {
+    // Runs one database call and turns its failure into the Application's exception types.
+    public static async Task<T> RunAsync<T>(Func<Task<T>> call)
+    {
+        try
+        {
+            return await call();
+        }
+        catch (Exception e) when (IsDatabaseError(e))
+        {
+            throw Translate(e);
+        }
+    }
+
+    public static async Task RunAsync(Func<Task> call)
+    {
+        try
+        {
+            await call();
+        }
+        catch (Exception e) when (IsDatabaseError(e))
+        {
+            throw Translate(e);
+        }
+    }
+
     // EF Core wraps transient failures (deadlock, lost connection) in an InvalidOperationException, so the whole
     // chain is searched.
     public static bool IsDatabaseError(Exception e) => Chain(e).Any(c => c is DbException or DbUpdateException);

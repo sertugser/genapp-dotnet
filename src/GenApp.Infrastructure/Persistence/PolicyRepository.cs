@@ -30,19 +30,19 @@ internal sealed class PolicyRepository(GenAppDbContext db, TimeProvider clock) :
     public async Task<PolicyRecord<TDetails>?> FindAsync<TDetails>(int customerNumber, int policyNumber, CancellationToken cancellationToken = default)
         where TDetails : class, IPolicyDetails
     {
-        var details = await db.Set<TDetails>()
+        var details = await DatabaseErrors.RunAsync(() => db.Set<TDetails>()
             .Include(d => d.Policy)
-            .SingleOrDefaultAsync(d => d.PolicyNumber == policyNumber && d.Policy!.CustomerNumber == customerNumber, cancellationToken);
+            .SingleOrDefaultAsync(d => d.PolicyNumber == policyNumber && d.Policy!.CustomerNumber == customerNumber, cancellationToken));
 
         return details is null ? null : new PolicyRecord<TDetails>(details.Policy!, details);
     }
 
     // Reads only the type column; nothing is tracked.
     public Task<string?> FindTypeAsync(int customerNumber, int policyNumber, CancellationToken cancellationToken = default) =>
-        db.Policies
+        DatabaseErrors.RunAsync(() => db.Policies
             .Where(p => p.CustomerNumber == customerNumber && p.PolicyNumber == policyNumber)
             .Select(p => p.PolicyType)
-            .SingleOrDefaultAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken));
 
     // LGUPDB01 (lgupdb01.cbl:278, :322): EF Core sends UPDATE ... WHERE last_changed = <client's value>.
     // Without setting OriginalValue, EF Core would compare against the value it just read and never find a conflict.
@@ -58,9 +58,9 @@ internal sealed class PolicyRepository(GenAppDbContext db, TimeProvider clock) :
     // system keeps the code's behaviour (docs/api-design.md section 3), so the deleted row count is returned and
     // the service maps 0 to 90. ExecuteDeleteAsync runs at once: a delete is the operation's only write.
     public Task<int> DeleteAsync(int customerNumber, int policyNumber, CancellationToken cancellationToken = default) =>
-        db.Policies
+        DatabaseErrors.RunAsync(() => db.Policies
             .Where(p => p.CustomerNumber == customerNumber && p.PolicyNumber == policyNumber)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync(cancellationToken));
 
     // ADR 0003 decision 3: the application is the only clock; PostgreSQL keeps microseconds and Npgsql
     // rejects DateTimeKind.Utc for "timestamp without time zone".

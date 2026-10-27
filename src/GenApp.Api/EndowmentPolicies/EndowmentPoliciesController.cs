@@ -1,3 +1,4 @@
+using GenApp.Api.Policies;
 using GenApp.Application;
 using GenApp.Application.Policies;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,8 @@ namespace GenApp.Api.EndowmentPolicies;
 [Produces("application/json")]
 public sealed class EndowmentPoliciesController(EndowmentPolicyService service) : ControllerBase
 {
+    private const string TypeName = "hayat sigortası poliçesi";
+
     /// <summary>Hayat sigortası poliçesi ekle (LGAPOL01, 01AEND).</summary>
     [HttpPost]
     [ProducesResponseType<EndowmentPolicyResponse>(StatusCodes.Status201Created)]
@@ -20,7 +23,7 @@ public sealed class EndowmentPoliciesController(EndowmentPolicyService service) 
         var result = await service.AddAsync(request.ToPolicy(customerNumber), request.ToEndowmentPolicy(), cancellationToken);
         if (!result.IsSuccess)
         {
-            return ReturnCodeProblems.For(result.ReturnCode, $"{customerNumber} numaralı müşteri bulunamadı.").ToResult();
+            return PolicyProblems.CustomerNotFound(result.ReturnCode, customerNumber);
         }
 
         var policy = EndowmentPolicyResponse.From(result.Value!);
@@ -37,7 +40,7 @@ public sealed class EndowmentPoliciesController(EndowmentPolicyService service) 
 
         return result.IsSuccess
             ? Ok(EndowmentPolicyResponse.From(result.Value!))
-            : Problem(result.ReturnCode, customerNumber, policyNumber);
+            : PolicyProblems.For(result.ReturnCode, customerNumber, policyNumber, TypeName);
     }
 
     /// <summary>Hayat sigortası poliçesi güncelle (LGUPOL01, 01UEND).</summary>
@@ -55,7 +58,7 @@ public sealed class EndowmentPoliciesController(EndowmentPolicyService service) 
 
         return result.IsSuccess
             ? Ok(EndowmentPolicyResponse.From(result.Value!))
-            : Problem(result.ReturnCode, customerNumber, policyNumber);
+            : PolicyProblems.For(result.ReturnCode, customerNumber, policyNumber, TypeName);
     }
 
     /// <summary>Hayat sigortası poliçesi sil (LGDPOL01, 01DEND).</summary>
@@ -69,16 +72,6 @@ public sealed class EndowmentPoliciesController(EndowmentPolicyService service) 
 
         return returnCode == ReturnCodes.Success
             ? NoContent()
-            : Problem(returnCode, customerNumber, policyNumber);
+            : PolicyProblems.For(returnCode, customerNumber, policyNumber, TypeName);
     }
-
-    private static IActionResult Problem(string returnCode, int customerNumber, int policyNumber) =>
-        ReturnCodeProblems.For(returnCode, returnCode switch
-        {
-            ReturnCodes.ConcurrencyConflict =>
-                $"{policyNumber} numaralı poliçe siz okuduktan sonra değiştirilmiş. Poliçeyi yeniden sorgulayıp tekrar deneyin.",
-            ReturnCodes.DatabaseError =>
-                $"{customerNumber} numaralı müşterinin {policyNumber} numaralı poliçesi silinemedi.",
-            _ => $"{customerNumber} numaralı müşterinin {policyNumber} numaralı hayat sigortası poliçesi bulunamadı.",
-        }).ToResult();
 }
