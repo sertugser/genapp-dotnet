@@ -129,12 +129,13 @@ kutu(s, 0.6, 4.0, 5.9, 3.2, "Nasıl ölçtük", [
 kutu(s, 6.8, 4.0, 5.9, 3.2, "Sınır", [
     "Sadece bu 5 operasyon; 18'e genellenmez. Güncellemede kodun ezilmesi, silmede tür kontrolü, ticari liste sorguları kapsam dışı.",
     "Test seti küçük: ikisi de %100, testler ayıramadı.",
-    "Seçim rastgele değil (kredi bitti).",
+    "Seçim rastgele değil: çalıştırma sırasında ilk gelen 5 operasyon.",
 ], 14)
 notlar(s, "Aynı operasyonları bir LLM'e çevirttik, kodunu bizim eşdeğerlik testlerimizle çalıştırdık. 15 çıktının hepsi derlendi ve 10 "
           "testin 10'unu geçti; bizim kodumuz da 10/10. Testlerin kendisi 10 tane olduğu için ikisini ayıramadı; ek olarak belgedeki 16 "
-          "davranışı ölçüm dışı yokladık, onda da hata çıkmadı. Plan 18 operasyondu; API kredisi bitince beş operasyon (15 çağrı) "
-          "ölçüme kaldı, bu yüzden sonuç genellenemez. Kaynak: tests/results/llm-comparison.md.")
+          "davranışı ölçüm dışı yokladık, onda da hata çıkmadı. Plan 18 operasyondu; çalıştırma ekip kararıyla 16 çağrıda durduruldu ve "
+          "beş operasyon (15 çağrı) ölçüme kaldı, bu yüzden sonuç genellenemez. Bizim kodumuz da Claude Code yardımıyla "
+          "yazıldı; karşılaştırma insan ile yapay zekâ arasında değil, adım adım yazılan kod ile tek seferde çevrilen kod arasındadır. Kaynak: tests/results/llm-comparison.md.")
 
 hedef = os.path.join(os.path.dirname(os.path.abspath(__file__)), "oguz-slaytlar.pptx")
 prs.save(hedef)
