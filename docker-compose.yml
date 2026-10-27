@@ -1,3 +1,9 @@
+# docker compose up: PostgreSQL, then the migrations (once), then the API with the web interface on
+# http://localhost:8080. For the database only (dotnet run, tests): docker compose up -d postgres
+
+x-connection-string: &connection-string
+  Host=postgres;Port=5432;Database=genapp;Username=${POSTGRES_USER:-genapp};Password=${POSTGRES_PASSWORD:-genapp_dev}
+
 services:
   postgres:
     image: postgres:18
@@ -14,6 +20,31 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  # Applies the EF Core migrations and exits.
+  migrate:
+    build:
+      context: .
+      target: migrate
+    environment:
+      ConnectionStrings__GenApp: *connection-string
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # REST API and web interface. Development shows the OpenAPI page at /swagger (docs/api-design.md section 1).
+  api:
+    build:
+      context: .
+      target: api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__GenApp: *connection-string
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
 
 volumes:
   pgdata:

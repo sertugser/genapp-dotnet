@@ -17,9 +17,9 @@ Mutation testing (Stryker.NET) measures how many planted bugs our tests actually
 |---|---|
 | `base/` | Original GenApp COBOL application from [cicsdev/cics-genapp](https://github.com/cicsdev/cics-genapp) (unchanged) |
 | `legacy-analysis/` | Static analysis of the COBOL code (in progress) |
-| `docs/` | Design notes and architecture decision records (planned) |
-| `src/` | ASP.NET Core solution (planned) |
-| `tests/` | Equivalence and integration tests (planned) |
+| `docs/` | Requirements, API design, architecture and architecture decision records |
+| `src/` | ASP.NET Core solution and the React web interface (in progress) |
+| `tests/` | Test predictions, the GnuCOBOL harness, equivalence and database tests (in progress) |
 
 ## Scope
 
@@ -29,6 +29,29 @@ policy update for motor, house and endowment (the original code has no customer 
 **Out of scope:** JCL batch jobs; setup and monitoring programs (LGSETUP, LGWEBST5); the optional CICS scenarios in `base/`
 (web services, CICSPlex SM, Workload Simulator, business events); the CICS named counter – customer numbers come from
 the database instead, which is GenApp's own fallback in LGACDB01; running on a real mainframe.
+
+## Running the application
+
+The only requirement is [Docker](https://docs.docker.com/get-docker/) (Docker Desktop on Windows and macOS).
+
+    docker compose up --build
+
+When the API has started, open:
+
+- http://localhost:8080 – web interface
+- http://localhost:8080/swagger – REST API description
+
+`docker compose up` starts three services in order: `postgres` (PostgreSQL 18), `migrate` (creates the tables,
+then exits) and `api` (REST API and web interface). The first run downloads the images and builds the API,
+which takes a few minutes.
+
+| Command | Effect |
+|---|---|
+| `Ctrl+C` or `docker compose down` | Stop the system; the data is kept |
+| `docker compose down -v` | Stop and delete the database |
+| `docker compose up -d postgres` | Start only the database, e.g. for `dotnet run` and the tests |
+
+Ports 8080 and 5432 must be free on the computer.
 
 ## Tech stack
 
