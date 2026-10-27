@@ -35,8 +35,8 @@ jobs:
           --health-timeout 3s
           --health-retries 10
 
-    # Eşdeğerlik testleri ve migration bu bağlantı dizesini kullanır (GenAppApiFactory). Servis job'a
-    # localhost:5432 üzerinden açılır.
+    # Eşdeğerlik testleri (GenAppApiFactory), entegrasyon testleri (EntegrasyonFixture) ve migration bu bağlantı
+    # dizesini kullanır. Servis job'a localhost:5432 üzerinden açılır.
     env:
       ConnectionStrings__GenApp: Host=localhost;Port=5432;Database=genapp;Username=genapp;Password=genapp_dev
 
@@ -68,7 +68,7 @@ jobs:
       - name: Veritabanı (repository) testlerini çalıştır
         run: dotnet test tests/GenApp.Infrastructure.Tests/GenApp.Infrastructure.Tests.csproj --no-build
 
-      # Eşdeğerlik testleri şeması kurulmuş bir veritabanı ister (docs/database-schema.md).
+      # Eşdeğerlik ve entegrasyon testleri şeması kurulmuş bir veritabanı ister (docs/database-schema.md).
       - name: Veritabanı şemasını kur (migration)
         run: |
           dotnet tool restore
@@ -152,3 +152,19 @@ jobs:
             exit 1
           fi
           echo "Tüm aktif operasyonların eşdeğerlik testleri geçti (${#names[@]} operasyon)."
+
+      # Entegrasyon testleri (tests/README.md, "Entegrasyon testleri"): API + PostgreSQL baştan sona; sonuç veritabanında
+      # ham SQL ile doğrulanır. active-operations.txt'e bağlı değildir, projenin bütün testleri çalışır. Migration
+      # adımının kurduğu şemayı ve iş düzeyindeki ConnectionStrings__GenApp'ı kullanır. Hiç test bulunamazsa
+      # TreatNoTestsAsError adımı başarısız yapar.
+      - name: Entegrasyon testlerini çalıştır (API + PostgreSQL)
+        shell: bash
+        run: |
+          if ! dotnet test tests/GenApp.IntegrationTests/GenApp.IntegrationTests.csproj \
+              --no-build \
+              -- RunConfiguration.TreatNoTestsAsError=true; then
+            echo "::error::Entegrasyon testleri başarısız (tests/GenApp.IntegrationTests). Başarısız testler ve nedenleri yukarıdaki dotnet test çıktısında."
+            echo "Bağlantı ya da şema sorunu SmokeTests'te görünür; hiç test bulunamadıysa TreatNoTestsAsError hatası verir."
+            exit 1
+          fi
+          echo "Entegrasyon testleri geçti."
