@@ -9,6 +9,7 @@
 | Kapsam | `musteri-ekle`, `musteri-sorgula`, `musteri-guncelle`, `motor-ekle`, `motor-sorgula`, her biri 3 tekrar ([README](README.md), Değişiklik kaydı) |
 | Araçlar | .NET SDK 10.0.403, PostgreSQL 18.6 (bu iş için ayrı kurulmuş geçici örnek, şema `dotnet ef database update` ile migration'lardan), betik `run_tests.py` |
 | Ölçü | geçen test ÷ toplam test (README bölüm 6). Geçti = xUnit `Passed`; derleme hatası, zaman aşımı, çöken API, atlanan test = geçmedi |
+| Terim | Bu dosyada "elle yazılan / elle yazılmış kod", ekibin analiz, tahmin, test ve inceleme süreciyle adım adım yazdığı koddur. Bu kod da yapay zekâ (Claude Code) yardımıyla yazıldı; karşılaştırma insan ile yapay zekâ arasında değil, denetimli süreç ile tek seferlik çeviri arasındadır |
 
 ## Sonuç
 
@@ -109,9 +110,12 @@ python experiments/llm/run_tests.py --dotnet <dotnet 10> --baglanti "<Connection
     çevrilebilen bir kısmını ölçer (ADR 0005 Karar 2). Geçmek tam eşdeğerlik demek değildir; farkı yakalayacak test
     yoksa fark görünmez. **Tavan etkisi:** her iki taraf da %100 olduğu için testler LLM ile elle yazılmış kodu
     birbirinden ayıramadı.
-  - **Seçilim yanlılığı:** Kapsam rastgele değil; API kredisi bitmeden tamamlanan, çalıştırma sırasında ilk gelen
+  - **Seçilim yanlılığı:** Kapsam rastgele değil; çalıştırma sırasında ilk gelen ve üç tekrarı da tamamlanan
     müşteri ve motor operasyonlarıdır (README, Değişiklik kaydı). Sonuç hayat, konut ve ticari operasyonlara ve
     güncelle/sil gibi daha zor operasyonlara genellenmez.
+  - **Aynı model ailesi:** Elle yazılan kod da Claude Code yardımıyla yazıldı. Fark, kodun nasıl yazıldığındadır:
+    bizim tarafta analiz, tahmin tabloları, testler ve inceleme ile adım adım; LLM tarafında COBOL'dan tek seferde,
+    geri bildirimsiz ve düzeltmesiz. Sonuç "yapay zekâ insan kadar iyi" diye okunamaz.
   - **Belge sızıntısı:** LLM'e `api-design.md` (bilinçli sapmalar dâhil) verildi; elle yazan ekip de görmüştü (README
     bölüm 8). Sonuç yalnızca COBOL'dan çevirinin göstereceğinden iyi olabilir.
   - **Eğitim verisi:** GenApp açık bir IBM örneğidir; modelin COBOL'u ya da çevirisini eğitiminde görüp görmediğini
