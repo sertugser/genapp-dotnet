@@ -1,3 +1,4 @@
+using GenApp.Api.Policies;
 using GenApp.Application;
 using GenApp.Application.Policies;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,8 @@ namespace GenApp.Api.MotorPolicies;
 [Produces("application/json")]
 public sealed class MotorPoliciesController(MotorPolicyService service) : ControllerBase
 {
+    private const string TypeName = "motor poliçesi";
+
     /// <summary>Motor poliçesi ekle (LGAPOL01, 01AMOT).</summary>
     [HttpPost]
     [ProducesResponseType<MotorPolicyResponse>(StatusCodes.Status201Created)]
@@ -20,7 +23,7 @@ public sealed class MotorPoliciesController(MotorPolicyService service) : Contro
         var result = await service.AddAsync(request.ToPolicy(customerNumber), request.ToMotorPolicy(), cancellationToken);
         if (!result.IsSuccess)
         {
-            return ReturnCodeProblems.For(result.ReturnCode, $"{customerNumber} numaralı müşteri bulunamadı.").ToResult();
+            return PolicyProblems.CustomerNotFound(result.ReturnCode, customerNumber);
         }
 
         var policy = MotorPolicyResponse.From(result.Value!);
@@ -37,7 +40,7 @@ public sealed class MotorPoliciesController(MotorPolicyService service) : Contro
 
         return result.IsSuccess
             ? Ok(MotorPolicyResponse.From(result.Value!))
-            : Problem(result.ReturnCode, customerNumber, policyNumber);
+            : PolicyProblems.For(result.ReturnCode, customerNumber, policyNumber, TypeName);
     }
 
     /// <summary>Motor poliçesi güncelle (LGUPOL01, 01UMOT).</summary>
@@ -55,7 +58,7 @@ public sealed class MotorPoliciesController(MotorPolicyService service) : Contro
 
         return result.IsSuccess
             ? Ok(MotorPolicyResponse.From(result.Value!))
-            : Problem(result.ReturnCode, customerNumber, policyNumber);
+            : PolicyProblems.For(result.ReturnCode, customerNumber, policyNumber, TypeName);
     }
 
     /// <summary>Motor poliçesi sil (LGDPOL01, 01DMOT).</summary>
@@ -69,16 +72,6 @@ public sealed class MotorPoliciesController(MotorPolicyService service) : Contro
 
         return returnCode == ReturnCodes.Success
             ? NoContent()
-            : Problem(returnCode, customerNumber, policyNumber);
+            : PolicyProblems.For(returnCode, customerNumber, policyNumber, TypeName);
     }
-
-    private static IActionResult Problem(string returnCode, int customerNumber, int policyNumber) =>
-        ReturnCodeProblems.For(returnCode, returnCode switch
-        {
-            ReturnCodes.ConcurrencyConflict =>
-                $"{policyNumber} numaralı poliçe siz okuduktan sonra değiştirilmiş. Poliçeyi yeniden sorgulayıp tekrar deneyin.",
-            ReturnCodes.DatabaseError =>
-                $"{customerNumber} numaralı müşterinin {policyNumber} numaralı poliçesi silinemedi.",
-            _ => $"{customerNumber} numaralı müşterinin {policyNumber} numaralı motor poliçesi bulunamadı.",
-        }).ToResult();
 }
