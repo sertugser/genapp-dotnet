@@ -217,3 +217,4 @@ Sonuç tablosunun biçimi:
 | Tarih | Değişiklik | Gerekçe |
 |---|---|---|
 | 2026-10-27 | İlk sürüm | H07 |
+| 2026-10-27 | Çalıştırma 16 çağrıda tamamlandı. Ölçüm kapsamı 18 operasyondan, üç tekrarı da yapılmış beş operasyona daraltıldı: `musteri-ekle`, `musteri-sorgula`, `musteri-guncelle`, `motor-ekle`, `motor-sorgula`. `motor-guncelle` (yalnızca T1) ek bilgi olarak raporlanır, ölçüme sayılmaz; kalan 12 operasyon çalıştırılmaz. Sonuç bu beş operasyon içindir, 18 operasyona genellenmez. Bölüm 1'deki soru ve bölüm 4'teki tablo bu kapsamla okunur. | Ekip kararı. Karar, LLM çıktıları testlerle hiç çalıştırılmadan alındı; sonuç görülerek operasyon seçilmedi. |

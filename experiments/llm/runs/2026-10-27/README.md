@@ -8,16 +8,18 @@
 | Betik | `experiments/llm/generate.py`; talimatlar her klasördeki `talimat.md` (sha256 `meta.json`'da) |
 | Ayarlar | Araç yok, varsayılan örnekleme ayarları, tek atış, geri bildirim yok |
 
-## Durum: 16 / 54 çağrı tamamlandı
+## Durum: 16 / 54 çağrı yapıldı, çalıştırma burada tamamlandı
 
-API kredisi bittiği için kalan çağrılar "kredi bakiyesi yetersiz" hatası aldı. Bu hatalı çağrıların cevabı yoktur ve
-bu klasörde yer almaz; yeniden denendiklerinde kayda eklenecektir.
+Çalıştırma 16 çağrıdan sonra durduruldu; kalan 38 çağrı yapılmadı ve yapılmayacak. Ölçüm kapsamı, üç tekrarı da
+tamamlanmış beş operasyondur (aşağıdaki tablonun ilk iki satırı). `motor-guncelle`'nin tek tekrarı (T1) kayıtta kalır,
+ek bilgi olarak raporlanır ama ölçüme sayılmaz. Karar, LLM çıktıları testlerle hiç çalıştırılmadan alındı (bkz.
+`../../README.md`, Değişiklik kaydı).
 
 | Operasyon | Tamamlanan tekrar |
 |---|---|
 | `musteri-ekle`, `musteri-sorgula`, `musteri-guncelle` | T1, T2, T3 |
 | `motor-ekle`, `motor-sorgula` | T1, T2, T3 |
 | `motor-guncelle` | T1 |
-| `motor-sil`, `konut-*`, `hayat-*`, `ticari-*` (12 operasyon) | henüz çalıştırılmadı |
+| `motor-sil`, `konut-*`, `hayat-*`, `ticari-*` (12 operasyon) | çalıştırılmadı (kapsam dışı) |
 
 Çıktılar elle değiştirilmemiştir. Testlerle çalıştırma H09'dadır (#47).
