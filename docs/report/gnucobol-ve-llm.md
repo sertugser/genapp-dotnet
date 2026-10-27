@@ -203,8 +203,8 @@ modelin ham cevabı ve kullanım bilgisi `experiments/llm/runs/2026-10-27/<opera
 
 ### 5.2 Ne yapıldı, kapsam nasıl daraldı
 
-Plan 18 operasyon × 3 tekrar = 54 çağrıydı. API kredisi bitince **16 çağrı** tamamlandı; kalan 38 çağrı "kredi
-yetersiz" hatası aldı ([`runs/2026-10-27/README.md`](../../experiments/llm/runs/2026-10-27/README.md)). Üç tekrarı da
+Plan 18 operasyon × 3 tekrar = 54 çağrıydı. Çalıştırma ekip kararıyla **16 çağrıda** durduruldu; kalan 38 çağrı
+yapılmadı ([`runs/2026-10-27/README.md`](../../experiments/llm/runs/2026-10-27/README.md)). Üç tekrarı da
 tamamlanan beş operasyon ölçüm kapsamına alındı: `musteri-ekle`, `musteri-sorgula`, `musteri-guncelle`, `motor-ekle`,
 `motor-sorgula` (15 çağrı). `motor-guncelle` yalnızca T1 olarak çalıştı ve ölçüme girmez. Karar README'nin değişiklik
 kaydındadır ve sonuç görülmeden alındı. **Seçim rastgele değildir:** çalıştırma sırasında ilk gelen müşteri ve motor
@@ -257,6 +257,9 @@ Diğer sınırlar:
   bizim kodumuzdan ayıramadı. "Eşdeğer" yerine "bu testlerle fark yakalanmadı" demek doğrudur.
 - **Girdiler tam adil değil.** LLM'e `docs/api-design.md` bilinçli sapmalarıyla verildi (elle yazan ekip de görmüştü).
   GenApp açık bir IBM örneğidir; modelin COBOL'u ya da çevirisini eğitiminde görmüş olması dışlanamaz.
+- **Aynı model ailesi.** Bizim kodumuz da Claude Code yardımıyla yazıldı. Karşılaştırma insan ile yapay zekâ
+  arasında değil, analiz, tahmin, test ve incelemeyle adım adım yazılan kod ile COBOL'dan tek seferde, düzeltmesiz
+  çevrilen kod arasındadır.
 - **Süreç ölçülmedi.** Analiz, tahmin ve incelemenin katkısı bu deneyle ölçülmedi; yalnızca iki kodun çıktısı
   karşılaştırıldı.
 - **Tek model, tek tarih** (`claude-opus-5-5`, 2026-10-27), 15 çağrı.
