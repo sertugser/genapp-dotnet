@@ -58,5 +58,20 @@ services:
       seed:
         condition: service_completed_successfully
 
+  # Load test of the SRS performance requirements (#84, tests/load/genapp-load.js). The load profile keeps it out of
+  # docker compose up; run it with: docker compose --profile load run --rm k6
+  k6:
+    image: grafana/k6:1.3.0
+    profiles: [load]
+    environment:
+      BASE_URL: http://api:8080
+      SUMMARY_FILE: /results/load-test-summary.json
+    volumes:
+      - ./tests/load:/scripts:ro
+      - ./tests/results:/results
+    command: run /scripts/genapp-load.js
+    depends_on:
+      - api
+
 volumes:
   pgdata:
