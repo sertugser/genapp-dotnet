@@ -10,6 +10,9 @@ namespace GenApp.Application.Policies;
 public abstract class PolicyService<TDetails>(IPolicyRepository policies, IUnitOfWork unitOfWork)
     where TDetails : class, IPolicyDetails
 {
+    // For the type-specific inquiries of a subclass (commercial: 02ICOM, 03ICOM, 05ICOM).
+    protected IPolicyRepository Policies { get; } = policies;
+
     // The POLICY.POLICYTYPE letter of this type (M, H, E, C).
     protected abstract string PolicyType { get; }
 
@@ -23,7 +26,7 @@ public abstract class PolicyService<TDetails>(IPolicyRepository policies, IUnitO
         Policy policy, TDetails details, CancellationToken cancellationToken = default)
     {
         policy.PolicyNumber = 0;
-        policies.Add(policy, details);
+        Policies.Add(policy, details);
 
         try
         {
@@ -69,7 +72,7 @@ public abstract class PolicyService<TDetails>(IPolicyRepository policies, IUnitO
         policy.BrokersReference = changes.BrokersReference;
         CopyChanges(details, detailsChanges);
 
-        policies.MarkUpdated(policy, lastChanged);
+        Policies.MarkUpdated(policy, lastChanged);
 
         try
         {
@@ -89,7 +92,7 @@ public abstract class PolicyService<TDetails>(IPolicyRepository policies, IUnitO
     // (docs/api-design.md section 3).
     public async Task<string> DeleteAsync(int customerNumber, int policyNumber, CancellationToken cancellationToken = default)
     {
-        var type = await policies.FindTypeAsync(customerNumber, policyNumber, cancellationToken);
+        var type = await Policies.FindTypeAsync(customerNumber, policyNumber, cancellationToken);
         if (type is null)
         {
             return ReturnCodes.DatabaseError;
@@ -100,7 +103,7 @@ public abstract class PolicyService<TDetails>(IPolicyRepository policies, IUnitO
             return ReturnCodes.NotFound;
         }
 
-        var deleted = await policies.DeleteAsync(customerNumber, policyNumber, cancellationToken);
+        var deleted = await Policies.DeleteAsync(customerNumber, policyNumber, cancellationToken);
         return deleted == 0 ? ReturnCodes.DatabaseError : ReturnCodes.Success;
     }
 
@@ -110,7 +113,7 @@ public abstract class PolicyService<TDetails>(IPolicyRepository policies, IUnitO
     private async Task<PolicyRecord<TDetails>?> FindAsync(
         int customerNumber, int policyNumber, CancellationToken cancellationToken)
     {
-        var record = await policies.FindAsync<TDetails>(customerNumber, policyNumber, cancellationToken);
+        var record = await Policies.FindAsync<TDetails>(customerNumber, policyNumber, cancellationToken);
         return record?.Policy.PolicyType == PolicyType ? record : null;
     }
 }

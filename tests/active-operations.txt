@@ -20,3 +20,8 @@ hayat-ekle
 hayat-sorgula
 hayat-guncelle
 hayat-sil
+
+# Ticari poliçe
+ticari-ekle
+ticari-sorgula
+ticari-sil

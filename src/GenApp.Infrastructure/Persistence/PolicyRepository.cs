@@ -19,6 +19,16 @@ internal sealed class PolicyRepository(GenAppDbContext db, TimeProvider clock) :
         };
         policy.LastChanged = Now();
 
+        // LGAPDB01 writes the dates to COMMERCIAL as well: START = issue date, RENEWAL = expiry date and REQUESTDATE =
+        // the new POLICY.LASTCHANGED (lgapdb01.cbl:308-321, :520-560; legacy-analysis/use-cases/16-commercial-add.md,
+        // note 2). The inquiries read them from there.
+        if (details is CommercialPolicy commercial)
+        {
+            commercial.StartDate = policy.IssueDate;
+            commercial.RenewalDate = policy.ExpiryDate;
+            commercial.RequestDate = policy.LastChanged;
+        }
+
         // Through the navigation EF Core inserts the policy first and copies its generated number to the type row,
         // all in one SaveChanges (one transaction).
         details.Policy = policy;
@@ -35,6 +45,43 @@ internal sealed class PolicyRepository(GenAppDbContext db, TimeProvider clock) :
             .SingleOrDefaultAsync(d => d.PolicyNumber == policyNumber && d.Policy!.CustomerNumber == customerNumber, cancellationToken));
 
         return details is null ? null : new PolicyRecord<TDetails>(details.Policy!, details);
+    }
+
+    // The three other commercial inquiries. Read only, so nothing is tracked. The inner join with COMMERCIAL is the
+    // legacy type check (17-commercial-inquire.md, note 7); the service checks POLICYTYPE as well. No ORDER BY, as in
+    // the legacy cursors; the 21-row limit of 03ICOM (lgipdb01.cbl:906-909) is not defined for the new system.
+    public async Task<PolicyRecord<CommercialPolicy>?> FindCommercialAsync(int policyNumber, CancellationToken cancellationToken = default)
+    {
+        var list = await QueryCommercialAsync(c => c.PolicyNumber == policyNumber, cancellationToken);
+        return list.SingleOrDefault();
+    }
+
+    public Task<IReadOnlyList<PolicyRecord<CommercialPolicy>>> FindCommercialByCustomerAsync(
+        int customerNumber, CancellationToken cancellationToken = default) =>
+        QueryCommercialAsync(c => c.Policy!.CustomerNumber == customerNumber, cancellationToken);
+
+    // The postcode is compared exactly, as ZIPCODE = CA-B-Postcode (17-commercial-inquire.md, note 14).
+    public Task<IReadOnlyList<PolicyRecord<CommercialPolicy>>> FindCommercialByPostcodeAsync(
+        string postcode, CancellationToken cancellationToken = default) =>
+        QueryCommercialAsync(c => c.Zipcode == postcode, cancellationToken);
+
+    private async Task<IReadOnlyList<PolicyRecord<CommercialPolicy>>> QueryCommercialAsync(
+        System.Linq.Expressions.Expression<Func<CommercialPolicy, bool>> filter, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var rows = await db.CommercialPolicies
+                .AsNoTracking()
+                .Include(c => c.Policy)
+                .Where(filter)
+                .ToListAsync(cancellationToken);
+            return rows.Select(c => new PolicyRecord<CommercialPolicy>(c.Policy!, c)).ToList();
+        }
+        catch (Exception e) when (DatabaseErrors.IsDatabaseError(e))
+        {
+            // A failed FETCH: 500 / 90, or 503 on deadlock and timeout (17-commercial-inquire.md, notes 5 and 6).
+            throw DatabaseErrors.Translate(e);
+        }
     }
 
     // Reads only the type column; nothing is tracked.
