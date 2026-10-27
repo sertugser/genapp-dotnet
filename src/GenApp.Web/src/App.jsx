@@ -8,8 +8,8 @@ const SCREENS = [
   { id: "customers", label: "Müşteriler", legacy: "SSC1", icon: LuUsers, ready: true },
   { id: "motor", label: "Motor poliçesi", legacy: "SSP1", icon: LuCar, ready: true },
   { id: "house", label: "Konut poliçesi", legacy: "SSP3", icon: LuHouse, ready: true },
-  { id: "endowment", label: "Hayat sigortası", legacy: "SSP2", icon: LuHeartPulse },
-  { id: "commercial", label: "Ticari poliçe", legacy: "SSP4", icon: LuBuilding2 },
+  { id: "endowment", label: "Hayat sigortası", legacy: "SSP2", icon: LuHeartPulse, ready: true },
+  { id: "commercial", label: "Ticari poliçe", legacy: "SSP4", icon: LuBuilding2, ready: true },
 ];
 
 export default function App() {
