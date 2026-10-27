@@ -1,0 +1,25 @@
+{
+  "operasyon": "musteri-guncelle",
+  "tekrar": 3,
+  "model_istenen": "claude-opus-5-5",
+  "model_donen": "claude-opus-5-5",
+  "zaman_utc": "2026-10-27T14:38:34+00:00",
+  "talimat_sha256": "4dc815477870b7e93b3006f809d2fc3952e4bfe600fedaf673bd732cb4a4818a",
+  "kullanim": {
+    "input_tokens": 31848,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 7637,
+    "output_tokens_details": {
+      "thinking_tokens": 2155
+    },
+    "service_tier": "standard",
+    "inference_geo": "global",
+    "speed": "standard"
+  },
+  "durdurma_nedeni": "end_turn"
+}

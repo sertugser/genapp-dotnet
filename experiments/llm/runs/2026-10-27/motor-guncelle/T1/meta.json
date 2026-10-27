@@ -1,0 +1,25 @@
+{
+  "operasyon": "motor-guncelle",
+  "tekrar": 1,
+  "model_istenen": "claude-opus-5-5",
+  "model_donen": "claude-opus-5-5",
+  "zaman_utc": "2026-10-27T14:47:55+00:00",
+  "talimat_sha256": "d165fddbe77e5fbf873f58b66fd8b93185d3501a981543e725bb8ed8d965ca27",
+  "kullanim": {
+    "input_tokens": 39027,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 12027,
+    "output_tokens_details": {
+      "thinking_tokens": 4426
+    },
+    "service_tier": "standard",
+    "inference_geo": "global",
+    "speed": "standard"
+  },
+  "durdurma_nedeni": "end_turn"
+}
