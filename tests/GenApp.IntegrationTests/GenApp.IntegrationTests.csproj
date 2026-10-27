@@ -9,7 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <!-- Veritabanı doğrulaması ham SQL ile yapılır. Npgsql API üzerinden dolaylı olarak da geliyor; açık referans,
+         Api'nin bağımlılıkları değişse de doğrulama yolunun kırılmaması için (sürüm dolaylı olanla aynı). -->
+    <PackageReference Include="Npgsql" Version="10.0.3" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
   </ItemGroup>
@@ -19,6 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Yalnızca WebApplicationFactory<Program> için. Testler Program dışında src'deki hiçbir sınıfı
+         kullanmaz; API'yi HTTP ile çağırır, veritabanını ham SQL ile okur. -->
     <ProjectReference Include="..\..\src\GenApp.Api\GenApp.Api.csproj" />
   </ItemGroup>
 
