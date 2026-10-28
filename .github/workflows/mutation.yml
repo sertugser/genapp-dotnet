@@ -1,0 +1,152 @@
+# Mutasyon testi (#53): Stryker.NET koda küçük hatalar (mutant) ekler ve testlerin bunları yakalayıp yakalamadığına
+# bakar. Yakalanan oran mutasyon skorudur. İki test takımı ayrı ölçülür:
+#   esdegerlik  yalnızca eşdeğerlik testleri (COBOL'dan türetilen testler; araştırmanın asıl ölçüsü)
+#   tum         eşdeğerlik + entegrasyon + birim + veritabanı testleri
+# src/ altındaki dört proje (Domain, Application, Infrastructure, Api) ayrı ayrı mutasyona uğratılır; EF Core
+# migration'ları (otomatik üretilen kod) dışarıda bırakılır.
+# Her PR'da çalışmaz: elle (Actions > Mutasyon testi > Run workflow) ya da tests/mutation veya bu dosya değişince.
+# Sonuç tablosu PR yorumunda ve iş özetinde; ham raporlar (html, json) "mutation-*" artifact'larında.
+
+name: Mutasyon testi
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "tests/mutation/**"
+      - ".github/workflows/mutation.yml"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  stryker:
+    name: Stryker (${{ matrix.suite }}, ${{ matrix.project }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [esdegerlik, tum]
+        project: [GenApp.Domain, GenApp.Application, GenApp.Infrastructure, GenApp.Api]
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: genapp
+          POSTGRES_USER: genapp
+          POSTGRES_PASSWORD: genapp_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U genapp -d genapp"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      ConnectionStrings__GenApp: Host=localhost;Port=5432;Database=genapp;Username=genapp;Password=genapp_dev
+
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      - name: .NET SDK'yı kur (global.json)
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Derle ve şemayı kur (ci.yml ile aynı)
+        run: |
+          dotnet restore GenApp.slnx
+          dotnet build GenApp.slnx --no-restore
+          dotnet tool restore
+          dotnet ef database update --no-build --project src/GenApp.Infrastructure --startup-project src/GenApp.Api
+
+      - name: Stryker.NET'i kur
+        run: |
+          dotnet tool install --global dotnet-stryker --version 4.13.0 || dotnet tool install --global dotnet-stryker
+          dotnet tool list --global | grep -i stryker
+
+      # Testler aynı veritabanını paylaştığı için mutantlar tek tek (concurrency 1) denenir.
+      - name: Mutasyon testini çalıştır
+        working-directory: src/${{ matrix.project }}
+        env:
+          SUITE: ${{ matrix.suite }}
+        run: |
+          tests=(--test-project ../../tests/GenApp.EquivalenceTests/GenApp.EquivalenceTests.csproj)
+          if [ "$SUITE" = "tum" ]; then
+            tests+=(--test-project ../../tests/GenApp.IntegrationTests/GenApp.IntegrationTests.csproj)
+            tests+=(--test-project ../../tests/GenApp.UnitTests/GenApp.UnitTests.csproj)
+            tests+=(--test-project ../../tests/GenApp.Infrastructure.Tests/GenApp.Infrastructure.Tests.csproj)
+          fi
+          # Testler Domain, Application ve Infrastructure'a Api üzerinden dolaylı bağlı; Stryker doğrudan referans
+          # arıyor. Referans yalnızca bu makinede eklenir (depoya girmez, testlerin davranışını değiştirmez).
+          for t in "${tests[@]}"; do
+            [ "$t" = "--test-project" ] && continue
+            grep -q "${{ matrix.project }}.csproj" "$t" || dotnet add "$t" reference ${{ matrix.project }}.csproj
+          done
+          set +e
+          dotnet stryker --project ${{ matrix.project }}.csproj "${tests[@]}" \
+            --mutate "**/*.cs" --mutate "!**/Migrations/**" \
+            --concurrency 1 --reporter json --reporter html --reporter progress \
+            --output "$RUNNER_TEMP/stryker" --break-at 0 2>&1 | tee "$RUNNER_TEMP/stryker.log"
+          code=${PIPESTATUS[0]}
+          if [ "$code" != "0" ]; then
+            # Son satırlar tek bir hata notu olarak (iş sayfasında ve API'de görünür).
+            msg=$(grep -v '^\s*$' "$RUNNER_TEMP/stryker.log" | tail -30 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=Stryker başarısız::$msg"
+          fi
+          exit $code
+
+      - name: Sonucu özetle
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/ozet"
+          python3 tests/mutation/summarize.py "$RUNNER_TEMP/stryker/reports/mutation-report.json" \
+            "${{ matrix.suite }}" "${{ matrix.project }}" "$RUNNER_TEMP/ozet"
+          cat "$RUNNER_TEMP/ozet/"*.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Raporları sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-${{ matrix.suite }}-${{ matrix.project }}
+          path: |
+            ${{ runner.temp }}/stryker/reports
+            ${{ runner.temp }}/ozet
+
+  sonuc:
+    name: Sonuç tablosu
+    needs: stryker
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      - name: Özetleri indir
+        uses: actions/download-artifact@v4
+        with:
+          pattern: mutation-*
+          path: parcalar
+
+      - name: Tabloyu birleştir
+        run: python3 tests/mutation/combine.py parcalar sonuc
+
+      - name: İş özetine yaz
+        run: cat sonuc/*.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: PR'a yorum olarak yaz
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for f in sonuc/*.md; do
+            jq -Rs '{body: .}' "$f" > body.json
+            curl -fsS -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+              --data @body.json > /dev/null
+          done
