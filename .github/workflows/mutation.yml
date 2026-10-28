@@ -82,10 +82,18 @@ jobs:
             tests+=(--test-project ../../tests/GenApp.UnitTests/GenApp.UnitTests.csproj)
             tests+=(--test-project ../../tests/GenApp.Infrastructure.Tests/GenApp.Infrastructure.Tests.csproj)
           fi
+          set +e
           dotnet stryker --project ${{ matrix.project }}.csproj "${tests[@]}" \
             --mutate "**/*.cs" --mutate "!**/Migrations/**" \
             --concurrency 1 --reporter json --reporter html --reporter progress \
-            --output "$RUNNER_TEMP/stryker" --break-at 0
+            --output "$RUNNER_TEMP/stryker" --break-at 0 2>&1 | tee "$RUNNER_TEMP/stryker.log"
+          code=${PIPESTATUS[0]}
+          if [ "$code" != "0" ]; then
+            # Son satırlar tek bir hata notu olarak (iş sayfasında ve API'de görünür).
+            msg=$(grep -v '^\s*$' "$RUNNER_TEMP/stryker.log" | tail -30 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=Stryker başarısız::$msg"
+          fi
+          exit $code
 
       - name: Sonucu özetle
         if: always()
