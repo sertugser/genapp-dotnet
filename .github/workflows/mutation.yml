@@ -82,6 +82,12 @@ jobs:
             tests+=(--test-project ../../tests/GenApp.UnitTests/GenApp.UnitTests.csproj)
             tests+=(--test-project ../../tests/GenApp.Infrastructure.Tests/GenApp.Infrastructure.Tests.csproj)
           fi
+          # Testler Domain, Application ve Infrastructure'a Api üzerinden dolaylı bağlı; Stryker doğrudan referans
+          # arıyor. Referans yalnızca bu makinede eklenir (depoya girmez, testlerin davranışını değiştirmez).
+          for t in "${tests[@]}"; do
+            [ "$t" = "--test-project" ] && continue
+            grep -q "${{ matrix.project }}.csproj" "$t" || dotnet add "$t" reference ${{ matrix.project }}.csproj
+          done
           set +e
           dotnet stryker --project ${{ matrix.project }}.csproj "${tests[@]}" \
             --mutate "**/*.cs" --mutate "!**/Migrations/**" \
